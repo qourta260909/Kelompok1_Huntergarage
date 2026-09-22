@@ -7,5 +7,8 @@ Route::get('/', function () {
 });
 
 Route::get('/danish', function () {
+});
+
+Route::get('/Qourta', function () {
     return view('welcome');
 });
