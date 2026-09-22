@@ -17,3 +17,7 @@ Route::get('/Qourta', function () {
 Route::get('/Royyan', function () {
     return view('welcome');
 });
+
+Route::get('/Safa', function () {
+    return view('welcome');
+});
