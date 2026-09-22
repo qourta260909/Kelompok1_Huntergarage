@@ -17,6 +17,3 @@ Route::get('/Qourta', function () {
 Route::get('/Royyan', function () {
     return view('welcome');
 });
-
-git config --global user.email "you@example.com"
-  git config --global user.name "Your Name"
