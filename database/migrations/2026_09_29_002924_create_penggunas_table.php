@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('penggunas', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        Schema::create('tb_pengguna', function (Blueprint $table) {
+        $table->id('id_pengguna');
+        //isi kolom yg lain di sini ...
+        $table->timestamps();
+    });
     }
 
     /**
