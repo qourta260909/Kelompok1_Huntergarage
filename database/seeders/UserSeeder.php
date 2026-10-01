@@ -6,11 +6,11 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-class DatabaseSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Membuat akun Admin
+        // Bikin akun Admin
         User::create([
             'name' => 'Admin Bengkel',
             'email' => 'admin@hunter.com',
@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin'
         ]);
 
-        // 2. Membuat akun Pelanggan/User biasa
+        // Bikin akun User biasa
         User::create([
             'name' => 'Pelanggan Setia',
             'email' => 'user@hunter.com',
