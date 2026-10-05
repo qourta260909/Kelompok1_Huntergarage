@@ -28,15 +28,8 @@
                     <path d="M7 10V8.5A5 5 0 0 1 12 3.5a5 5 0 0 1 5 5V10h.75A2.25 2.25 0 0 1 20 12.25v7.5A2.25 2.25 0 0 1 17.75 22h-11.5A2.25 2.25 0 0 1 4 19.75v-7.5A2.25 2.25 0 0 1 6.25 10H7Zm2 0h6V8.5a3 3 0 1 0-6 0V10Zm2.5 4.75a1 1 0 1 0 2 0 .98.98 0 0 0-.27-.7.98.98 0 0 0-1.46 0 .98.98 0 0 0-.27.7Z" fill="currentColor"/>
                 </svg>
                 <input id="password" type="password" name="password" placeholder="Masukan Sandi" required autocomplete="current-password">
-                <span class="field-action" aria-hidden="true">◌</span>
             </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <div class="form-footer">
-            @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="forgot-link">Forgot your password?</a>
-            @endif
         </div>
 
         <button type="submit" class="login-button">Login</button>

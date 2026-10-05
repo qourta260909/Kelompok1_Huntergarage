@@ -4,303 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard - Hunter Garage</title>
-    
-    <style>
-        /* ================= CSS RESET & GLOBAL ================= */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f8fafc;
-            color: #111827;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .layout-container {
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* ================= SIDEBAR ================= */
-        .sidebar {
-            width: 256px;
-            background-color: #f59e0b;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-box {
-            width: 40px;
-            height: 40px;
-            background-color: #000;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .brand-title {
-            font-weight: 800;
-            font-size: 15px;
-            line-height: 1.2;
-            color: #000;
-        }
-
-        .brand-subtitle {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: rgba(0, 0, 0, 0.7);
-            text-transform: uppercase;
-        }
-
-        .nav-menu {
-            flex: 1;
-            padding: 8px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .nav-link.active {
-            background-color: #000;
-            color: #fff;
-        }
-
-        .nav-link.inactive {
-            color: #000;
-        }
-
-        .nav-link.inactive:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-icon {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-        }
-
-        .nav-link.active .nav-icon { background-color: rgba(255, 255, 255, 0.2); }
-        .nav-link.inactive .nav-icon { background-color: rgba(0, 0, 0, 0.2); }
-
-        .mt-auto { margin-top: 16px; }
-
-        /* ================= MAIN CONTENT ================= */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow-y: auto;
-            padding: 32px;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 32px;
-        }
-
-        .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #f59e0b;
-        }
-
-        .page-subtitle {
-            color: #6b7280;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .btn-logout {
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #f3f4f6;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .btn-logout:hover { background-color: #f9fafb; }
-        
-        .btn-logout svg {
-            width: 20px;
-            height: 20px;
-            color: #374151;
-        }
-
-        /* ================= STATS GRID ================= */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-        
-        @media (min-width: 1024px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        .card {
-            background-color: #fff;
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid #f3f4f6;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .card-title {
-            color: #6b7280;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .card-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-gray { background-color: #f9fafb; }
-        .icon-amber { background-color: #fffbeb; }
-        .icon-teal { background-color: #f0fdfa; }
-
-        .card-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #f59e0b;
-            line-height: 1;
-            margin-bottom: 12px;
-        }
-
-        .card-trend {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .trend-up {
-            color: #059669;
-            background-color: #ecfdf5;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .trend-text { color: #9ca3af; margin-left: 4px; }
-
-        /* ================= TABLE ================= */
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .table-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .table-subtitle {
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .pill-entries {
-            background-color: #f9fafb;
-            border: 1px solid #f3f4f6;
-            color: #4b5563;
-            padding: 6px 16px;
-            border-radius: 9999px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            text-align: left;
-            border-collapse: collapse;
-        }
-
-        th {
-            color: #9ca3af;
-            font-size: 12px;
-            text-transform: uppercase;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #f3f4f6;
-            font-weight: 600;
-            width: 20%;
-        }
-
-        td {
-            padding: 16px 0;
-            border-bottom: 1px solid #f9fafb;
-            font-size: 14px;
-        }
-
-        tr:last-child td { border-bottom: none; }
-
-        .td-bold { font-weight: 700; color: #111827; }
-        .td-muted { color: #4b5563; }
-
-        /* ================= STATUS BADGES ================= */
-        .badge {
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-success { background-color: #ecfdf5; color: #059669; }
-        .badge-waiting { background-color: #f1f5f9; color: #475569; }
-        .badge-process { background-color: #fef3c7; color: #b45309; }
-    </style>
+    @vite('resources/css/dashboard.css')
 </head>
 <body>
 
@@ -309,31 +13,66 @@
         <!-- ================= SIDEBAR ================= -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="logo-box">H</div>
-                <div>
+                <a href="{{ route('dashboard') }}" class="logo-link">
+                    <div class="logo-box">H</div>
+                </a>
+                <a href="{{ route('dashboard') }}" class="brand-link">
                     <div class="brand-title">Hunter Garage</div>
                     <div class="brand-subtitle">Platform Bisnis</div>
-                </div>
             </div>
+             </a>
 
             <nav class="nav-menu">
                 <a href="#" class="nav-link active">
-                    <span class="nav-icon"></span> Dashboard
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+  <rect x="4" y="4" width="7" height="7" rx="1.5"/>
+  <rect x="13" y="4" width="7" height="7" rx="1.5"/>
+  <rect x="4" y="13" width="7" height="7" rx="1.5"/>
+  <rect x="13" y="13" width="7" height="7" rx="1.5"/>
+</svg>
+</span> Dashboard
                 </a>
                 <a href="#" class="nav-link inactive">
-                    <span class="nav-icon"></span> Pemesanan
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="7" y="5" width="10" height="16" rx="2"/>
+  <path d="M9 5V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+  <line x1="10" y1="10" x2="14" y2="10"/>
+  <line x1="10" y1="14" x2="14" y2="14"/>
+</svg>
+</span> Pemesanan
                 </a>
                 <a href="#" class="nav-link inactive">
-                    <span class="nav-icon"></span> Layanan
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+</svg>
+</span> Layanan
                 </a>
                 <a href="#" class="nav-link inactive">
-                    <span class="nav-icon"></span> Produk
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+  <line x1="12" y1="22.08" x2="12" y2="12"/>
+</svg>
+</span> Produk
                 </a>
                 <a href="#" class="nav-link inactive">
-                    <span class="nav-icon"></span> Profile
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+  <circle cx="12" cy="8" r="4"/>
+  <path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z"/>
+</svg>
+</span> Profile
                 </a>
-                <a href="#" class="nav-link inactive mt-auto">
-                    <span class="nav-icon"></span> Riwayat
+                <a href="#" class="nav-link inactive">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
                 </a>
             </nav>
         </aside>
@@ -348,7 +87,7 @@
                     <p class="page-subtitle">Selamat datang kembali, {{ auth()->user()->name }}. Berikut adalah ringkasan performa bisnis Anda.</p>
                 </div>
                 
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
                     @csrf
                     <button type="submit" class="btn-logout">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -362,7 +101,16 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">Pelanggan aktif</div>
-                        <div class="card-icon icon-gray">👤</div>
+                        <div class="card-icon icon-gray"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Kotak Latar Belakang -->
+                            <rect width="40" height="40" rx="10" fill="#EDE9FE"/>
+                            <!-- Ikon User/Group -->
+                            <path d="M15 17C16.6569 17 18 15.6569 18 14C18 12.3431 16.6569 11 15 11C13.3431 11 12 12.3431 12 14C12 15.6569 13.3431 17 15 17Z" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                             <path d="M22 19C23.1046 19 24 18.1046 24 17C24 15.8954 23.1046 15 22 15" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M9 26V25C9 23.3431 10.3431 22 12 22H18C19.6569 22 21 23.3431 21 25V26" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                         <path d="M24 26V25C24 23.9515 23.284 23.072 22.308 22.825" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                </div>
                     </div>
                     <div class="card-value">-</div>
                 </div>
@@ -370,7 +118,15 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">Pesanan Baru</div>
-                        <div class="card-icon icon-amber">📦</div>
+                        <div class="card-icon icon-amber"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Kotak Latar Belakang -->
+  <rect width="40" height="40" rx="10" fill="#FEF3C7"/>
+  <!-- Ikon Tas Belanja -->
+  <path d="M13 14H27L28 27H12L13 14Z" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16 14V11C16 9.89543 16.8954 9 18 9H22C23.1046 9 24 9.89543 24 11V14" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17 19H23" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+</svg>
+</div>
                     </div>
                     <div class="card-value">-</div>
                 </div>
@@ -378,7 +134,15 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">Total Penjualan</div>
-                        <div class="card-icon icon-gray">$</div>
+                        <div class="card-icon icon-gray"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Kotak Latar Belakang dengan Sudut Melengkung -->
+  <rect width="64" height="64" rx="16" fill="#E2F2ED"/>
+  
+  <!-- Ikon Simbol Dollar -->
+  <path d="M32 16V48" stroke="#0D9488" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M40 24H26C23.7909 24 22 25.7909 22 28C22 30.2091 23.7909 32 26 32H38C40.2091 32 42 33.7909 42 36C42 38.2091 40.2091 40 38 40H24" stroke="#0D9488" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</div>
                     </div>
                     <div class="card-value">-</div>
                 </div>
@@ -386,7 +150,14 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">Pendapatan Baru</div>
-                        <div class="card-icon icon-teal">📈</div>
+                        <div class="card-icon icon-teal"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Kotak Latar Belakang -->
+  <rect width="40" height="40" rx="10" fill="#FEE2E2"/>
+  <!-- Ikon Grafik Naik -->
+  <path d="M12 25L17.5 19.5L21.5 23.5L28 15" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M23 15H28V20" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</div>
                     </div>
                     <div class="card-value">-</div>
                 </div>
