@@ -7,6 +7,28 @@ use App\Http\Controllers\HomeController;
 use App\Models\User;         // <-- Tambahkan ini agar bisa memanggil tabel users
 use App\Models\DataLayanan;  // <-- Tambahkan ini agar bisa memanggil tabel layanan
 
+Route::get('/dashboard-pemesanan', function () {
+    return view('dashboard_pemesanan');
+})->name('dashboard.pemesanan');
+
+Route::get('/dashboard-layanan', function () {
+    return view('dashboard_layanan');
+})->name('dashboard.layanan');
+
+Route::get('/dashboard-produk', function () {
+    return view('dashboard_produk');
+})->name('dashboard.produk');
+
+Route::get('/dashboard-profile', function () {
+    return view('dashboard_profile');
+})->name('dashboard.profile');
+
+Route::get('/dashboard-riwayat', function () {
+    return view('dashboard_riwayat');
+})->name('dashboard.riwayat');
+
+
+
 // Jalur Halaman Depan (Untuk User)
 Route::get('/', [HomeController::class, 'index']);
 
