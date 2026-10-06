@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard - Hunter Garage</title>
     @vite('resources/css/dashboard.css')
+
+    <style>
+        .card {
+            margin-top:20px;
+        }
+    </style>
+
+
 </head>
 <body>
 
@@ -94,14 +102,54 @@
                     </button>
                 </form>
             </header>
-
+<div id="header-layanan" class="header-container">
     <div class="toggle-container">
-  <button class="toggle-btn active">Layanan</button>
-  <button class="toggle-btn">Produk</button>
-  </div>
+        <button type="button" class="toggle-btn active" data-order-tab="layanan" aria-pressed="true">Layanan</button>
+        <button type="button" class="toggle-btn" data-order-tab="produk" aria-pressed="false">Produk</button>
+    </div>
+        <input type="text" id="searchInput" placeholder="Cari Data...">
+     </div>
+
+        <div class="card">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Pelanggan</th>
+                                <th id="orderCategoryHeading">Layanan</th>
+                                <th>Tanggal,jam</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data tabel dikosongkan untuk diisi dengan loop data dari backend nanti -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
 
         </main>
     </div>
+    <script>
+        const orderTabButtons = document.querySelectorAll('[data-order-tab]');
+        const orderCategoryHeading = document.getElementById('orderCategoryHeading');
+
+        orderTabButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const selectedTab = button.dataset.orderTab;
+
+                orderTabButtons.forEach((tabButton) => {
+                    const isActive = tabButton === button;
+                    tabButton.classList.toggle('active', isActive);
+                    tabButton.setAttribute('aria-pressed', String(isActive));
+                });
+
+                orderCategoryHeading.textContent = selectedTab === 'produk' ? 'Produk' : 'Layanan';
+            });
+        });
+    </script>
 </body>
 </html>

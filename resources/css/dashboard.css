@@ -305,3 +305,50 @@
         .badge-success { background-color: #ecfdf5; color: #059669; }
         .badge-waiting { background-color: #f1f5f9; color: #475569; }
         .badge-process { background-color: #fef3c7; color: #b45309; }
+
+
+        .toggle-container {
+            display: inline-flex    ;
+            width:fit-content;
+            border-radius: 24px;
+            padding: 5px;
+            background-color:#E2E8F0;
+            gap: 12px;   
+            margin-top: 25px;
+        }
+
+        .toggle-btn {
+            background-color: transparent;
+            border: none;
+            color: #6B6F7A;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 700;
+        }
+
+        .toggle-btn.active {
+            background-color: #D9D9D9;
+            border:none;
+            border-radius: 25px;
+        }
+
+        .toggle-btn:focus-visible {
+            outline: 2px solid #111827;
+            outline-offset: 2px;
+        }
+
+        .header-container{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-container input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 200px;
+        }
