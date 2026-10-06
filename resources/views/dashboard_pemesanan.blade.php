@@ -95,6 +95,11 @@
                 </form>
             </header>
 
+    <div class="toggle-container">
+  <button class="toggle-btn active">Layanan</button>
+  <button class="toggle-btn">Produk</button>
+  </div>
+
 
         </main>
     </div>
