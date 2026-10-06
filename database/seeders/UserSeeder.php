@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin Bengkel',
             'email' => 'admin@hunter.com',
             'password' => Hash::make('123'),
-            'role' => 'admin'
+            'role' => 'admin',
         ]);
 
         // Bikin akun User biasa
@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
             'name' => 'Pelanggan Setia',
             'email' => 'user@hunter.com',
             'password' => Hash::make('123'),
-            'role' => 'user'
+            'role' => 'user',
         ]);
     }
 }

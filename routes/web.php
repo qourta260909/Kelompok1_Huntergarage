@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\HomeController;
-use App\Models\User;         // <-- Tambahkan ini agar bisa memanggil tabel users
-use App\Models\DataLayanan;  // <-- Tambahkan ini agar bisa memanggil tabel layanan
+use App\Models\User;
+use App\Models\DataLayanan;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -33,21 +33,45 @@ Route::get('/dashboard-riwayat', function () {
 
 
 // Jalur Halaman Depan (Untuk User)
-Route::get('/', [HomeController::class, 'index']);
+Route::view('/', 'welcome');
 
 // Dashboard (Untuk Admin) dengan Logika Percabangan & Pengambilan Data
 Route::get('/dashboard', function () {
     // Cek apakah pengguna yang sedang login memiliki role 'admin'
     if (auth()->user()->role === 'admin') {
-        
-        // 1. KOKI MENGAMBIL DATA
-        // Hitung total user biasa
         $totalPelanggan = User::where('role', 'user')->count();
-        // Ambil 4 layanan pertama
         $dataLayanan = DataLayanan::take(4)->get();
-        
-        // 2. KOKI MEMBAWA DATA KE PIRING SAJI (Dashboard)
-        return view('dashboard', compact('totalPelanggan', 'dataLayanan')); 
+        $pesananBaru = DB::table('data_pesanans')
+            ->whereDate('created_at', today())
+            ->count();
+
+        $totalPendapatan = DB::table('riwayat_pembayarans')
+            ->where('status', 'lunas')
+            ->sum('jumlah');
+
+        $awalBulan = now()->startOfMonth();
+        $awalBulanBerikutnya = $awalBulan->copy()->addMonth();
+        $pendapatanBaru = DB::table('riwayat_pembayarans')
+            ->where('status', 'lunas')
+            ->where('dibayar_pada', '>=', $awalBulan)
+            ->where('dibayar_pada', '<', $awalBulanBerikutnya)
+            ->sum('jumlah');
+
+        $pesananTerbaru = DB::table('data_pesanans')
+            ->leftJoin('users', 'users.id', '=', 'data_pesanans.user_id')
+            ->select('data_pesanans.*', 'users.name as nama_pelanggan')
+            ->orderByDesc('data_pesanans.created_at')
+            ->limit(5)
+            ->get();
+
+        return view('dashboard', compact(
+            'totalPelanggan',
+            'dataLayanan',
+            'pesananBaru',
+            'totalPendapatan',
+            'pendapatanBaru',
+            'pesananTerbaru'
+        ));
     }
     
     // Jika BUKAN admin, tendang ke home

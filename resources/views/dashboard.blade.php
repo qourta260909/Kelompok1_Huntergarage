@@ -112,7 +112,7 @@
                         </svg>
                 </div>
                     </div>
-                    <div class="card-value">-</div>
+                    <div class="card-value">{{ number_format($totalPelanggan, 0, ',', '.') }}</div>
                 </div>
 
                 <div class="card">
@@ -128,12 +128,12 @@
 </svg>
 </div>
                     </div>
-                    <div class="card-value">-</div>
+                    <div class="card-value">{{ number_format($pesananBaru, 0, ',', '.') }}</div>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">Total Penjualan</div>
+                        <div class="card-title">Total Pendapatan</div>
                         <div class="card-icon icon-gray"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Kotak Latar Belakang dengan Sudut Melengkung -->
   <rect width="64" height="64" rx="16" fill="#E2F2ED"/>
@@ -144,7 +144,7 @@
 </svg>
 </div>
                     </div>
-                    <div class="card-value">-</div>
+                    <div class="card-value">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</div>
                 </div>
 
                 <div class="card">
@@ -159,7 +159,7 @@
 </svg>
 </div>
                     </div>
-                    <div class="card-value">-</div>
+                    <div class="card-value">Rp {{ number_format($pendapatanBaru, 0, ',', '.') }}</div>
                 </div>
             </div>
 
@@ -184,7 +184,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data tabel dikosongkan untuk diisi dengan loop data dari backend nanti -->
+                            @forelse ($pesananTerbaru as $pesanan)
+                                <tr>
+                                    <td>#{{ $pesanan->id }}</td>
+                                    <td>{{ $pesanan->nama_pelanggan ?? 'Pelanggan dihapus' }}</td>
+                                    <td>{{ $pesanan->nama_layanan ?? '-' }}</td>
+                                    <td>{{ ucfirst($pesanan->status) }}</td>
+                                    <td>Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5">Belum ada pesanan.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
