@@ -87,12 +87,9 @@
                     <p class="page-subtitle">Selamat datang kembali, {{ auth()->user()->name }}. Berikut adalah ringkasan performa bisnis Anda.</p>
                 </div>
                 
-                <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
-                    @csrf
-                    <button type="submit" class="btn-logout">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    </button>
-                </form>
+                <button type="button" class="btn-logout" onclick="openLogoutModal()" title="Keluar">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
             </header>
 
             <!-- Cards Statistik -->
@@ -128,7 +125,7 @@
 </svg>
 </div>
                     </div>
-                    <div class="card-value">{{ number_format($pesananBaru, 0, ',', '.') }}</div>
+                    <div class="card-value">{{ number_format($pesananBaru, 0    , ',', '.') }}</div>
                 </div>
 
                 <div class="card">
@@ -168,7 +165,7 @@
                 <div class="table-header">
                     <div>
                         <div class="table-title">Pesanan Terbaru</div>
-                        <div class="table-subtitle">Aktivitas pemesanan yang paling baru</div>
+                        <div class="table-subtitle">Daftar pesanan dengan status baru</div>
                     </div>
                 </div>
 
@@ -204,5 +201,7 @@
 
         </main>
     </div>
+
+    <x-logout-modal />
 </body>
 </html>

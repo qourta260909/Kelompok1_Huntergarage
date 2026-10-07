@@ -18,6 +18,7 @@ class DashboardTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $this->assertSame(1, User::where('email', 'pelanggan.dashboard@hunter.com')->count());
+        $this->assertSame(1, DB::table('data_pesanans')->where('status', 'baru')->count());
         $this->assertSame(
             1,
             DB::table('data_pesanans')->whereDate('created_at', today())->count()
@@ -33,6 +34,19 @@ class DashboardTest extends TestCase
                 ->where('dibayar_pada', '>=', now()->startOfMonth())
                 ->where('dibayar_pada', '<', now()->addMonth()->startOfMonth())
                 ->sum('jumlah')
+        );
+
+        $admin = User::where('role', 'admin')->firstOrFail();
+        $response = $this->actingAs($admin)->get(route('dashboard'));
+
+        $response->assertOk()
+            ->assertSee('Servis Berkala')
+            ->assertSee('Pelanggan Dashboard')
+            ->assertSee('Baru');
+
+        $this->assertSame(
+            1,
+            substr_count((string) $response->getContent(), '<div class="card-value">1</div>')
         );
     }
 
@@ -96,10 +110,13 @@ class DashboardTest extends TestCase
             ->assertSee('Servis berkala')
             ->assertSee('Rp 150.000')
             ->assertSee('Rp 100.000')
+            ->assertDontSee('Ganti oli')
             ->assertDontSee('Belum ada pesanan.');
 
-        $content = (string) $response->getContent();
-        $this->assertSame(1, substr_count($content, '<div class="card-value">2</div>'));
-        $this->assertSame(1, substr_count($content, '<div class="card-value">1</div>'));
+        $response->assertViewHas('pesananBaru', 1)
+            ->assertViewHas('pesananTerbaru', function ($pesananTerbaru) {
+                return $pesananTerbaru->count() === 1
+                    && $pesananTerbaru->first()->status === 'baru';
+            });
     }
 }

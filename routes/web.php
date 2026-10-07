@@ -41,9 +41,9 @@ Route::get('/dashboard', function () {
     if (auth()->user()->role === 'admin') {
         $totalPelanggan = User::where('role', 'user')->count();
         $dataLayanan = DataLayanan::take(4)->get();
-        $pesananBaru = DB::table('data_pesanans')
-            ->whereDate('created_at', today())
-            ->count();
+        $pesananBaruQuery = DB::table('data_pesanans')
+            ->where('status', 'baru');
+        $pesananBaru = (clone $pesananBaruQuery)->count();
 
         $totalPendapatan = DB::table('riwayat_pembayarans')
             ->where('status', 'lunas')
@@ -57,11 +57,10 @@ Route::get('/dashboard', function () {
             ->where('dibayar_pada', '<', $awalBulanBerikutnya)
             ->sum('jumlah');
 
-        $pesananTerbaru = DB::table('data_pesanans')
+        $pesananTerbaru = (clone $pesananBaruQuery)
             ->leftJoin('users', 'users.id', '=', 'data_pesanans.user_id')
             ->select('data_pesanans.*', 'users.name as nama_pelanggan')
             ->orderByDesc('data_pesanans.created_at')
-            ->limit(5)
             ->get();
 
         return view('dashboard', compact(

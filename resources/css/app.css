@@ -182,6 +182,11 @@ input, button {
     opacity: 0.96;
 }
 
+.login-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .login-hero {
     position: relative;
     flex: 1;
@@ -259,3 +264,54 @@ input, button {
         min-height: 50vh;
     }
 }
+
+/* ================= TOP LOADING BAR ================= */
+.top-loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3.5px;
+    width: 0%;
+    background: linear-gradient(90deg, #f6a31d, #d8251d);
+    box-shadow: 0 0 10px rgba(246, 163, 29, 0.8), 0 0 5px rgba(216, 37, 29, 0.6);
+    z-index: 999999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.top-loading-bar.loading {
+    opacity: 1;
+    animation: topLoadingProgress 2.5s cubic-bezier(0.1, 0.6, 0.2, 1) forwards;
+}
+
+@keyframes topLoadingProgress {
+    0% {
+        width: 0%;
+    }
+    25% {
+        width: 35%;
+    }
+    55% {
+        width: 65%;
+    }
+    80% {
+        width: 85%;
+    }
+    100% {
+        width: 95%;
+    }
+}
+
+.password-icon{
+    width: 20px;
+    height: 20px;
+    margin-right: 0.9rem;
+    flex-shrink: 0;
+    cursor:pointer;
+}
+
+.password-icon:hover{
+    color: var(--brand-red);
+}
+

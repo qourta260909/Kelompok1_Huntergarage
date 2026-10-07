@@ -24,7 +24,7 @@ class PendapatanBaruSeeder extends Seeder
         $pesanan = DataPesanan::updateOrCreate(
             [
                 'user_id' => $pelanggan->id,
-                'nama_layanan' => 'Seeder - Pendapatan Bulan Ini',
+                'nama_layanan' => 'Servis',
             ],
             [
                 'total_harga' => 350000,
@@ -36,7 +36,7 @@ class PendapatanBaruSeeder extends Seeder
         RiwayatPembayaran::updateOrCreate(
             ['data_pesanan_id' => $pesanan->id],
             [
-                'jumlah' => 350000,
+                'jumlah' => 250000,
                 'status' => 'lunas',
                 'dibayar_pada' => now()->startOfMonth(),
             ]

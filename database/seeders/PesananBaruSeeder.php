@@ -23,7 +23,7 @@ class PesananBaruSeeder extends Seeder
         DataPesanan::updateOrCreate(
             [
                 'user_id' => $pelanggan->id,
-                'nama_layanan' => 'Pesanan Baru - Servis Berkala',
+                'nama_layanan' => 'Servis Berkalsa',
             ],
             [
                 'total_harga' => 250000,

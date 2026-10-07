@@ -24,7 +24,7 @@ class TotalPendapatanSeeder extends Seeder
         $pesanan = DataPesanan::updateOrCreate(
             [
                 'user_id' => $pelanggan->id,
-                'nama_layanan' => 'Seeder - Pendapatan Sebelumnya',
+                'nama_layanan' => 'Ganti Oli',
             ],
             [
                 'total_harga' => 750000,
