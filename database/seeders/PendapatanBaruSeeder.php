@@ -15,7 +15,7 @@ class PendapatanBaruSeeder extends Seeder
         $pelanggan = User::firstOrCreate(
             ['email' => 'pelanggan.dashboard@hunter.com'],
             [
-                'name' => 'Pelanggan Dashboard',
+                'name' => 'Royyan',
                 'password' => Hash::make('123'),
                 'role' => 'user',
             ]

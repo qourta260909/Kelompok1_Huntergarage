@@ -14,7 +14,7 @@ class PesananBaruSeeder extends Seeder
         $pelanggan = User::firstOrCreate(
             ['email' => 'pelanggan.dashboard@hunter.com'],
             [
-                'name' => 'Pelanggan Dashboard',
+                'name' => 'Royyan',
                 'password' => Hash::make('123'),
                 'role' => 'user',
             ]
@@ -23,7 +23,7 @@ class PesananBaruSeeder extends Seeder
         DataPesanan::updateOrCreate(
             [
                 'user_id' => $pelanggan->id,
-                'nama_layanan' => 'Servis Berkalsa',
+                'nama_layanan' => 'Servis Berkalla',
             ],
             [
                 'total_harga' => 250000,
