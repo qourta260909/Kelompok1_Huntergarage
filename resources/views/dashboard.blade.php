@@ -183,7 +183,7 @@
                         <tbody>
                             @forelse ($pesananTerbaru as $pesanan)
                                 <tr>
-                                    <td>#{{ $pesanan->id }}</td>
+                                    <td>{{ $pesanan->id }}</td>
                                     <td>{{ $pesanan->nama_pelanggan ?? 'Pelanggan dihapus' }}</td>
                                     <td>{{ $pesanan->nama_layanan ?? '-' }}</td>
                                     <td>{{ ucfirst($pesanan->status) }}</td>

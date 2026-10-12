@@ -133,6 +133,12 @@ input, button {
     border-radius: 14px;
 }
 
+.field-shell input:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
 .field-shell input::placeholder {
     color: rgba(17, 17, 17, 0.38);
 }
@@ -315,3 +321,6 @@ input, button {
     color: var(--brand-red);
 }
 
+.email:hover, .password:hover{
+    color: none;
+}
