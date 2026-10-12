@@ -7,9 +7,6 @@ use App\Models\User;
 use App\Models\DataLayanan;
 use Illuminate\Support\Facades\DB;
 
-
-
-
 Route::get('/dashboard-pemesanan', function () {
     return view('dashboard_pemesanan');
 })->name('dashboard.pemesanan');
@@ -30,17 +27,13 @@ Route::get('/dashboard-riwayat', function () {
     return view('dashboard_riwayat');
 })->name('dashboard.riwayat');
 
-
-
-// Jalur Halaman Depan (Untuk User)
 Route::view('/', 'welcome');
 
-// Dashboard (Untuk Admin) dengan Logika Percabangan & Pengambilan Data
 Route::get('/dashboard', function () {
-    // Cek apakah pengguna yang sedang login memiliki role 'admin'
     if (auth()->user()->role === 'admin') {
         $totalPelanggan = User::where('role', 'user')->count();
         $dataLayanan = DataLayanan::take(4)->get();
+        
         $pesananBaruQuery = DB::table('data_pesanans')
             ->where('status', 'baru');
         $pesananBaru = (clone $pesananBaruQuery)->count();
@@ -73,19 +66,15 @@ Route::get('/dashboard', function () {
         ));
     }
     
-    // Jika BUKAN admin, tendang ke home
     return redirect('/'); 
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->name('dashboard');
 
-// Jalur Profile (Bawaan Breeze)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 }); 
 
-// Jalur Layanan
 Route::get('/layanan', [LayananController::class, 'index']); 
 
-// Jalur Keamanan bawaan Breeze (Login, Register, Logout)
 require __DIR__.'/auth.php';
