@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -12,42 +11,23 @@ class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_dashboard_seeders_populate_each_statistic_idempotently(): void
+    public function test_admin_dashboard_renders_successfully_with_zero_data(): void
     {
-        $this->seed(DatabaseSeeder::class);
-        $this->seed(DatabaseSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
 
-        $this->assertSame(1, User::where('email', 'pelanggan.dashboard@hunter.com')->count());
-        $this->assertSame(1, DB::table('data_pesanans')->where('status', 'baru')->count());
-        $this->assertSame(
-            1,
-            DB::table('data_pesanans')->whereDate('created_at', today())->count()
-        );
-        $this->assertSame(
-            1100000.0,
-            (float) DB::table('riwayat_pembayarans')->where('status', 'lunas')->sum('jumlah')
-        );
-        $this->assertSame(
-            350000.0,
-            (float) DB::table('riwayat_pembayarans')
-                ->where('status', 'lunas')
-                ->where('dibayar_pada', '>=', now()->startOfMonth())
-                ->where('dibayar_pada', '<', now()->addMonth()->startOfMonth())
-                ->sum('jumlah')
-        );
-
-        $admin = User::where('role', 'admin')->firstOrFail();
         $response = $this->actingAs($admin)->get(route('dashboard'));
 
         $response->assertOk()
-            ->assertSee('Servis Berkala')
-            ->assertSee('Pelanggan Dashboard')
-            ->assertSee('Baru');
+            ->assertSee('Pelanggan aktif')
+            ->assertSee('Pesanan Baru')
+            ->assertSee('Total Pendapatan')
+            ->assertSee('Pendapatan Baru')
+            ->assertSee('Belum ada pesanan.');
 
-        $this->assertSame(
-            1,
-            substr_count((string) $response->getContent(), '<div class="card-value">1</div>')
-        );
+        $response->assertViewHas('totalPelanggan', 0)
+            ->assertViewHas('pesananBaru', 0)
+            ->assertViewHas('totalPendapatan', 0)
+            ->assertViewHas('pendapatanBaru', 0);
     }
 
     public function test_admin_dashboard_shows_statistics_from_database(): void
@@ -60,43 +40,51 @@ class DashboardTest extends TestCase
         ]);
         User::factory()->create(['role' => 'user']);
 
-        DB::table('data_pesanans')->insert([
-            [
-                'user_id' => $customer->id,
-                'nama_layanan' => 'Servis berkala',
-                'total_harga' => 100000,
-                'status' => 'baru',
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'user_id' => $customer->id,
-                'nama_layanan' => 'Ganti oli',
-                'total_harga' => 50000,
-                'status' => 'selesai',
-                'created_at' => $now->copy()->subDay(),
-                'updated_at' => $now->copy()->subDay(),
-            ],
+        $pesanan1Id = DB::table('tb_pesanan')->insertGetId([
+            'user_id' => $customer->id,
+            'nama_layanan' => 'Servis berkala',
+            'total_harga' => 100000,
+            'status' => 'baru',
+            'created_at' => $now,
+            'updated_at' => $now,
         ]);
 
-        DB::table('riwayat_pembayarans')->insert([
+        $pesanan2Id = DB::table('tb_pesanan')->insertGetId([
+            'user_id' => $customer->id,
+            'nama_layanan' => 'Ganti oli',
+            'total_harga' => 50000,
+            'status' => 'selesai',
+            'created_at' => $now->copy()->subDay(),
+            'updated_at' => $now->copy()->subDay(),
+        ]);
+
+        DB::table('tb_pembayaran')->insert([
             [
+                'pesanan_id' => $pesanan1Id,
+                'nomor_invoice' => 'INV-001',
                 'jumlah' => 100000,
                 'status' => 'lunas',
+                'metode_pembayaran' => 'tunai',
                 'dibayar_pada' => $now,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
             [
+                'pesanan_id' => $pesanan2Id,
+                'nomor_invoice' => 'INV-002',
                 'jumlah' => 50000,
                 'status' => 'lunas',
+                'metode_pembayaran' => 'transfer',
                 'dibayar_pada' => $now->copy()->subMonth(),
                 'created_at' => $now->copy()->subMonth(),
                 'updated_at' => $now->copy()->subMonth(),
             ],
             [
+                'pesanan_id' => $pesanan1Id,
+                'nomor_invoice' => 'INV-003',
                 'jumlah' => 25000,
                 'status' => 'menunggu',
+                'metode_pembayaran' => 'transfer',
                 'dibayar_pada' => null,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -118,5 +106,57 @@ class DashboardTest extends TestCase
                 return $pesananTerbaru->count() === 1
                     && $pesananTerbaru->first()->status === 'baru';
             });
+    }
+
+    public function test_admin_can_crud_pesanan_and_see_new_orders_on_dashboard(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Create pesanan via CRUD
+        $this->actingAs($admin)->post(route('dashboard.pesanan.store'), [
+            'nama_pelanggan' => 'Budi Santoso',
+            'kategori' => 'layanan',
+            'nama_layanan' => 'Tune Up Mesin',
+            'jadwal_service' => '2026-11-05T10:30',
+            'total_harga' => '250,000',
+            'status' => 'baru',
+        ])->assertRedirect(route('dashboard.pesanan'));
+
+        // Verify appears in Pesanan page
+        $this->actingAs($admin)->get(route('dashboard.pesanan'))
+            ->assertOk()
+            ->assertSee('Budi Santoso')
+            ->assertSee('Tune Up Mesin')
+            ->assertSee('Pukul 10:30');
+
+        // Verify appears in Dashboard "Pesanan Terbaru" (read-only)
+        $this->actingAs($admin)->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Budi Santoso')
+            ->assertSee('Tune Up Mesin')
+            ->assertSee('Rp 250.000');
+
+        $pesananId = DB::table('tb_pesanan')->where('nama_pelanggan', 'Budi Santoso')->value('id');
+
+        // Update pesanan status to selesai
+        $this->actingAs($admin)->put(route('dashboard.pesanan.update', $pesananId), [
+            'nama_pelanggan' => 'Budi Santoso',
+            'kategori' => 'layanan',
+            'nama_layanan' => 'Tune Up Mesin',
+            'jadwal_service' => '2026-11-05T10:30',
+            'total_harga' => '250,000',
+            'status' => 'selesai',
+        ])->assertRedirect(route('dashboard.pesanan'));
+
+        // Should no longer be in "Pesanan Terbaru" (status = baru) on main dashboard
+        $this->actingAs($admin)->get(route('dashboard'))
+            ->assertOk()
+            ->assertDontSee('Budi Santoso');
+
+        // Delete pesanan
+        $this->actingAs($admin)->delete(route('dashboard.pesanan.destroy', $pesananId))
+            ->assertRedirect(route('dashboard.pesanan'));
+
+        $this->assertDatabaseMissing('tb_pesanan', ['id' => $pesananId]);
     }
 }

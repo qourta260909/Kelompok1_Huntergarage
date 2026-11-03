@@ -2,58 +2,87 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProfileController;
 use App\Models\User;
-use App\Models\DataLayanan;
+use App\Models\Layanan;
 use Illuminate\Support\Facades\DB;
 
-Route::get('/dashboard-pemesanan', function () {
-    return view('dashboard_pemesanan');
-})->name('dashboard.pemesanan');
+Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->group(function () {
+    Route::redirect('/dashboard-pemesanan', '/dashboard-pesanan');
 
-Route::get('/dashboard-layanan', function () {
-    return view('dashboard_layanan');
-})->name('dashboard.layanan');
+    Route::get('/dashboard-pesanan', [PesananController::class, 'index'])->name('dashboard.pesanan');
+    Route::post('/dashboard-pesanan', [PesananController::class, 'store'])->name('dashboard.pesanan.store');
+    Route::put('/dashboard-pesanan/{pesanan}', [PesananController::class, 'update'])->name('dashboard.pesanan.update');
+    Route::delete('/dashboard-pesanan/{pesanan}', [PesananController::class, 'destroy'])->name('dashboard.pesanan.destroy');
 
-Route::get('/dashboard-produk', function () {
-    return view('dashboard_produk');
-})->name('dashboard.produk');
+    Route::get('/dashboard-layanan', function () {
+        if (auth()->user()->role !== 'admin') {
+            return redirect('/');
+        }
+        return view('dashboard_layanan');
+    })->name('dashboard.layanan');
 
-Route::get('/dashboard-profile', function () {
-    return view('dashboard_profile');
-})->name('dashboard.profile');
+    Route::get('/dashboard-produk', function () {
+        if (auth()->user()->role !== 'admin') {
+            return redirect('/');
+        }
+        return view('dashboard_produk');
+    })->name('dashboard.produk');
 
-Route::get('/dashboard-riwayat', function () {
-    return view('dashboard_riwayat');
-})->name('dashboard.riwayat');
+    Route::get('/dashboard-profile', function () {
+        if (auth()->user()->role !== 'admin') {
+            return redirect('/');
+        }
+        return view('dashboard_profile');
+    })->name('dashboard.profile');
 
-Route::view('/', 'welcome');
+    Route::get('/dashboard-riwayat', function () {
+        if (auth()->user()->role !== 'admin') {
+            return redirect('/');
+        }
+        return view('dashboard_riwayat');
+    })->name('dashboard.riwayat');
+});
+
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    if (auth()->check() && auth()->user()->role === 'admin') {
+        \Illuminate\Support\Facades\Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    }
+
+    return view('welcome');
+})->middleware(\App\Http\Middleware\PreventBackHistory::class);
 
 Route::get('/dashboard', function () {
     if (auth()->user()->role === 'admin') {
         $totalPelanggan = User::where('role', 'user')->count();
-        $dataLayanan = DataLayanan::take(4)->get();
+        $dataLayanan = Layanan::take(4)->get();
         
-        $pesananBaruQuery = DB::table('data_pesanans')
+        $pesananBaruQuery = DB::table('tb_pesanan')
             ->where('status', 'baru');
         $pesananBaru = (clone $pesananBaruQuery)->count();
 
-        $totalPendapatan = DB::table('riwayat_pembayarans')
+        $totalPendapatan = DB::table('tb_pembayaran')
             ->where('status', 'lunas')
             ->sum('jumlah');
 
         $awalBulan = now()->startOfMonth();
         $awalBulanBerikutnya = $awalBulan->copy()->addMonth();
-        $pendapatanBaru = DB::table('riwayat_pembayarans')
+        $pendapatanBaru = DB::table('tb_pembayaran')
             ->where('status', 'lunas')
             ->where('dibayar_pada', '>=', $awalBulan)
             ->where('dibayar_pada', '<', $awalBulanBerikutnya)
             ->sum('jumlah');
 
         $pesananTerbaru = (clone $pesananBaruQuery)
-            ->leftJoin('users', 'users.id', '=', 'data_pesanans.user_id')
-            ->select('data_pesanans.*', 'users.name as nama_pelanggan')
-            ->orderByDesc('data_pesanans.created_at')
+            ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
+            ->select(
+                'tb_pesanan.*',
+                DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan')
+            )
+            ->orderBy('tb_pesanan.id', 'asc')
             ->get();
 
         return view('dashboard', compact(

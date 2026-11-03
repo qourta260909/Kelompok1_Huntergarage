@@ -64,4 +64,11 @@
             closeLogoutModal();
         }
     });
+
+    // Cegah akses halaman dashboard dari cache browser (Back/Forward cache) setelah logout
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
 </script>

@@ -14,7 +14,9 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <a href="{{ route('dashboard') }}" class="logo-link">
-                    <div class="logo-box">H</div>
+                    <div class="logo-box">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Hunter Garage" class="logo-img">
+                    </div>
                 </a>
                 <a href="{{ route('dashboard') }}" class="brand-link">
                     <div class="brand-title">Hunter Garage</div>
@@ -32,14 +34,14 @@
 </svg>
 </span> Dashboard
                 </a>
-                <a href="{{ route('dashboard.pemesanan') }}" class="nav-link {{ request()->routeIs('dashboard.pemesanan') ? 'active' : 'inactive' }}">
+                <a href="{{ route('dashboard.pesanan') }}" class="nav-link {{ request()->routeIs('dashboard.pesanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <rect x="7" y="5" width="10" height="16" rx="2"/>
   <path d="M9 5V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
   <line x1="10" y1="10" x2="14" y2="10"/>
   <line x1="10" y1="14" x2="14" y2="14"/>
 </svg>
-</span> Pemesanan
+</span> Pesanan
                 </a>
                 <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -83,7 +85,7 @@
             <!-- Top Header -->
             <header class="header-top">
                 <div>
-                    <h2 class="page-title">Pemesanan</h2>
+                    <h2 class="page-title">Pesanan</h2>
                     <p class="page-subtitle">Pantau pesanan anda dari masuk sampai selesai.</p>
                 </div>
                 

@@ -125,14 +125,10 @@
         <header class="topbar">
             <a class="brand" href="{{ url('/') }}">Hunter Garage</a>
             <nav class="nav" aria-label="Navigasi utama">
-                @auth
-                    <a class="button button-primary" href="{{ route('dashboard') }}">Dashboard</a>
-                @else
-                    <a class="button" href="{{ route('login') }}">Masuk</a>
-                    @if (Route::has('register'))
-                        <a class="button button-primary" href="{{ route('register') }}">Daftar</a>
-                    @endif
-                @endauth
+                <a class="button" href="{{ route('login') }}">Masuk</a>
+                @if (Route::has('register'))
+                    <a class="button button-primary" href="{{ route('register') }}">Daftar</a>
+                @endif
             </nav>
         </header>
 
@@ -146,5 +142,12 @@
             <a class="button button-primary" href="{{ route('login') }}">Mulai sekarang</a>
         </main>
     </div>
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
 </body>
 </html>
