@@ -102,12 +102,12 @@
                         <div class="card-title">Pelanggan aktif</div>
                         <div class="card-icon icon-gray"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <!-- Kotak Latar Belakang -->
-                            <rect width="40" height="40" rx="10" fill="#EDE9FE"/>
+                            <rect width="40" height="40" rx="10" fill="#EFF6FF"/>
                             <!-- Ikon User/Group -->
-                            <path d="M15 17C16.6569 17 18 15.6569 18 14C18 12.3431 16.6569 11 15 11C13.3431 11 12 12.3431 12 14C12 15.6569 13.3431 17 15 17Z" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                             <path d="M22 19C23.1046 19 24 18.1046 24 17C24 15.8954 23.1046 15 22 15" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                          <path d="M9 26V25C9 23.3431 10.3431 22 12 22H18C19.6569 22 21 23.3431 21 25V26" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                         <path d="M24 26V25C24 23.9515 23.284 23.072 22.308 22.825" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M15 17C16.6569 17 18 15.6569 18 14C18 12.3431 16.6569 11 15 11C13.3431 11 12 12.3431 12 14C12 15.6569 13.3431 17 15 17Z" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                             <path d="M22 19C23.1046 19 24 18.1046 24 17C24 15.8954 23.1046 15 22 15" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M9 26V25C9 23.3431 10.3431 22 12 22H18C19.6569 22 21 23.3431 21 25V26" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                         <path d="M24 26V25C24 23.9515 23.284 23.072 22.308 22.825" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                 </div>
                     </div>
@@ -119,11 +119,11 @@
                         <div class="card-title">Pesanan Baru</div>
                         <div class="card-icon icon-amber"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Kotak Latar Belakang -->
-  <rect width="40" height="40" rx="10" fill="#FEF3C7"/>
+  <rect width="40" height="40" rx="10" fill="#E0F2FE"/>
   <!-- Ikon Tas Belanja -->
-  <path d="M13 14H27L28 27H12L13 14Z" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M16 14V11C16 9.89543 16.8954 9 18 9H22C23.1046 9 24 9.89543 24 11V14" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M17 19H23" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+  <path d="M13 14H27L28 27H12L13 14Z" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16 14V11C16 9.89543 16.8954 9 18 9H22C23.1046 9 24 9.89543 24 11V14" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17 19H23" stroke="#0284C7" stroke-width="2" stroke-linecap="round"/>
 </svg>
 </div>
                     </div>
@@ -133,13 +133,13 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">Total Pendapatan</div>
-                        <div class="card-icon icon-gray"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <div class="card-icon icon-gray"><svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Kotak Latar Belakang dengan Sudut Melengkung -->
-  <rect width="64" height="64" rx="16" fill="#E2F2ED"/>
+  <rect width="64" height="64" rx="16" fill="#DBEAFE"/>
   
   <!-- Ikon Simbol Dollar -->
-  <path d="M32 16V48" stroke="#0D9488" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M40 24H26C23.7909 24 22 25.7909 22 28C22 30.2091 23.7909 32 26 32H38C40.2091 32 42 33.7909 42 36C42 38.2091 40.2091 40 38 40H24" stroke="#0D9488" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M32 16V48" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M40 24H26C23.7909 24 22 25.7909 22 28C22 30.2091 23.7909 32 26 32H38C40.2091 32 42 33.7909 42 36C42 38.2091 40.2091 40 38 40H24" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 </div>
                     </div>
@@ -151,10 +151,10 @@
                         <div class="card-title">Pendapatan Baru</div>
                         <div class="card-icon icon-teal"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Kotak Latar Belakang -->
-  <rect width="40" height="40" rx="10" fill="#FEE2E2"/>
+  <rect width="40" height="40" rx="10" fill="#E0E7FF"/>
   <!-- Ikon Grafik Naik -->
-  <path d="M12 25L17.5 19.5L21.5 23.5L28 15" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M23 15H28V20" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12 25L17.5 19.5L21.5 23.5L28 15" stroke="#4338CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M23 15H28V20" stroke="#4338CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 </div>
                     </div>
@@ -167,7 +167,7 @@
                 <div class="table-header">
                     <div>
                         <div class="table-title">Pesanan Terbaru</div>
-                        <div class="table-subtitle">Daftar pesanan dengan status baru</div>
+                        <div class="table-subtitle">Daftar pesanan yang masuk beserta status terbarunya</div>
                     </div>
                 </div>
 
@@ -175,21 +175,32 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Pesanan</th>
+                                <th>Id</th>
                                 <th>Pelanggan</th>
-                                <th>Layanan</th>
+                                <th>Layanan/Produk</th>
                                 <th>Status</th>
                                 <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($pesananTerbaru as $pesanan)
+                                @php
+                                    $badgeClass = match($pesanan->status) {
+                                        'selesai' => 'badge-success',
+                                        'proses' => 'badge-process',
+                                        default => 'badge-waiting',
+                                    };
+                                    $kategoriLabel = ($pesanan->kategori ?? 'layanan') === 'produk' ? 'Produk' : 'Layanan';
+                                @endphp
                                 <tr>
-                                    <td>{{ $pesanan->id }}</td>
+                                    <td class="td-bold">#{{ $loop->iteration }}</td>
                                     <td>{{ $pesanan->nama_pelanggan ?? 'Pelanggan dihapus' }}</td>
-                                    <td>{{ $pesanan->nama_layanan ?? '-' }}</td>
-                                    <td>{{ ucfirst($pesanan->status) }}</td>
-                                    <td>Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                    <td>
+                                        <span class="td-bold">{{ $pesanan->nama_layanan ?? '-' }}</span>
+                                        <span style="display:inline-block; margin-left:6px; padding:2px 8px; border-radius:9999px; font-size:11px; font-weight:600; background:#f3f4f6; color:#4b5563;">{{ $kategoriLabel }}</span>
+                                    </td>
+                                    <td><span class="badge {{ $badgeClass }}">{{ ucfirst($pesanan->status) }}</span></td>
+                                    <td class="td-bold">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                                 </tr>
                             @empty
                                 <tr>

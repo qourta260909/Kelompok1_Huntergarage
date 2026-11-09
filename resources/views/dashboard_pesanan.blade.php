@@ -14,25 +14,27 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-top: 25px;
+            margin-top: 8px;
         }
         .header-container input[type="text"] {
             margin-top: 0;
         }
         .btn-add-order {
-            background-color: #f59e0b;
+            background-color: #2563eb;
             color: #fff;
             border: none;
-            padding: 9px 16px;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease;
             white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
         }
         .btn-add-order:hover {
-            background-color: #d97706;
+            background-color: #1d4ed8;
+            transform: translateY(-1px);
         }
         .action-btns {
             display: flex;
@@ -102,8 +104,8 @@
             display: inline-block;
             margin-top: 3px;
             padding: 2px 8px;
-            background-color: #fef3c7;
-            color: #b45309;
+            background-color: #eff6ff;
+            color: #1d4ed8;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 700;
@@ -118,9 +120,8 @@
             transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
         }
         .toggle-btn.active {
-            color: #111827;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            transform: scale(1.02);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
         }
         @keyframes tabSwitchFade {
             0% {
@@ -156,12 +157,12 @@
             max-width: 460px;
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
         }
         .crud-modal-title {
             font-size: 18px;
             font-weight: 700;
-            color: #111827;
+            color: #0f172a;
             margin-bottom: 16px;
         }
         .form-group {
@@ -171,20 +172,20 @@
             display: block;
             font-size: 13px;
             font-weight: 600;
-            color: #374151;
+            color: #334155;
             margin-bottom: 6px;
         }
         .form-control {
             width: 100%;
             padding: 9px 12px;
-            border: 1px solid #d1d5db;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             font-size: 14px;
-            color: #111827;
+            color: #0f172a;
         }
         .form-control:focus {
-            outline: 2px solid #f59e0b;
-            border-color: #f59e0b;
+            outline: 2px solid #2563eb;
+            border-color: #2563eb;
         }
         .crud-modal-actions {
             display: flex;
@@ -193,8 +194,8 @@
             margin-top: 20px;
         }
         .btn-cancel-crud {
-            background: #f3f4f6;
-            color: #4b5563;
+            background: #f1f5f9;
+            color: #475569;
             border: none;
             padding: 9px 16px;
             border-radius: 8px;
@@ -203,7 +204,7 @@
             cursor: pointer;
         }
         .btn-save-crud {
-            background: #f59e0b;
+            background: #2563eb;
             color: #fff;
             border: none;
             padding: 9px 18px;
@@ -213,7 +214,7 @@
             cursor: pointer;
         }
         .btn-save-crud:hover {
-            background: #d97706;
+            background: #1d4ed8;
         }
     </style>
 </head>
@@ -438,7 +439,7 @@
 
                 <div class="form-group">
                     <label for="inputNamaLayanan" id="labelNamaItem">Nama Layanan</label>
-                    <input type="text" id="inputNamaLayanan" name="nama_layanan" class="form-control" placeholder="Contoh: Servis Berkala / Ganti Oli" required>
+                    <select id="inputNamaLayanan" name="nama_layanan" class="form-control" required></select>
                 </div>
 
                 <div class="form-row-2">
@@ -474,9 +475,10 @@
                 <div class="form-group">
                     <label for="inputStatus">Status</label>
                     <select id="inputStatus" name="status" class="form-control" required>
-                        <option value="baru">Baru (Muncul di Pesanan Terbaru Dashboard)</option>
+                        <option value="baru">Baru</option>
                         <option value="proses">Proses</option>
-                        <option value="selesai">Selesai</option>
+                        <option value="selesai">Selesai (Pindah ke Riwayat)</option>
+                        <option value="dibatalkan">Dibatalkan (Pindah ke Riwayat)</option>
                     </select>
                 </div>
 
@@ -601,13 +603,53 @@
             });
         }
 
-        function updateItemLabel() {
-            if (inputKategori.value === 'produk') {
-                labelNamaItem.textContent = 'Nama Produk';
-                inputNamaLayanan.placeholder = 'Contoh: Oli Mesin / Kampas Rem';
+        const opsiLayanan = [
+            'Servis Berkala',
+            'Ganti Oli',
+            'Tune Up Mesin',
+            'Servis Rem',
+            'Servis CVT / Transmisi',
+            'Ganti Ban / Tambal Ban',
+            'Cek Kelistrikan & Aki',
+            'Turun Mesin / Overhaul',
+        ];
+
+        const opsiProduk = [
+            'Oli Mesin',
+            'Oli Gardan / Transmisi',
+            'Kampas Rem',
+            'Filter Oli / Filter Udara',
+            'Busi',
+            'Aki (Accu)',
+            'Ban Luar / Ban Dalam',
+            'V-Belt / Rantai',
+            'Lampu LED / Bohlam',
+            'Cairan Pendingin (Coolant)',
+        ];
+
+        function updateItemLabel(selectedValue = '') {
+            const isProduk = inputKategori.value === 'produk';
+            labelNamaItem.textContent = isProduk ? 'Nama Produk' : 'Nama Layanan';
+            const daftarOpsi = isProduk ? opsiProduk : opsiLayanan;
+
+            inputNamaLayanan.innerHTML = '';
+            daftarOpsi.forEach((item) => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.textContent = item;
+                inputNamaLayanan.appendChild(opt);
+            });
+
+            if (selectedValue) {
+                if (!daftarOpsi.includes(selectedValue)) {
+                    const customOpt = document.createElement('option');
+                    customOpt.value = selectedValue;
+                    customOpt.textContent = selectedValue;
+                    inputNamaLayanan.appendChild(customOpt);
+                }
+                inputNamaLayanan.value = selectedValue;
             } else {
-                labelNamaItem.textContent = 'Nama Layanan';
-                inputNamaLayanan.placeholder = 'Contoh: Servis Berkala / Ganti Oli';
+                inputNamaLayanan.value = daftarOpsi[0];
             }
         }
 
@@ -617,13 +659,12 @@
             crudFormMethod.value = 'POST';
             inputNamaPelanggan.value = '';
             inputKategori.value = activeCategory;
-            inputNamaLayanan.value = '';
+            updateItemLabel();
             inputTanggalService.value = defaultToday;
             inputJamService.value = '09:00';
             syncJadwalService();
             inputTotalHarga.value = '';
             inputStatus.value = 'baru';
-            updateItemLabel();
             crudModal.classList.add('active');
         }
 
@@ -633,7 +674,7 @@
             crudFormMethod.value = 'PUT';
             inputNamaPelanggan.value = data.nama_pelanggan;
             inputKategori.value = data.kategori || 'layanan';
-            inputNamaLayanan.value = data.nama_layanan;
+            updateItemLabel(data.nama_layanan);
 
             const rawJadwal = data.jadwal_service || '';
             const parts = rawJadwal.split('T');
@@ -646,7 +687,6 @@
 
             inputTotalHarga.value = formatNumberWithCommas(Math.round(Number(data.total_harga || 0)));
             inputStatus.value = data.status;
-            updateItemLabel();
             crudModal.classList.add('active');
         }
 

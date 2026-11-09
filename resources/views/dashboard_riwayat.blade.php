@@ -5,6 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard - Hunter Garage</title>
     @vite('resources/css/dashboard.css')
+
+    <style>
+        .card {
+            margin-top: 20px;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .header-container input[type="text"] {
+            margin-top: 0;
+        }
+        th {
+            width: auto;
+            padding-right: 16px;
+        }
+        td {
+            padding-right: 16px;
+        }
+        .schedule-date {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+        .schedule-time {
+            display: inline-block;
+            margin-top: 3px;
+            padding: 2px 8px;
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .badge-cancelled {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        .btn-delete {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-delete:hover {
+            background-color: #fee2e2;
+        }
+        /* Animasi perpindahan tab Layanan <-> Produk */
+        .toggle-btn {
+            transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+        }
+        .toggle-btn.active {
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+        @keyframes tabSwitchFade {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .tab-animating {
+            animation: tabSwitchFade 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
 </head>
 <body>
 
@@ -85,8 +161,8 @@
             <!-- Top Header -->
             <header class="header-top">
                 <div>
-                    <h2 class="page-title">Pesanan</h2>
-                    <p class="page-subtitle">Pantau pesanan anda dari masuk sampai selesai.</p>
+                    <h2 class="page-title">Riwayat</h2>
+                    <p class="page-subtitle">Daftar pesanan yang telah selesai atau dibatalkan.</p>
                 </div>
                 
                 <button type="button" class="btn-logout" onclick="openLogoutModal()" title="Keluar">
@@ -94,9 +170,148 @@
                 </button>
             </header>
 
+            <div class="header-container">
+                <div class="toggle-container">
+                    <button type="button" class="toggle-btn active" data-history-tab="layanan" aria-pressed="true">Layanan</button>
+                    <button type="button" class="toggle-btn" data-history-tab="produk" aria-pressed="false">Produk</button>
+                </div>
+                <div class="header-actions">
+                    <input type="text" id="searchInput" placeholder="Cari Riwayat...">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Pelanggan</th>
+                                <th id="historyCategoryHeading">Layanan</th>
+                                <th>Tanggal,jam</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            @php
+                                $noLayanan = 0;
+                                $noProduk = 0;
+                            @endphp
+                            @forelse ($daftarRiwayat ?? [] as $riwayat)
+                                @php
+                                    $kategoriRow = $riwayat->kategori ?? 'layanan';
+                                    $nomorUrut = $kategoriRow === 'produk' ? ++$noProduk : ++$noLayanan;
+                                    $waktuService = $riwayat->jadwal_service ?? $riwayat->created_at;
+                                    $carbonWaktu = $waktuService ? \Carbon\Carbon::parse($waktuService)->locale('id') : null;
+                                    $badgeClass = $riwayat->status === 'dibatalkan' ? 'badge-cancelled' : 'badge-success';
+                                @endphp
+                                <tr class="history-row" data-kategori="{{ $kategoriRow }}">
+                                    <td class="td-bold">#{{ $nomorUrut }}</td>
+                                    <td>{{ $riwayat->nama_pelanggan_tampil ?? 'Pelanggan' }}</td>
+                                    <td>{{ $riwayat->nama_layanan ?? '-' }}</td>
+                                    <td class="td-muted">
+                                        @if ($carbonWaktu)
+                                            <div class="schedule-date">{{ $carbonWaktu->translatedFormat('l, d M Y') }}</div>
+                                            <div class="schedule-time">Pukul {{ $carbonWaktu->format('H:i') }}</div>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td class="td-bold">Rp {{ number_format($riwayat->total_harga, 0, ',', '.') }}</td>
+                                    <td>
+                                        <span class="badge {{ $badgeClass }}">{{ ucfirst($riwayat->status) }}</span>
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="{{ route('dashboard.pesanan.destroy', $riwayat->id) }}" onsubmit="return confirm('Yakin ingin menghapus riwayat #{{ $nomorUrut }}?');" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-delete">Hapus</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr id="emptyServerRow">
+                                    <td colspan="7" style="text-align:center; color:#6b7280;">Belum ada riwayat pesanan selesai atau dibatalkan.</td>
+                                </tr>
+                            @endforelse
+                            <tr id="emptyFilterRow" style="display:none;">
+                                <td colspan="7" style="text-align:center; color:#6b7280;">Tidak ada riwayat pada kategori/pencarian ini.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
         </main>
     </div>
+
+    <script>
+        const historyTabButtons = document.querySelectorAll('[data-history-tab]');
+        const historyCategoryHeading = document.getElementById('historyCategoryHeading');
+        const historyTableBody = document.getElementById('historyTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const historyRows = document.querySelectorAll('.history-row');
+        const emptyFilterRow = document.getElementById('emptyFilterRow');
+        const emptyServerRow = document.getElementById('emptyServerRow');
+        let activeCategory = 'layanan';
+
+        function triggerTabAnimation() {
+            [historyTableBody, historyCategoryHeading].forEach((el) => {
+                if (!el) return;
+                el.classList.remove('tab-animating');
+                void el.offsetWidth;
+                el.classList.add('tab-animating');
+            });
+        }
+
+        function filterHistory() {
+            if (emptyServerRow) return;
+            const query = (searchInput.value || '').toLowerCase().trim();
+            let visibleCount = 0;
+
+            historyRows.forEach((row) => {
+                const rowCategory = row.dataset.kategori || 'layanan';
+                const matchesCategory = rowCategory === activeCategory;
+                const matchesSearch = row.textContent.toLowerCase().includes(query);
+
+                if (matchesCategory && matchesSearch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (emptyFilterRow) {
+                emptyFilterRow.style.display = visibleCount === 0 ? '' : 'none';
+            }
+        }
+
+        historyTabButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                if (activeCategory === button.dataset.historyTab) return;
+                activeCategory = button.dataset.historyTab;
+
+                historyTabButtons.forEach((tabButton) => {
+                    const isActive = tabButton === button;
+                    tabButton.classList.toggle('active', isActive);
+                    tabButton.setAttribute('aria-pressed', String(isActive));
+                });
+
+                historyCategoryHeading.textContent = activeCategory === 'produk' ? 'Produk' : 'Layanan';
+                filterHistory();
+                triggerTabAnimation();
+            });
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterHistory);
+        }
+
+        filterHistory();
+    </script>
 
     <x-logout-modal />
 </body>
