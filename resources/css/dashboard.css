@@ -157,10 +157,6 @@ textarea:focus-visible {
     text-transform: uppercase;
 }
 
-.sidebar-label-account {
-    margin-top: 25px;
-}
-
 .admin-nav {
     display: grid;
     gap: 4px;
@@ -861,6 +857,7 @@ textarea:focus-visible {
     gap: 6px;
 }
 
+.action-buttons .button-primary,
 .action-buttons .button-secondary,
 .action-buttons .button-danger {
     min-height: 31px;
@@ -1038,72 +1035,6 @@ textarea:focus-visible {
 
 .btn-modal-confirm:hover {
     background: #951c29;
-}
-
-.profile-card {
-    display: grid;
-    grid-template-columns: minmax(230px, 0.75fr) minmax(0, 1.5fr);
-    gap: 26px;
-    padding: 25px;
-}
-
-.profile-identity {
-    display: grid;
-    align-content: start;
-    justify-items: start;
-    gap: 9px;
-}
-
-.profile-avatar {
-    display: grid;
-    width: 66px;
-    height: 66px;
-    place-items: center;
-    margin-bottom: 5px;
-    border-radius: 18px;
-    background: var(--admin-blue-soft);
-    color: var(--admin-blue-deep);
-    font-size: 25px;
-    font-weight: 700;
-}
-
-.profile-identity h2 {
-    margin: 0;
-    color: var(--admin-ink);
-    font-size: 19px;
-}
-
-.profile-identity p {
-    margin: 0;
-    color: var(--admin-muted);
-    font-size: 12px;
-}
-
-.profile-details {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-    padding: 5px 0;
-}
-
-.profile-field {
-    padding-bottom: 13px;
-    border-bottom: 1px solid var(--admin-line);
-}
-
-.profile-field span {
-    display: block;
-    color: var(--admin-muted);
-    font-size: 11px;
-}
-
-.profile-field strong {
-    display: block;
-    overflow-wrap: anywhere;
-    margin-top: 5px;
-    color: #26344b;
-    font-size: 13px;
-    font-weight: 600;
 }
 
 .pagination-wrap {
@@ -1312,17 +1243,6 @@ textarea:focus-visible {
 
     .page-toolbar .button-primary {
         width: 100%;
-    }
-
-    .profile-card {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 22px;
-        padding: 19px;
-    }
-
-    .profile-details {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 13px;
     }
 
     .form-row-2 {

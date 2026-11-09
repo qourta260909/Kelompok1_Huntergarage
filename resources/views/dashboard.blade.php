@@ -92,7 +92,7 @@
                                 <td><span class="table-primary">{{ $pesanan->nama_pelanggan ?? 'Pelanggan dihapus' }}</span></td>
                                 <td>{{ $pesanan->nama_layanan ?? '-' }}</td>
                                 <td class="numeric">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
-                                <td><span class="status-badge status-new">{{ ucfirst($pesanan->status) }}</span></td>
+                                <td><span class="status-badge status-process">Menunggu</span></td>
                             </tr>
                         @empty
                             <tr>

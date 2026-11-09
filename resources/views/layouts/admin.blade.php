@@ -47,14 +47,6 @@
                 </a>
             </nav>
 
-            <p class="sidebar-label sidebar-label-account">Akun</p>
-            <nav class="admin-nav" aria-label="Akun">
-                <a href="{{ route('dashboard.profile') }}" class="admin-nav-link {{ request()->routeIs('dashboard.profile') ? 'active' : '' }}" @if (request()->routeIs('dashboard.profile')) aria-current="page" @endif>
-                    <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1a7 7 0 0 1 14 0v1z"/></svg>
-                    <span>Profil</span>
-                </a>
-            </nav>
-
             <div class="sidebar-account">
                 <span class="user-avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span>
                 <span class="sidebar-account-copy">

@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PesananController;
-use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use App\Models\Layanan;
 use App\Models\Produk;
@@ -14,22 +13,12 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::
     Route::redirect('/dashboard-pemesanan', '/dashboard-pesanan');
 
     Route::get('/dashboard-pesanan', [PesananController::class, 'index'])->name('dashboard.pesanan');
-    Route::post('/dashboard-pesanan', [PesananController::class, 'store'])->name('dashboard.pesanan.store');
     Route::put('/dashboard-pesanan/{pesanan}', [PesananController::class, 'update'])->name('dashboard.pesanan.update');
-    Route::delete('/dashboard-pesanan/{pesanan}', [PesananController::class, 'destroy'])->name('dashboard.pesanan.destroy');
 
-    Route::get('/dashboard-layanan', function () {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-
-        $layanan = Layanan::query()
-            ->withCount('riwayatLayanan')
-            ->orderBy('nama_layanan')
-            ->get();
-
-        return view('dashboard_layanan', compact('layanan'));
-    })->name('dashboard.layanan');
+    Route::get('/dashboard-layanan', [LayananController::class, 'index'])->name('dashboard.layanan');
+    Route::post('/dashboard-layanan', [LayananController::class, 'store'])->name('dashboard.layanan.store');
+    Route::put('/dashboard-layanan/{layanan}', [LayananController::class, 'update'])->name('dashboard.layanan.update');
+    Route::delete('/dashboard-layanan/{layanan}', [LayananController::class, 'destroy'])->name('dashboard.layanan.destroy');
 
     Route::get('/dashboard-produk', function () {
         if (auth()->user()->role !== 'admin') {
@@ -49,33 +38,38 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::
         return view('dashboard_produk', compact('produk', 'totalProduk', 'totalStok', 'produkMenipis'));
     })->name('dashboard.produk');
 
-    Route::get('/dashboard-profile', function () {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-        return view('dashboard_profile');
-    })->name('dashboard.profile');
-
     Route::get('/dashboard-riwayat', function () {
         if (auth()->user()->role !== 'admin') {
             return redirect('/');
         }
 
-        $pesananSelesaiQuery = DB::table('tb_pesanan')
+        $pesananRiwayatQuery = DB::table('tb_pesanan')
             ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
-            ->where('tb_pesanan.status', 'selesai');
-        $totalRiwayat = (clone $pesananSelesaiQuery)->count();
-        $nilaiPesananSelesai = (clone $pesananSelesaiQuery)->sum('tb_pesanan.total_harga');
-        $pesananSelesai = $pesananSelesaiQuery
+            ->whereIn('tb_pesanan.status', ['diterima', 'ditolak', 'selesai']);
+
+        $totalRiwayat = (clone $pesananRiwayatQuery)->count();
+        $totalDiterima = (clone $pesananRiwayatQuery)->whereIn('tb_pesanan.status', ['diterima', 'selesai'])->count();
+        $totalDitolak = (clone $pesananRiwayatQuery)->where('tb_pesanan.status', 'ditolak')->count();
+        $nilaiPesananSelesai = (clone $pesananRiwayatQuery)
+            ->whereIn('tb_pesanan.status', ['diterima', 'selesai'])
+            ->sum('tb_pesanan.total_harga');
+
+        $pesananSelesai = $pesananRiwayatQuery
             ->select(
                 'tb_pesanan.*',
                 DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan')
             )
             ->orderByDesc('tb_pesanan.updated_at')
-            ->paginate(12)
-            ->withQueryString();
+            ->orderByDesc('tb_pesanan.id')
+            ->get();
 
-        return view('dashboard_riwayat', compact('pesananSelesai', 'totalRiwayat', 'nilaiPesananSelesai'));
+        return view('dashboard_riwayat', compact(
+            'pesananSelesai',
+            'totalRiwayat',
+            'totalDiterima',
+            'totalDitolak',
+            'nilaiPesananSelesai'
+        ));
     })->name('dashboard.riwayat');
 });
 
@@ -109,7 +103,7 @@ Route::get('/dashboard', function () {
             ->get();
         
         $pesananBaruQuery = DB::table('tb_pesanan')
-            ->where('status', 'baru');
+            ->whereIn('status', ['menunggu', 'baru']);
         $pesananBaru = (clone $pesananBaruQuery)->count();
 
         $totalPendapatan = DB::table('tb_pembayaran')
@@ -151,12 +145,6 @@ Route::get('/dashboard', function () {
     
     return redirect('/'); 
 })->middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-}); 
 
 Route::get('/layanan', [LayananController::class, 'index']); 
 
