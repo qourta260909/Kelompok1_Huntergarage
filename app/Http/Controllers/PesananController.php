@@ -16,7 +16,6 @@ class PesananController extends Controller
 
         $daftarPesanan = DB::table('tb_pesanan')
             ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
-            ->whereIn('tb_pesanan.status', ['menunggu', 'baru'])
             ->select(
                 'tb_pesanan.*',
                 DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan_tampil')
@@ -28,7 +27,6 @@ class PesananController extends Controller
         return view('dashboard_pesanan', compact('daftarPesanan'));
     }
 
-<<<<<<< HEAD
     public function riwayat()
     {
         if (auth()->user()->role !== 'admin') {
@@ -84,16 +82,19 @@ class PesananController extends Controller
         return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil ditambahkan.');
     }
 
-=======
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261
     public function update(Request $request, Pesanan $pesanan)
     {
         if (auth()->user()->role !== 'admin') {
             return redirect('/');
         }
 
+        if ($request->has('total_harga')) {
+            $request->merge([
+                'total_harga' => preg_replace('/[^\d]/', '', (string) $request->input('total_harga')),
+            ]);
+        }
+
         $validated = $request->validate([
-<<<<<<< HEAD
             'nama_pelanggan' => ['required', 'string', 'max:255'],
             'kategori' => ['required', 'in:layanan,produk'],
             'nama_layanan' => ['required', 'string', 'max:255'],
@@ -113,20 +114,10 @@ class PesananController extends Controller
 
         $pesanan->update($validated);
         $this->syncPembayaran($pesanan);
-=======
-            'status' => ['required', 'in:diterima,ditolak'],
-        ]);
 
-        $pesanan->update([
-            'status' => $validated['status'],
-        ]);
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261
+        return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil diperbarui.');
+    }
 
-        $pesanStatus = $validated['status'] === 'diterima'
-            ? 'Pesanan berhasil diterima dan masuk ke riwayat.'
-            : 'Pesanan telah ditolak dan masuk ke riwayat.';
-
-<<<<<<< HEAD
     public function destroy(Pesanan $pesanan)
     {
         if (auth()->user()->role !== 'admin') {
@@ -137,9 +128,6 @@ class PesananController extends Controller
         $pesanan->delete();
 
         return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil dihapus.');
-=======
-        return redirect()->route('dashboard.pesanan')->with('success', $pesanStatus);
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261
     }
 
     private function syncPembayaran(Pesanan $pesanan): void
@@ -174,4 +162,3 @@ class PesananController extends Controller
         }
     }
 }
-

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -84,39 +83,78 @@
     </style>
 </head>
 <body>
-=======
-@extends('layouts.admin')
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261
 
-@section('title', 'Riwayat')
+    <div class="layout-container">
 
-@section('content')
-    <header class="page-heading">
-        <div>
-            <h1>Riwayat pesanan</h1>
-            <p>Daftar pesanan layanan dan produk yang telah diterima atau ditolak.</p>
-        </div>
-    </header>
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ route('dashboard') }}" class="logo-link">
+                    <div class="logo-box">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Hunter Garage" class="logo-img">
+                    </div>
+                </a>
+                <a href="{{ route('dashboard') }}" class="brand-link">
+                    <div class="brand-title">Hunter Garage</div>
+                    <div class="brand-subtitle">Platform Bisnis</div>
+                </a>
+            </div>
 
-    <section class="stats-grid" aria-label="Ringkasan riwayat">
-        <article class="stat-card">
-            <div class="stat-card-top"><span class="stat-label">Pesanan diterima</span><span class="stat-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7.5"/></svg></span></div>
-            <strong class="stat-value">{{ number_format($totalDiterima ?? $totalRiwayat, 0, ',', '.') }}</strong>
-            <span class="stat-note">Total pesanan diterima</span>
-        </article>
-        <article class="stat-card">
-            <div class="stat-card-top"><span class="stat-label">Pesanan ditolak</span><span class="stat-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span></div>
-            <strong class="stat-value">{{ number_format($totalDitolak ?? 0, 0, ',', '.') }}</strong>
-            <span class="stat-note">Total pesanan ditolak</span>
-        </article>
-        <article class="stat-card">
-            <div class="stat-card-top"><span class="stat-label">Nilai pesanan diterima</span><span class="stat-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2v20M17 6.5c0-1.4-1.7-2.5-4-2.5H10a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6h-3c-2.3 0-4-1.1-4-2.5"/></svg></span></div>
-            <strong class="stat-value">Rp {{ number_format($nilaiPesananSelesai, 0, ',', '.') }}</strong>
-            <span class="stat-note">Akumulasi nilai pesanan diterima</span>
-        </article>
-    </section>
+            <nav class="nav-menu">
+                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+  <rect x="4" y="4" width="7" height="7" rx="1.5"/>
+  <rect x="13" y="4" width="7" height="7" rx="1.5"/>
+  <rect x="4" y="13" width="7" height="7" rx="1.5"/>
+  <rect x="13" y="13" width="7" height="7" rx="1.5"/>
+</svg>
+</span> Dashboard
+                </a>
+                <a href="{{ route('dashboard.pesanan') }}" class="nav-link {{ request()->routeIs('dashboard.pesanan') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="7" y="5" width="10" height="16" rx="2"/>
+  <path d="M9 5V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+  <line x1="10" y1="10" x2="14" y2="10"/>
+  <line x1="10" y1="14" x2="14" y2="14"/>
+</svg>
+</span> Pesanan
+                </a>
+                <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+</svg>
+</span> Layanan
+                </a>
+                <a href="{{ route('dashboard.produk') }}" class="nav-link {{ request()->routeIs('dashboard.produk') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+  <line x1="12" y1="22.08" x2="12" y2="12"/>
+</svg>
+</span> Produk
+                </a>
+                <a href="{{ route('dashboard.profile') }}" class="nav-link {{ request()->routeIs('dashboard.profile') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+  <circle cx="12" cy="8" r="4"/>
+  <path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z"/>
+</svg>
+</span> Profile
+                </a>
+                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
+                </a>
+            </nav>
+        </aside>
 
-<<<<<<< HEAD
         <!-- ================= MAIN CONTENT ================= -->
         <main class="main-content">
             
@@ -215,100 +253,10 @@
         const historyTableBody = document.getElementById('historyTableBody');
         const searchInput = document.getElementById('searchInput');
         const historyRows = document.querySelectorAll('.history-row');
-=======
-    <div class="page-toolbar">
-        <div class="toolbar-tabs" role="group" aria-label="Filter kategori riwayat pesanan">
-            <button type="button" class="toolbar-tab active" data-order-tab="layanan" aria-pressed="true">Layanan</button>
-            <button type="button" class="toolbar-tab" data-order-tab="produk" aria-pressed="false">Produk</button>
-        </div>
-        <div class="toolbar-controls">
-            <label class="sr-only" for="searchInput">Cari riwayat pesanan</label>
-            <input type="search" id="searchInput" class="search-input" placeholder="Cari pelanggan atau pesanan">
-        </div>
-    </div>
-
-    <section class="panel">
-        <div class="panel-header">
-            <div>
-                <h2 class="panel-title">Catatan riwayat pesanan</h2>
-                <p class="panel-description">{{ number_format($totalRiwayat, 0, ',', '.') }} riwayat pesanan tercatat</p>
-            </div>
-        </div>
-        <div class="table-scroll">
-            <table class="admin-table order-table">
-                <thead>
-                    <tr>
-                        <th>Pesanan</th>
-                        <th>Pelanggan</th>
-                        <th id="orderCategoryHeading">Layanan</th>
-                        <th>Tanggal diperbarui</th>
-                        <th>Nilai</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="orderTableBody">
-                    @php
-                        $noLayanan = 0;
-                        $noProduk = 0;
-                    @endphp
-                    @forelse ($pesananSelesai as $pesanan)
-                        @php
-                            $kategoriRow = $pesanan->kategori ?? 'layanan';
-                            $nomorUrut = $kategoriRow === 'produk' ? ++$noProduk : ++$noLayanan;
-                            $isDitolak = $pesanan->status === 'ditolak';
-                            $badgeClass = $isDitolak ? 'status-low' : 'status-success';
-                            $labelStatus = $isDitolak ? 'Ditolak' : 'Diterima';
-                        @endphp
-                        <tr class="order-row" data-kategori="{{ $kategoriRow }}">
-                            <td class="numeric">#{{ $nomorUrut }}</td>
-                            <td><span class="table-primary">{{ $pesanan->nama_pelanggan ?? 'Pelanggan dihapus' }}</span></td>
-                            <td class="order-item">{{ $pesanan->nama_layanan ?? '—' }}</td>
-                            <td class="numeric">
-                                @if ($pesanan->updated_at)
-                                    {{ \Carbon\Carbon::parse($pesanan->updated_at)->locale('id')->translatedFormat('d M Y, H:i') }}
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td class="numeric">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
-                            <td><span class="status-badge {{ $badgeClass }}">{{ $labelStatus }}</span></td>
-                        </tr>
-                    @empty
-                        <tr id="emptyServerRow">
-                            <td colspan="6">
-                                <div class="empty-state">
-                                    <strong>Belum ada riwayat pesanan.</strong>
-                                    <p>Pesanan yang sudah diterima atau ditolak akan muncul di sini.</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                    <tr id="emptyFilterRow" hidden>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <strong>Tidak ada riwayat pesanan yang cocok.</strong>
-                                <p>Coba kategori atau kata kunci pencarian lain.</p>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-@endsection
-
-@push('scripts')
-    <script>
-        const orderTabButtons = document.querySelectorAll('[data-order-tab]');
-        const orderCategoryHeading = document.getElementById('orderCategoryHeading');
-        const searchInput = document.getElementById('searchInput');
-        const orderRows = document.querySelectorAll('.order-row');
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261
         const emptyFilterRow = document.getElementById('emptyFilterRow');
         const emptyServerRow = document.getElementById('emptyServerRow');
         let activeCategory = 'layanan';
 
-<<<<<<< HEAD
         function triggerTabAnimation() {
             [historyTableBody, historyCategoryHeading].forEach((el) => {
                 if (!el) return;
@@ -347,33 +295,10 @@
                 activeCategory = button.dataset.historyTab;
 
                 historyTabButtons.forEach((tabButton) => {
-=======
-        function filterHistory() {
-            if (emptyServerRow) return;
-
-            const query = searchInput.value.toLowerCase().trim();
-            let visibleCount = 0;
-
-            orderRows.forEach((row) => {
-                const matchesCategory = (row.dataset.kategori || 'layanan') === activeCategory;
-                const matchesSearch = row.textContent.toLowerCase().includes(query);
-                row.hidden = !(matchesCategory && matchesSearch);
-                if (!row.hidden) visibleCount++;
-            });
-
-            emptyFilterRow.hidden = visibleCount > 0;
-        }
-
-        orderTabButtons.forEach((button) => {
-            button.addEventListener('click', () => {
-                activeCategory = button.dataset.orderTab;
-                orderTabButtons.forEach((tabButton) => {
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261
                     const isActive = tabButton === button;
                     tabButton.classList.toggle('active', isActive);
                     tabButton.setAttribute('aria-pressed', String(isActive));
                 });
-<<<<<<< HEAD
 
                 historyCategoryHeading.textContent = activeCategory === 'produk' ? 'Produk' : 'Layanan';
                 filterHistory();
@@ -391,15 +316,3 @@
     <x-logout-modal />
 </body>
 </html>
-=======
-                orderCategoryHeading.textContent = activeCategory === 'produk' ? 'Produk' : 'Layanan';
-                filterHistory();
-            });
-        });
-
-        searchInput.addEventListener('input', filterHistory);
-        filterHistory();
-    </script>
-@endpush
-
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261

@@ -3,78 +3,41 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PesananController;
+use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use App\Models\Layanan;
-use App\Models\Produk;
-use App\Models\Stok;
 use Illuminate\Support\Facades\DB;
 
 Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->group(function () {
     Route::redirect('/dashboard-pemesanan', '/dashboard-pesanan');
 
     Route::get('/dashboard-pesanan', [PesananController::class, 'index'])->name('dashboard.pesanan');
+    Route::post('/dashboard-pesanan', [PesananController::class, 'store'])->name('dashboard.pesanan.store');
     Route::put('/dashboard-pesanan/{pesanan}', [PesananController::class, 'update'])->name('dashboard.pesanan.update');
+    Route::delete('/dashboard-pesanan/{pesanan}', [PesananController::class, 'destroy'])->name('dashboard.pesanan.destroy');
 
-    Route::get('/dashboard-layanan', [LayananController::class, 'index'])->name('dashboard.layanan');
-    Route::post('/dashboard-layanan', [LayananController::class, 'store'])->name('dashboard.layanan.store');
-    Route::put('/dashboard-layanan/{layanan}', [LayananController::class, 'update'])->name('dashboard.layanan.update');
-    Route::delete('/dashboard-layanan/{layanan}', [LayananController::class, 'destroy'])->name('dashboard.layanan.destroy');
+    Route::get('/dashboard-layanan', function () {
+        if (auth()->user()->role !== 'admin') {
+            return redirect('/');
+        }
+        return view('dashboard_layanan');
+    })->name('dashboard.layanan');
 
     Route::get('/dashboard-produk', function () {
         if (auth()->user()->role !== 'admin') {
             return redirect('/');
         }
-
-        $produk = Produk::query()
-            ->with('stok')
-            ->orderBy('nama_produk')
-            ->get();
-        $totalProduk = $produk->count();
-        $totalStok = (int) Stok::sum('jumlah_stok');
-        $produkMenipis = Stok::query()
-            ->whereColumn('jumlah_stok', '<=', 'stok_minimum')
-            ->count();
-
-        return view('dashboard_produk', compact('produk', 'totalProduk', 'totalStok', 'produkMenipis'));
+        return view('dashboard_produk');
     })->name('dashboard.produk');
 
-<<<<<<< HEAD
-    Route::get('/dashboard-riwayat', [PesananController::class, 'riwayat'])->name('dashboard.riwayat');
-=======
-    Route::get('/dashboard-riwayat', function () {
+    Route::get('/dashboard-profile', function () {
         if (auth()->user()->role !== 'admin') {
             return redirect('/');
         }
+        return view('dashboard_profile');
+    })->name('dashboard.profile');
 
-        $pesananRiwayatQuery = DB::table('tb_pesanan')
-            ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
-            ->whereIn('tb_pesanan.status', ['diterima', 'ditolak', 'selesai']);
-
-        $totalRiwayat = (clone $pesananRiwayatQuery)->count();
-        $totalDiterima = (clone $pesananRiwayatQuery)->whereIn('tb_pesanan.status', ['diterima', 'selesai'])->count();
-        $totalDitolak = (clone $pesananRiwayatQuery)->where('tb_pesanan.status', 'ditolak')->count();
-        $nilaiPesananSelesai = (clone $pesananRiwayatQuery)
-            ->whereIn('tb_pesanan.status', ['diterima', 'selesai'])
-            ->sum('tb_pesanan.total_harga');
-
-        $pesananSelesai = $pesananRiwayatQuery
-            ->select(
-                'tb_pesanan.*',
-                DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan')
-            )
-            ->orderByDesc('tb_pesanan.updated_at')
-            ->orderByDesc('tb_pesanan.id')
-            ->get();
-
-        return view('dashboard_riwayat', compact(
-            'pesananSelesai',
-            'totalRiwayat',
-            'totalDiterima',
-            'totalDitolak',
-            'nilaiPesananSelesai'
-        ));
-    })->name('dashboard.riwayat');
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261
+    Route::get('/dashboard-riwayat', [PesananController::class, 'riwayat'])->name('dashboard.riwayat');
 });
 
 Route::get('/', function (\Illuminate\Http\Request $request) {
@@ -91,22 +54,7 @@ Route::get('/dashboard', function () {
     if (auth()->user()->role === 'admin') {
         $totalPelanggan = User::where('role', 'user')->count();
         $dataLayanan = Layanan::take(4)->get();
-        $totalLayanan = Layanan::count();
-        $totalProduk = Produk::count();
-        $totalStok = (int) Stok::sum('jumlah_stok');
-        $jumlahProdukMenipis = Stok::query()
-            ->whereColumn('jumlah_stok', '<=', 'stok_minimum')
-            ->count();
-        $produkMenipis = Produk::query()
-            ->with('stok')
-            ->whereHas('stok', function ($query) {
-                $query->whereColumn('jumlah_stok', '<=', 'stok_minimum');
-            })
-            ->orderBy('nama_produk')
-            ->limit(4)
-            ->get();
         
-<<<<<<< HEAD
         $pesananAktifQuery = DB::table('tb_pesanan')
             ->whereIn('tb_pesanan.status', ['baru', 'proses']);
         $pesananBaru = (clone $pesananAktifQuery)->count();
@@ -119,11 +67,6 @@ Route::get('/dashboard', function () {
                     ->whereColumn('tb_pembayaran.pesanan_id', 'tb_pesanan.id');
             })
             ->sum('total_harga');
-=======
-        $pesananBaruQuery = DB::table('tb_pesanan')
-            ->whereIn('status', ['menunggu', 'baru']);
-        $pesananBaru = (clone $pesananBaruQuery)->count();
->>>>>>> 9f30e90dee6e40e25744fde700cb275b3939c261
 
         $totalPendapatan = DB::table('tb_pembayaran')
             ->where('status', 'lunas')
@@ -143,18 +86,12 @@ Route::get('/dashboard', function () {
                 'tb_pesanan.*',
                 DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan')
             )
-            ->orderByDesc('tb_pesanan.created_at')
-            ->orderByDesc('tb_pesanan.id')
+            ->orderBy('tb_pesanan.id', 'asc')
             ->get();
 
         return view('dashboard', compact(
             'totalPelanggan',
             'dataLayanan',
-            'totalLayanan',
-            'totalProduk',
-            'totalStok',
-            'jumlahProdukMenipis',
-            'produkMenipis',
             'pesananBaru',
             'totalPendapatan',
             'pendapatanBaru',
@@ -164,6 +101,12 @@ Route::get('/dashboard', function () {
     
     return redirect('/'); 
 })->middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+}); 
 
 Route::get('/layanan', [LayananController::class, 'index']); 
 

@@ -1,252 +1,103 @@
-@extends('layouts.admin')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - Hunter Garage</title>
+    @vite('resources/css/dashboard.css')
+</head>
+<body>
 
-@section('title', 'Layanan')
+    <div class="layout-container">
 
-@section('content')
-    @php
-        $totalRiwayatLayanan = $layanan->sum('riwayat_layanan_count');
-    @endphp
-
-    <header class="page-heading">
-        <div>
-            <h1>Layanan</h1>
-            <p>Kelola daftar layanan, durasi, dan harga yang akan tampil pada form pemesanan pelanggan.</p>
-        </div>
-    </header>
-
-    @if (session('success'))
-        <div class="alert-success" role="status">{{ session('success') }}</div>
-    @endif
-
-    @if ($errors->any())
-        <div class="alert-error" role="alert">{{ $errors->first() }}</div>
-    @endif
-
-    <section class="stats-grid" aria-label="Ringkasan layanan">
-        <article class="stat-card">
-            <div class="stat-card-top"><span class="stat-label">Jenis layanan</span><span class="stat-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.2-3.2a6 6 0 0 1-7.9 7.9l-6.8 6.8a2.1 2.1 0 0 1-3-3l6.8-6.8a6 6 0 0 1 7.9-7.9z"/></svg></span></div>
-            <strong class="stat-value">{{ number_format($layanan->count(), 0, ',', '.') }}</strong>
-            <span class="stat-note">Layanan terdaftar</span>
-        </article>
-        <article class="stat-card">
-            <div class="stat-card-top"><span class="stat-label">Riwayat pengerjaan</span><span class="stat-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg></span></div>
-            <strong class="stat-value">{{ number_format($totalRiwayatLayanan, 0, ',', '.') }}</strong>
-            <span class="stat-note">Pengerjaan tercatat</span>
-        </article>
-        <article class="stat-card">
-            <div class="stat-card-top"><span class="stat-label">Rata-rata harga</span><span class="stat-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2v20M17 6.5c0-1.4-1.7-2.5-4-2.5H10a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6h-3c-2.3 0-4-1.1-4-2.5"/></svg></span></div>
-            <strong class="stat-value">Rp {{ number_format($layanan->avg('harga') ?? 0, 0, ',', '.') }}</strong>
-            <span class="stat-note">Dari layanan terdaftar</span>
-        </article>
-    </section>
-
-    <div class="page-toolbar">
-        <div></div>
-        <div class="toolbar-controls">
-            <label class="sr-only" for="searchLayananInput">Cari layanan</label>
-            <input type="search" id="searchLayananInput" class="search-input" placeholder="Cari nama atau deskripsi layanan">
-            <button type="button" class="button-primary" onclick="openCreateLayananModal()">
-                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                Tambah layanan
-            </button>
-        </div>
-    </div>
-
-    <section class="panel">
-        <div class="panel-header">
-            <div>
-                <h2 class="panel-title">Daftar layanan</h2>
-                <p class="panel-description">Pilihan layanan yang tersedia untuk form pelanggan (user).</p>
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ route('dashboard') }}" class="logo-link">
+                    <div class="logo-box">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Hunter Garage" class="logo-img">
+                    </div>
+                </a>
+                <a href="{{ route('dashboard') }}" class="brand-link">
+                    <div class="brand-title">Hunter Garage</div>
+                    <div class="brand-subtitle">Platform Bisnis</div>
+                </a>
             </div>
-        </div>
-        <div class="table-scroll">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Layanan</th>
-                        <th>Deskripsi</th>
-                        <th>Estimasi durasi</th>
-                        <th>Harga</th>
-                        <th>Pengerjaan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="layananTableBody">
-                    @forelse ($layanan as $item)
-                        <tr class="layanan-row">
-                            <td><span class="table-primary">{{ $item->nama_layanan }}</span></td>
-                            <td>{{ $item->deskripsi ?: 'Deskripsi belum tersedia' }}</td>
-                            <td>{{ $item->estimasi_durasi ?: 'Belum ditentukan' }}</td>
-                            <td class="numeric">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                            <td class="numeric">{{ number_format($item->riwayat_layanan_count, 0, ',', '.') }} kali</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button
-                                        type="button"
-                                        class="button-secondary"
-                                        onclick="openEditLayananModal({{ json_encode([
-                                            'id' => $item->id,
-                                            'nama_layanan' => $item->nama_layanan,
-                                            'deskripsi' => $item->deskripsi ?? '',
-                                            'estimasi_durasi' => $item->estimasi_durasi ?? '',
-                                            'harga' => (float) $item->harga,
-                                            'update_url' => route('dashboard.layanan.update', $item->id),
-                                        ]) }})"
-                                    >Edit</button>
-                                    <form method="POST" action="{{ route('dashboard.layanan.destroy', $item->id) }}" onsubmit="return confirm('Yakin ingin menghapus layanan {{ addslashes($item->nama_layanan) }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="button-danger">Hapus</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr id="emptyLayananServerRow">
-                            <td colspan="6">
-                                <div class="empty-state">
-                                    <strong>Belum ada layanan terdaftar.</strong>
-                                    <p>Tambahkan layanan baru untuk ditampilkan pada form pemesanan pelanggan.</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                    <tr id="emptyLayananFilterRow" hidden>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <strong>Tidak ada layanan yang cocok.</strong>
-                                <p>Coba kata kunci pencarian lain.</p>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
 
-    <div id="crudLayananModal" class="crud-modal-overlay" aria-hidden="true">
-        <button class="logout-modal-backdrop" type="button" aria-label="Tutup formulir layanan" onclick="closeLayananModal()"></button>
-        <div class="crud-modal-card" role="dialog" aria-modal="true" aria-labelledby="crudLayananModalTitle">
-            <h2 id="crudLayananModalTitle" class="crud-modal-title">Tambah layanan</h2>
-            <form id="crudLayananForm" method="POST" action="{{ route('dashboard.layanan.store') }}">
-                @csrf
-                <input type="hidden" name="_method" id="crudLayananFormMethod" value="POST">
+            <nav class="nav-menu">
+                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+  <rect x="4" y="4" width="7" height="7" rx="1.5"/>
+  <rect x="13" y="4" width="7" height="7" rx="1.5"/>
+  <rect x="4" y="13" width="7" height="7" rx="1.5"/>
+  <rect x="13" y="13" width="7" height="7" rx="1.5"/>
+</svg>
+</span> Dashboard
+                </a>
+                <a href="{{ route('dashboard.pesanan') }}" class="nav-link {{ request()->routeIs('dashboard.pesanan') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="7" y="5" width="10" height="16" rx="2"/>
+  <path d="M9 5V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+  <line x1="10" y1="10" x2="14" y2="10"/>
+  <line x1="10" y1="14" x2="14" y2="14"/>
+</svg>
+</span> Pesanan
+                </a>
+                <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+</svg>
+</span> Layanan
+                </a>
+                <a href="{{ route('dashboard.produk') }}" class="nav-link {{ request()->routeIs('dashboard.produk') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+  <line x1="12" y1="22.08" x2="12" y2="12"/>
+</svg>
+</span> Produk
+                </a>
+                <a href="{{ route('dashboard.profile') }}" class="nav-link {{ request()->routeIs('dashboard.profile') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+  <circle cx="12" cy="8" r="4"/>
+  <path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z"/>
+</svg>
+</span> Profile
+                </a>
+                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
+                </a>
+            </nav>
+        </aside>
 
-                <div class="form-group">
-                    <label for="inputNamaLayanan">Nama layanan</label>
-                    <input type="text" id="inputNamaLayanan" name="nama_layanan" class="form-control" placeholder="Contoh: Servis Berkala / Ganti Oli" required>
+        <!-- ================= MAIN CONTENT ================= -->
+        <main class="main-content">
+            
+            <!-- Top Header -->
+            <header class="header-top">
+                <div>
+                    <h2 class="page-title">Pesanan</h2>
+                    <p class="page-subtitle">Pantau pesanan anda dari masuk sampai selesai.</p>
                 </div>
-                <div class="form-group">
-                    <label for="inputDeskripsiLayanan">Deskripsi layanan</label>
-                    <textarea id="inputDeskripsiLayanan" name="deskripsi" class="form-control" rows="3" placeholder="Penjelasan singkat layanan untuk pelanggan"></textarea>
-                </div>
-                <div class="form-row-2">
-                    <div class="form-group">
-                        <label for="inputDurasiLayanan">Estimasi durasi</label>
-                        <input type="text" id="inputDurasiLayanan" name="estimasi_durasi" class="form-control" placeholder="Contoh: 30 menit / 1 jam">
-                    </div>
-                    <div class="form-group">
-                        <label for="inputHargaLayanan">Harga (Rp)</label>
-                        <input type="text" inputmode="numeric" id="inputHargaLayanan" name="harga" class="form-control" placeholder="Contoh: 75,000" autocomplete="off" required>
-                    </div>
-                </div>
-                <div class="crud-modal-actions">
-                    <button type="button" class="btn-cancel-crud" onclick="closeLayananModal()">Batal</button>
-                    <button type="submit" class="btn-save-crud">Simpan layanan</button>
-                </div>
-            </form>
-        </div>
+                
+                <button type="button" class="btn-logout" onclick="openLogoutModal()" title="Keluar">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+            </header>
+
+
+        </main>
     </div>
-@endsection
 
-@push('scripts')
-    <script>
-        const searchLayananInput = document.getElementById('searchLayananInput');
-        const layananRows = document.querySelectorAll('.layanan-row');
-        const emptyLayananFilterRow = document.getElementById('emptyLayananFilterRow');
-        const emptyLayananServerRow = document.getElementById('emptyLayananServerRow');
-
-        if (searchLayananInput) {
-            searchLayananInput.addEventListener('input', () => {
-                if (emptyLayananServerRow) return;
-                const query = searchLayananInput.value.toLowerCase().trim();
-                let visibleCount = 0;
-
-                layananRows.forEach((row) => {
-                    const matches = row.textContent.toLowerCase().includes(query);
-                    row.hidden = !matches;
-                    if (matches) visibleCount++;
-                });
-
-                emptyLayananFilterRow.hidden = visibleCount > 0;
-            });
-        }
-
-        const crudLayananModal = document.getElementById('crudLayananModal');
-        const crudLayananForm = document.getElementById('crudLayananForm');
-        const crudLayananModalTitle = document.getElementById('crudLayananModalTitle');
-        const crudLayananFormMethod = document.getElementById('crudLayananFormMethod');
-        const inputNamaLayanan = document.getElementById('inputNamaLayanan');
-        const inputDeskripsiLayanan = document.getElementById('inputDeskripsiLayanan');
-        const inputDurasiLayanan = document.getElementById('inputDurasiLayanan');
-        const inputHargaLayanan = document.getElementById('inputHargaLayanan');
-        let previousLayananFocus;
-
-        function formatHargaWithCommas(value) {
-            const digitsOnly = String(value ?? '').replace(/\D/g, '');
-            return digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
-
-        function showLayananModal() {
-            previousLayananFocus = document.activeElement;
-            crudLayananModal.classList.add('active');
-            crudLayananModal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-            inputNamaLayanan.focus();
-        }
-
-        function openCreateLayananModal() {
-            crudLayananModalTitle.textContent = 'Tambah layanan';
-            crudLayananForm.action = "{{ route('dashboard.layanan.store') }}";
-            crudLayananFormMethod.value = 'POST';
-            inputNamaLayanan.value = '';
-            inputDeskripsiLayanan.value = '';
-            inputDurasiLayanan.value = '';
-            inputHargaLayanan.value = '';
-            showLayananModal();
-        }
-
-        function openEditLayananModal(data) {
-            crudLayananModalTitle.textContent = `Edit layanan: ${data.nama_layanan}`;
-            crudLayananForm.action = data.update_url;
-            crudLayananFormMethod.value = 'PUT';
-            inputNamaLayanan.value = data.nama_layanan || '';
-            inputDeskripsiLayanan.value = data.deskripsi || '';
-            inputDurasiLayanan.value = data.estimasi_durasi || '';
-            inputHargaLayanan.value = formatHargaWithCommas(Math.round(Number(data.harga || 0)));
-            showLayananModal();
-        }
-
-        function closeLayananModal() {
-            crudLayananModal.classList.remove('active');
-            crudLayananModal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
-            if (previousLayananFocus instanceof HTMLElement) previousLayananFocus.focus();
-        }
-
-        inputHargaLayanan.addEventListener('input', () => {
-            inputHargaLayanan.value = formatHargaWithCommas(inputHargaLayanan.value);
-        });
-
-        crudLayananForm.addEventListener('submit', () => {
-            inputHargaLayanan.value = inputHargaLayanan.value.replace(/\D/g, '');
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && crudLayananModal.classList.contains('active')) {
-                closeLayananModal();
-            }
-        });
-    </script>
-@endpush
-
+    <x-logout-modal />
+</body>
+</html>

@@ -1,6 +1,6 @@
 <div id="logoutConfirmModal" class="logout-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle" aria-describedby="logoutModalDesc">
-    <button class="logout-modal-backdrop" type="button" aria-label="Tutup konfirmasi keluar" onclick="closeLogoutModal()"></button>
-    <div class="logout-modal-card" tabindex="-1">
+    <div class="logout-modal-backdrop" onclick="closeLogoutModal()"></div>
+    <div class="logout-modal-card">
         <div class="logout-modal-icon-wrapper">
             <div class="logout-modal-icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -33,16 +33,12 @@
 </div>
 
 <script>
-    let logoutModalTrigger = null;
-
     function openLogoutModal() {
         const modal = document.getElementById('logoutConfirmModal');
         if (modal) {
-            logoutModalTrigger = document.activeElement;
             modal.classList.add('active');
             modal.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
-            modal.querySelector('.btn-modal-cancel')?.focus();
         }
     }
 
@@ -52,7 +48,6 @@
             modal.classList.remove('active');
             modal.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
-            if (logoutModalTrigger instanceof HTMLElement) logoutModalTrigger.focus();
         }
     }
 
