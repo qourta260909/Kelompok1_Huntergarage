@@ -20,10 +20,30 @@ class PesananController extends Controller
                 'tb_pesanan.*',
                 DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan_tampil')
             )
+            ->whereIn('tb_pesanan.status', ['baru', 'proses'])
             ->orderBy('tb_pesanan.id', 'asc')
             ->get();
 
         return view('dashboard_pesanan', compact('daftarPesanan'));
+    }
+
+    public function riwayat()
+    {
+        if (auth()->user()->role !== 'admin') {
+            return redirect('/');
+        }
+
+        $daftarRiwayat = DB::table('tb_pesanan')
+            ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
+            ->select(
+                'tb_pesanan.*',
+                DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan_tampil')
+            )
+            ->whereIn('tb_pesanan.status', ['selesai', 'dibatalkan'])
+            ->orderBy('tb_pesanan.id', 'asc')
+            ->get();
+
+        return view('dashboard_riwayat', compact('daftarRiwayat'));
     }
 
     public function store(Request $request)
@@ -53,10 +73,11 @@ class PesananController extends Controller
                 },
             ],
             'total_harga' => ['required', 'numeric', 'min:0'],
-            'status' => ['required', 'in:baru,proses,selesai'],
+            'status' => ['required', 'in:baru,proses,selesai,dibatalkan'],
         ]);
 
-        Pesanan::create($validated);
+        $pesanan = Pesanan::create($validated);
+        $this->syncPembayaran($pesanan);
 
         return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil ditambahkan.');
     }
@@ -88,10 +109,11 @@ class PesananController extends Controller
                 },
             ],
             'total_harga' => ['required', 'numeric', 'min:0'],
-            'status' => ['required', 'in:baru,proses,selesai'],
+            'status' => ['required', 'in:baru,proses,selesai,dibatalkan'],
         ]);
 
         $pesanan->update($validated);
+        $this->syncPembayaran($pesanan);
 
         return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil diperbarui.');
     }
@@ -102,8 +124,41 @@ class PesananController extends Controller
             return redirect('/');
         }
 
+        DB::table('tb_pembayaran')->where('pesanan_id', $pesanan->id)->delete();
         $pesanan->delete();
 
         return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil dihapus.');
+    }
+
+    private function syncPembayaran(Pesanan $pesanan): void
+    {
+        if ($pesanan->status === 'selesai') {
+            $now = now();
+            $existing = DB::table('tb_pembayaran')->where('pesanan_id', $pesanan->id)->first();
+
+            if ($existing) {
+                DB::table('tb_pembayaran')
+                    ->where('pesanan_id', $pesanan->id)
+                    ->update([
+                        'jumlah' => $pesanan->total_harga,
+                        'status' => 'lunas',
+                        'dibayar_pada' => $existing->dibayar_pada ?? $now,
+                        'updated_at' => $now,
+                    ]);
+            } else {
+                DB::table('tb_pembayaran')->insert([
+                    'pesanan_id' => $pesanan->id,
+                    'nomor_invoice' => 'INV-PESANAN-' . $pesanan->id,
+                    'jumlah' => $pesanan->total_harga,
+                    'metode_pembayaran' => 'tunai',
+                    'status' => 'lunas',
+                    'dibayar_pada' => $now,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+            }
+        } else {
+            DB::table('tb_pembayaran')->where('pesanan_id', $pesanan->id)->delete();
+        }
     }
 }

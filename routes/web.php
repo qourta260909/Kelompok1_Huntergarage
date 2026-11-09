@@ -37,12 +37,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::
         return view('dashboard_profile');
     })->name('dashboard.profile');
 
-    Route::get('/dashboard-riwayat', function () {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-        return view('dashboard_riwayat');
-    })->name('dashboard.riwayat');
+    Route::get('/dashboard-riwayat', [PesananController::class, 'riwayat'])->name('dashboard.riwayat');
 });
 
 Route::get('/', function (\Illuminate\Http\Request $request) {
@@ -60,13 +55,22 @@ Route::get('/dashboard', function () {
         $totalPelanggan = User::where('role', 'user')->count();
         $dataLayanan = Layanan::take(4)->get();
         
-        $pesananBaruQuery = DB::table('tb_pesanan')
-            ->where('status', 'baru');
-        $pesananBaru = (clone $pesananBaruQuery)->count();
+        $pesananAktifQuery = DB::table('tb_pesanan')
+            ->whereIn('tb_pesanan.status', ['baru', 'proses']);
+        $pesananBaru = (clone $pesananAktifQuery)->count();
+
+        $pesananSelesaiTanpaPembayaran = DB::table('tb_pesanan')
+            ->where('status', 'selesai')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('tb_pembayaran')
+                    ->whereColumn('tb_pembayaran.pesanan_id', 'tb_pesanan.id');
+            })
+            ->sum('total_harga');
 
         $totalPendapatan = DB::table('tb_pembayaran')
             ->where('status', 'lunas')
-            ->sum('jumlah');
+            ->sum('jumlah') + $pesananSelesaiTanpaPembayaran;
 
         $awalBulan = now()->startOfMonth();
         $awalBulanBerikutnya = $awalBulan->copy()->addMonth();
@@ -74,9 +78,9 @@ Route::get('/dashboard', function () {
             ->where('status', 'lunas')
             ->where('dibayar_pada', '>=', $awalBulan)
             ->where('dibayar_pada', '<', $awalBulanBerikutnya)
-            ->sum('jumlah');
+            ->sum('jumlah') + $pesananSelesaiTanpaPembayaran;
 
-        $pesananTerbaru = (clone $pesananBaruQuery)
+        $pesananTerbaru = (clone $pesananAktifQuery)
             ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
             ->select(
                 'tb_pesanan.*',

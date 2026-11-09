@@ -94,11 +94,12 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($admin)->get(route('dashboard'));
 
         $response->assertOk()
+            ->assertSee('#1')
             ->assertSee('Pelanggan Dashboard')
             ->assertSee('Servis berkala')
+            ->assertDontSee('Ganti oli')
             ->assertSee('Rp 150.000')
             ->assertSee('Rp 100.000')
-            ->assertDontSee('Ganti oli')
             ->assertDontSee('Belum ada pesanan.');
 
         $response->assertViewHas('pesananBaru', 1)
@@ -117,7 +118,7 @@ class DashboardTest extends TestCase
             'nama_pelanggan' => 'Budi Santoso',
             'kategori' => 'layanan',
             'nama_layanan' => 'Tune Up Mesin',
-            'jadwal_service' => '2026-11-05T10:30',
+            'jadwal_service' => '2026-11-05T10:00',
             'total_harga' => '250,000',
             'status' => 'baru',
         ])->assertRedirect(route('dashboard.pesanan'));
@@ -127,14 +128,17 @@ class DashboardTest extends TestCase
             ->assertOk()
             ->assertSee('Budi Santoso')
             ->assertSee('Tune Up Mesin')
-            ->assertSee('Pukul 10:30');
+            ->assertSee('Pukul 10:00');
 
-        // Verify appears in Dashboard "Pesanan Terbaru" (read-only)
+        // Verify appears in Dashboard "Pesanan Terbaru" (read-only) with #1 and Baru, and pendapatanBaru is 0
         $this->actingAs($admin)->get(route('dashboard'))
             ->assertOk()
+            ->assertSee('#1')
             ->assertSee('Budi Santoso')
             ->assertSee('Tune Up Mesin')
-            ->assertSee('Rp 250.000');
+            ->assertSee('Baru')
+            ->assertSee('Rp 250.000')
+            ->assertViewHas('pendapatanBaru', 0);
 
         $pesananId = DB::table('tb_pesanan')->where('nama_pelanggan', 'Budi Santoso')->value('id');
 
@@ -143,15 +147,29 @@ class DashboardTest extends TestCase
             'nama_pelanggan' => 'Budi Santoso',
             'kategori' => 'layanan',
             'nama_layanan' => 'Tune Up Mesin',
-            'jadwal_service' => '2026-11-05T10:30',
+            'jadwal_service' => '2026-11-05T10:00',
             'total_harga' => '250,000',
             'status' => 'selesai',
         ])->assertRedirect(route('dashboard.pesanan'));
 
-        // Should no longer be in "Pesanan Terbaru" (status = baru) on main dashboard
+        // Should disappear from main dashboard list and Pesanan list, and money added to Pendapatan Baru
         $this->actingAs($admin)->get(route('dashboard'))
             ->assertOk()
+            ->assertDontSee('Budi Santoso')
+            ->assertViewHas('pendapatanBaru', 250000)
+            ->assertViewHas('totalPendapatan', 250000);
+
+        $this->actingAs($admin)->get(route('dashboard.pesanan'))
+            ->assertOk()
             ->assertDontSee('Budi Santoso');
+
+        // Should appear in Riwayat page with status Selesai
+        $this->actingAs($admin)->get(route('dashboard.riwayat'))
+            ->assertOk()
+            ->assertSee('#1')
+            ->assertSee('Budi Santoso')
+            ->assertSee('Tune Up Mesin')
+            ->assertSee('Selesai');
 
         // Delete pesanan
         $this->actingAs($admin)->delete(route('dashboard.pesanan.destroy', $pesananId))
