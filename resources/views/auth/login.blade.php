@@ -53,6 +53,13 @@
         </div>
 
         <button type="submit" id="btn-login" class="login-button">Login</button>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem; font-size:0.88rem; color:#6b7280;">
+            <a href="{{ route('home') }}" style="color:#6b7280; text-decoration:none; font-weight:500;">&larr; Kembali ke Beranda</a>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" style="color:#101010; text-decoration:none; font-weight:700;">Daftar Akun Baru</a>
+            @endif
+        </div>
     </form>
     
     <div id="topLoadingBar" class="top-loading-bar" aria-hidden="true"></div>

@@ -13,15 +13,17 @@ class Layanan extends Model
     protected $table = 'tb_layanan';
 
     protected $fillable = [
+        'kode_layanan',
         'nama_layanan',
         'deskripsi',
         'harga',
         'estimasi_durasi',
+        'status',
     ];
 
-    public function riwayatLayanan(): HasMany
+    public function pesanans(): HasMany
     {
-        return $this->hasMany(DataLayanan::class, 'layanan_id');
+        return $this->hasMany(Pesanan::class, 'layanan_id');
     }
 
     public function jadwalServices(): HasMany

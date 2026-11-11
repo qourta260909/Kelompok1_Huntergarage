@@ -16,6 +16,8 @@ class Pesanan extends Model
 
     protected $fillable = [
         'user_id',
+        'layanan_id',
+        'produk_id',
         'jadwalservice_id',
         'nama_pelanggan',
         'kategori',
@@ -28,6 +30,16 @@ class Pesanan extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function layanan(): BelongsTo
+    {
+        return $this->belongsTo(Layanan::class, 'layanan_id');
+    }
+
+    public function produk(): BelongsTo
+    {
+        return $this->belongsTo(Produk::class, 'produk_id');
     }
 
     public function jadwalService(): BelongsTo

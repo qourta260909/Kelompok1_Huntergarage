@@ -57,13 +57,6 @@
 </svg>
 </span> Produk
                 </a>
-                <a href="{{ route('dashboard.profile') }}" class="nav-link {{ request()->routeIs('dashboard.profile') ? 'active' : 'inactive' }}">
-                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-  <circle cx="12" cy="8" r="4"/>
-  <path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z"/>
-</svg>
-</span> Profile
-                </a>
                 <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <line x1="8" y1="5" x2="20" y2="5"/>
@@ -89,9 +82,7 @@
                     <p class="page-subtitle">Pantau pesanan anda dari masuk sampai selesai.</p>
                 </div>
                 
-                <button type="button" class="btn-logout" onclick="openLogoutModal()" title="Keluar">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                </button>
+                <x-admin-dropdown />
             </header>
 
 
