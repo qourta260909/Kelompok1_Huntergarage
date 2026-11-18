@@ -36,7 +36,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false))->with('login_success', true);
+        if ($request->user() && $request->user()->role === 'admin') {
+            return redirect()->intended(route('dashboard', absolute: false))->with('login_success', true);
+        }
+
+        return redirect()->intended(route('home', absolute: false))->with('login_success', true);
     }
 
     /**
@@ -50,6 +54,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect()->route('home');
     }
 }

@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('tb_layanan', function (Blueprint $table) {
             $table->id();
+            $table->string('kode_layanan')->nullable();
             $table->string('nama_layanan');
             $table->text('deskripsi')->nullable();
             $table->decimal('harga', 12, 2)->default(0);
             $table->string('estimasi_durasi')->nullable();
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->timestamps();
         });
     }

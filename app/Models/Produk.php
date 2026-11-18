@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Produk extends Model
@@ -14,15 +13,18 @@ class Produk extends Model
     protected $table = 'tb_produk';
 
     protected $fillable = [
-        'nama_produk',
         'kode_produk',
+        'nama_produk',
+        'deskripsi',
         'kategori',
+        'stok',
         'harga_jual',
+        'status',
     ];
 
-    public function stok(): HasOne
+    public function pesanans(): HasMany
     {
-        return $this->hasOne(Stok::class, 'produk_id');
+        return $this->hasMany(Pesanan::class, 'produk_id');
     }
 
     public function riwayatPemakaian(): HasMany

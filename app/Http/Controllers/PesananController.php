@@ -2,12 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Layanan;
 use App\Models\Pesanan;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PesananController extends Controller
 {
+    public function storeUserOrder(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $validated = $request->validate([
+            'kategori' => ['required', 'in:layanan,produk'],
+            'layanan_id' => ['nullable', 'required_if:kategori,layanan', 'exists:tb_layanan,id'],
+            'produk_id' => ['nullable', 'required_if:kategori,produk', 'exists:tb_produk,id'],
+            'jadwal_service' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    $time = \Carbon\Carbon::parse($value)->format('H:i');
+                    if ($time < '08:00' || $time > '22:00') {
+                        $fail('Jam booking hanya tersedia antara pukul 08:00 pagi hingga 22:00 malam.');
+                    }
+                },
+            ],
+        ]);
+
+        $layananId = null;
+        $produkId = null;
+        $namaItem = '';
+        $totalHarga = 0;
+
+        if ($validated['kategori'] === 'layanan') {
+            $layanan = Layanan::findOrFail($validated['layanan_id']);
+            $layananId = $layanan->id;
+            $namaItem = $layanan->nama_layanan;
+            $totalHarga = $layanan->harga;
+        } else {
+            $produk = Produk::findOrFail($validated['produk_id']);
+            if ($produk->stok <= 0) {
+                return back()->withErrors(['produk_id' => 'Stok produk yang dipilih sedang habis.']);
+            }
+            $produkId = $produk->id;
+            $namaItem = $produk->nama_produk;
+            $totalHarga = $produk->harga_jual;
+            $produk->decrement('stok');
+        }
+
+        $pesanan = Pesanan::create([
+            'user_id' => $user->id,
+            'layanan_id' => $layananId,
+            'produk_id' => $produkId,
+            'nama_pelanggan' => $user->name,
+            'kategori' => $validated['kategori'],
+            'nama_layanan' => $namaItem,
+            'jadwal_service' => $validated['jadwal_service'],
+            'total_harga' => $totalHarga,
+            'status' => 'baru',
+        ]);
+
+        $kodeBooking = 'BKG-' . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+
+        return redirect()->route('user.pesanan')->with('success', "Booking {$kodeBooking} ({$namaItem}) berhasil dikirim dan sedang menunggu konfirmasi Admin.");
+    }
     public function index()
     {
         if (auth()->user()->role !== 'admin') {
@@ -114,8 +176,35 @@ class PesananController extends Controller
 
         $pesanan->update($validated);
         $this->syncPembayaran($pesanan);
+        $this->syncRiwayat($pesanan);
 
         return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil diperbarui.');
+    }
+
+    public function updateStatus(Request $request, Pesanan $pesanan)
+    {
+        if (auth()->user()->role !== 'admin') {
+            return redirect('/');
+        }
+
+        $validated = $request->validate([
+            'aksi' => ['required', 'in:terima,tolak'],
+        ]);
+
+        $statusBaru = $validated['aksi'] === 'terima' ? 'selesai' : 'dibatalkan';
+        $pesanan->update([
+            'status' => $statusBaru,
+        ]);
+
+        $this->syncPembayaran($pesanan);
+        $this->syncRiwayat($pesanan);
+
+        $kodePesanan = 'BKG-' . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+        $pesanNotifikasi = $validated['aksi'] === 'terima'
+            ? "Pesanan {$kodePesanan} berhasil diterima dan dipindahkan ke Riwayat Pesanan."
+            : "Pesanan {$kodePesanan} telah ditolak dan dipindahkan ke Riwayat Pesanan.";
+
+        return redirect()->route('dashboard.riwayat')->with('success', $pesanNotifikasi);
     }
 
     public function destroy(Pesanan $pesanan)
@@ -125,9 +214,45 @@ class PesananController extends Controller
         }
 
         DB::table('tb_pembayaran')->where('pesanan_id', $pesanan->id)->delete();
+        DB::table('tb_riwayatpesanan')->where('pesanan_id', $pesanan->id)->delete();
         $pesanan->delete();
 
-        return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil dihapus.');
+        return back()->with('success', 'Data pesanan berhasil dihapus.');
+    }
+
+    private function syncRiwayat(Pesanan $pesanan): void
+    {
+        if (in_array($pesanan->status, ['selesai', 'dibatalkan'], true)) {
+            $now = now();
+            $existing = DB::table('tb_riwayatpesanan')->where('pesanan_id', $pesanan->id)->first();
+            $catatan = $pesanan->status === 'selesai' ? 'Pesanan diterima' : 'Pesanan ditolak';
+
+            if ($existing) {
+                DB::table('tb_riwayatpesanan')
+                    ->where('pesanan_id', $pesanan->id)
+                    ->update([
+                        'user_id' => $pesanan->user_id,
+                        'total_harga' => $pesanan->total_harga,
+                        'status_akhir' => $pesanan->status,
+                        'tanggal_selesai' => $existing->tanggal_selesai ?? $now,
+                        'catatan' => $catatan,
+                        'updated_at' => $now,
+                    ]);
+            } else {
+                DB::table('tb_riwayatpesanan')->insert([
+                    'pesanan_id' => $pesanan->id,
+                    'user_id' => $pesanan->user_id,
+                    'total_harga' => $pesanan->total_harga,
+                    'status_akhir' => $pesanan->status,
+                    'tanggal_selesai' => $now,
+                    'catatan' => $catatan,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+            }
+        } else {
+            DB::table('tb_riwayatpesanan')->where('pesanan_id', $pesanan->id)->delete();
+        }
     }
 
     private function syncPembayaran(Pesanan $pesanan): void

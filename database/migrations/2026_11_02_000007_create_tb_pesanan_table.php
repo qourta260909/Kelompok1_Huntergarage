@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('tb_pesanan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('layanan_id')->nullable()->constrained('tb_layanan')->nullOnDelete();
+            $table->foreignId('produk_id')->nullable()->constrained('tb_produk')->nullOnDelete();
             $table->foreignId('jadwalservice_id')->nullable()->constrained('tb_jadwalservice')->nullOnDelete();
             $table->string('nama_pelanggan')->nullable();
             $table->string('kategori')->default('layanan');
