@@ -1,22 +1,22 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --bg-page: #f4f4f5;
-            --bg-sidebar-start: #09090b;
-            --bg-sidebar-end: #141417;
-            --bg-sidebar-active: #27272a;
+            --bg-page: #f4f7fb;
+            --bg-sidebar-start: #0f172a;
+            --bg-sidebar-end: #1e3a8a;
+            --bg-sidebar-active: rgba(255, 255, 255, 0.14);
             --bg-surface: #ffffff;
-            --bg-subtle: #f4f4f5;
-            --bg-muted: #e4e4e7;
-            --text-primary: #101010;
-            --text-secondary: #27272a;
-            --text-muted: #71717a;
-            --text-sidebar-muted: #a1a1aa;
-            --border-light: #e4e4e7;
-            --border-input: #d4d4d8;
-            --accent-primary: #101010;
-            --accent-primary-hover: #27272a;
-            --accent-gold: #f6a31d;
+            --bg-subtle: #f1f5f9;
+            --bg-muted: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #1e293b;
+            --text-muted: #64748b;
+            --text-sidebar-muted: #93c5fd;
+            --border-light: #e2e8f0;
+            --border-input: #cbd5e1;
+            --accent-primary: #2563eb;
+            --accent-primary-hover: #1d4ed8;
+            --accent-gold: #3b82f6;
             --danger: #dc2626;
             --danger-bg: #fef2f2;
             --danger-border: #fecaca;
@@ -34,7 +34,7 @@
         }
 
         ::selection {
-            background-color: #101010;
+            background-color: #2563eb;
             color: #ffffff;
         }
 
@@ -271,7 +271,7 @@
             width: 36px;
             height: 36px;
             border-radius: 9px;
-            background: linear-gradient(135deg, #101010 0%, #27272a 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
             color: #ffffff;
             display: inline-flex;
             align-items: center;
@@ -280,7 +280,7 @@
             font-weight: 800;
             letter-spacing: 0.03em;
             flex-shrink: 0;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
         }
 
         .admin-avatar-sm {
@@ -945,7 +945,7 @@
         .table-pagination-footer {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             gap: 12px;
             padding: 15px 28px;
             border-top: 1.5px solid #e4e4e7;
@@ -996,10 +996,10 @@
         }
 
         .page-btn.active {
-            background-color: #09090b;
-            border-color: #09090b;
-            color: #f6a31d;
-            box-shadow: 0 2px 8px rgba(9, 9, 11, 0.18);
+            background-color: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
         }
 
         .page-btn:disabled {

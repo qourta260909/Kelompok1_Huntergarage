@@ -36,10 +36,10 @@
             transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
         }
         .toggle-btn.active {
-            background-color: #09090b;
-            color: #f5f5f5;
+            background-color: #2563eb;
+            color: #ffffff;
             border-radius: 9999px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
         }
         .search-box-wrapper {
             position: relative;
@@ -349,7 +349,6 @@
                 </div>
 
                 <div class="table-pagination-footer">
-                    <div class="pagination-info" id="paginationInfo">Menampilkan 0 data</div>
                     <div class="pagination-controls" id="paginationControls"></div>
                 </div>
             </div>
@@ -365,7 +364,6 @@
         const orderRows = Array.from(document.querySelectorAll('.order-row'));
         const emptyFilterRow = document.getElementById('emptyFilterRow');
         const emptyServerRow = document.getElementById('emptyServerRow');
-        const paginationInfo = document.getElementById('paginationInfo');
         const paginationControls = document.getElementById('paginationControls');
         const ITEMS_PER_PAGE = 5;
         let activeCategory = 'layanan';
@@ -381,10 +379,9 @@
         }
 
         function renderPagination(totalItems, totalPages) {
-            if (!paginationInfo || !paginationControls) return;
+            if (!paginationControls) return;
 
             if (totalItems === 0) {
-                paginationInfo.innerHTML = 'Menampilkan <strong>0</strong> data';
                 paginationControls.innerHTML = `
                     <button type="button" class="page-btn" disabled>&lsaquo; Prev</button>
                     <button type="button" class="page-btn active" disabled>1</button>
@@ -392,10 +389,6 @@
                 `;
                 return;
             }
-
-            const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
-            const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
-            paginationInfo.innerHTML = `Menampilkan <strong>${startItem}&ndash;${endItem}</strong> dari <strong>${totalItems}</strong> data`;
 
             let buttonsHtml = `
                 <button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&lsaquo; Prev</button>

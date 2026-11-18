@@ -44,10 +44,10 @@
             transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
         }
         .toggle-btn.active {
-            background-color: #09090b;
-            color: #f7f7f7;
+            background-color: #2563eb;
+            color: #ffffff;
             border-radius: 9999px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
         }
         .search-box-wrapper {
             position: relative;
@@ -74,12 +74,12 @@
         }
         .search-input:focus {
             outline: none;
-            border-color: #09090b;
+            border-color: #2563eb;
         }
         .btn-add-primary {
-            background-color: #030303;
+            background-color: #2563eb;
             color: #ffffff;
-            border: 1.5px solid;
+            border: 1.5px solid #2563eb;
             padding: 11px 22px;
             border-radius: 12px;
             font-size: 13.5px;
@@ -87,7 +87,7 @@
             letter-spacing: -0.01em;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 3px 10px rgba(22, 163, 74, 0.22);
+            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22);
         }
         .btn-add-primary:hover {
             transform: translateY(-1px);
@@ -151,8 +151,8 @@
             align-items: center;
             gap: 6px;
             background-color: #ffffff;
-            color: #09090b;
-            border: 1.5px solid #27272a;
+            color: #2563eb;
+            border: 1.5px solid #2563eb;
             padding: 5px 14px;
             border-radius: 9999px;
             font-size: 12.5px;
@@ -161,7 +161,7 @@
             transition: all 0.18s ease;
         }
         .btn-pill-edit:hover {
-            background-color: #f4f4f5;
+            background-color: #eff6ff;
         }
         .btn-pill-delete {
             display: inline-flex;
@@ -251,8 +251,8 @@
             color: #09090b;
         }
         .form-control:focus {
-            outline: 2px solid #09090b;
-            border-color: #09090b;
+            outline: 2px solid #2563eb;
+            border-color: #2563eb;
         }
         .form-row-2 {
             display: grid;
@@ -266,8 +266,8 @@
             margin-top: 22px;
         }
         .btn-cancel-crud {
-            background: #f4f4f5;
-            color: #27272a;
+            background: #f1f5f9;
+            color: #1e293b;
             border: none;
             padding: 10px 18px;
             border-radius: 10px;
@@ -276,7 +276,7 @@
             cursor: pointer;
         }
         .btn-save-crud {
-            background: #09090b;
+            background: #2563eb;
             color: #ffffff;
             border: none;
             padding: 10px 20px;
@@ -495,7 +495,6 @@
                     </table>
                 </div>
                 <div class="table-pagination-footer">
-                    <div class="pagination-info" id="paginationInfo">Menampilkan 0 data</div>
                     <div class="pagination-controls" id="paginationControls"></div>
                 </div>
             </div>
@@ -551,7 +550,6 @@
         const layananRows = Array.from(document.querySelectorAll('.layanan-row'));
         const emptyFilterRow = document.getElementById('emptyFilterRow');
         const emptyServerRow = document.getElementById('emptyServerRow');
-        const paginationInfo = document.getElementById('paginationInfo');
         const paginationControls = document.getElementById('paginationControls');
         const ITEMS_PER_PAGE = 5;
         let activeStatus = 'aktif';
@@ -577,10 +575,9 @@
         }
 
         function renderPagination(totalItems, totalPages) {
-            if (!paginationInfo || !paginationControls) return;
+            if (!paginationControls) return;
 
             if (totalItems === 0) {
-                paginationInfo.innerHTML = 'Menampilkan <strong>0</strong> data';
                 paginationControls.innerHTML = `
                     <button type="button" class="page-btn" disabled>&lsaquo; Prev</button>
                     <button type="button" class="page-btn active" disabled>1</button>
@@ -588,10 +585,6 @@
                 `;
                 return;
             }
-
-            const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
-            const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
-            paginationInfo.innerHTML = `Menampilkan <strong>${startItem}&ndash;${endItem}</strong> dari <strong>${totalItems}</strong> data`;
 
             let buttonsHtml = `
                 <button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&lsaquo; Prev</button>

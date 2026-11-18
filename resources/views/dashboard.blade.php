@@ -278,7 +278,6 @@
                 </div>
 
                 <div class="table-pagination-footer">
-                    <div class="pagination-info" id="paginationInfo">Menampilkan 0 data</div>
                     <div class="pagination-controls" id="paginationControls"></div>
                 </div>
             </div>
@@ -292,7 +291,6 @@
         const orderRows = Array.from(document.querySelectorAll('.order-row'));
         const emptyFilterRow = document.getElementById('emptyFilterRow');
         const emptyServerRow = document.getElementById('emptyServerRow');
-        const paginationInfo = document.getElementById('paginationInfo');
         const paginationControls = document.getElementById('paginationControls');
         const ITEMS_PER_PAGE = 5;
         let currentPage = 1;
@@ -317,10 +315,9 @@
         }
 
         function renderPagination(totalItems, totalPages) {
-            if (!paginationInfo || !paginationControls) return;
+            if (!paginationControls) return;
 
             if (totalItems === 0) {
-                paginationInfo.innerHTML = 'Menampilkan <strong>0</strong> data';
                 paginationControls.innerHTML = `
                     <button type="button" class="page-btn" disabled>&lsaquo; Prev</button>
                     <button type="button" class="page-btn active" disabled>1</button>
@@ -328,10 +325,6 @@
                 `;
                 return;
             }
-
-            const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
-            const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
-            paginationInfo.innerHTML = `Menampilkan <strong>${startItem}&ndash;${endItem}</strong> dari <strong>${totalItems}</strong> data`;
 
             let buttonsHtml = `
                 <button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&lsaquo; Prev</button>
