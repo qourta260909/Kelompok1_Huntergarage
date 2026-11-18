@@ -55,7 +55,15 @@ $renderPublicUserPage = function (string $activePage) {
     return view('user_home', compact('layananAktif', 'produkAktif', 'pesananUser', 'activePage'));
 };
 
-Route::get('/', fn () => $renderPublicUserPage('beranda'))
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    if (auth()->check() && auth()->user()->role === 'admin') {
+        \Illuminate\Support\Facades\Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    }
+
+    return view('welcome');
+})
     ->middleware(\App\Http\Middleware\PreventBackHistory::class)
     ->name('home');
 
