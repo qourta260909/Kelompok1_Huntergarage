@@ -18,8 +18,8 @@
             <a class="brand" href="{{ url('/') }}">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo Hunter Garage" class="brand-logo">
                 <div class="brand-text">
-                    <span class="brand-title">Hunter garage</span>
-                    <span class="brand-subtitle">Service dan sparepart</span>
+                    <span class="brand-title">Hunter Garage</span>
+                    <span class="brand-subtitle">Servis dan Suku Cadang</span>
                 </div>
             </a>
 
@@ -60,7 +60,7 @@
                                     <line x1="8" y1="2" x2="8" y2="6"></line>
                                     <line x1="3" y1="10" x2="21" y2="10"></line>
                                 </svg>
-                                <span>Booking Saya</span>
+                                <span>Jadwal Servis Saya</span>
                             </a>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
@@ -71,7 +71,7 @@
                                         <polyline points="16 17 21 12 16 7"></polyline>
                                         <line x1="21" y1="12" x2="9" y2="12"></line>
                                     </svg>
-                                    <span>Logout</span>
+                                    <span>Keluar</span>
                                 </button>
                             </form>
                         </div>
@@ -85,8 +85,29 @@
     <main>
         <div class="container">
             <div class="booking-wrapper">
+                @if (session('success'))
+                    <div class="user-alert user-alert-success">{{ session('success') }}</div>
+                @endif
+                @if ($errors->any())
+                    <div class="user-alert user-alert-error">{{ $errors->first() }}</div>
+                @endif
+
+                @if (($layananAktif ?? collect())->isEmpty())
+                    <section class="booking-card" aria-live="polite">
+                        <div class="empty-catalog-box">
+                            <div class="empty-catalog-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                </svg>
+                            </div>
+                            <h1 class="empty-catalog-title">Belum Ada Layanan Tersedia</h1>
+                            <p class="empty-catalog-desc">Saat ini belum ada layanan aktif yang ditambahkan oleh Admin di dasbor. Silakan cek kembali nanti atau kembali ke beranda.</p>
+                            <a href="{{ route('home') }}" class="booking-next-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; margin-top:18px;">Kembali ke Beranda</a>
+                        </div>
+                    </section>
+                @else
                 <!-- Stepper -->
-                <div class="stepper" aria-label="Tahapan booking layanan">
+                <div class="stepper" aria-label="Tahapan pemesanan layanan">
                     <button type="button" class="stepper-item active" data-step-target="1" onclick="goToStep(1)">
                         <span class="stepper-circle">1</span>
                         <span class="stepper-label">Kendaraan</span>
@@ -181,7 +202,7 @@
                                 </div>
                             </div>
 
-                            <p class="booking-note">Pastikan data sama dengan kendaraan yang akan di service.</p>
+                            <p class="booking-note">Pastikan data sesuai dengan kendaraan yang akan diservis.</p>
 
                             <hr class="booking-divider">
 
@@ -200,70 +221,32 @@
                         </div>
 
                         <div class="service-option-list" role="radiogroup" aria-label="Pilihan layanan">
-                            <label class="service-option-card">
-                                <input type="radio" name="jenis_layanan" value="Servis Rutin" checked>
-                                <span class="service-radio-circle"></span>
-                                <span class="service-option-icon" aria-hidden="true">
-                                    <!-- Gear icon -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-                                    </svg>
-                                </span>
-                                <span class="service-option-content">
-                                    <strong class="service-option-title">Servis Rutin</strong>
-                                    <span class="service-option-desc">Perawatan berkala untuk menjaga performa kendaraan tetap optimal.</span>
-                                </span>
-                            </label>
-
-                            <label class="service-option-card">
-                                <input type="radio" name="jenis_layanan" value="Tune Up">
-                                <span class="service-radio-circle"></span>
-                                <span class="service-option-icon" aria-hidden="true">
-                                    <!-- Wrench icon -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
-                                    </svg>
-                                </span>
-                                <span class="service-option-content">
-                                    <strong class="service-option-title">Tune Up</strong>
-                                    <span class="service-option-desc">Penyetelan mesin, busi, filter, dan komponen pendukung agar performa kembali stabil.</span>
-                                </span>
-                            </label>
-
-                            <label class="service-option-card">
-                                <input type="radio" name="jenis_layanan" value="Servis Ban">
-                                <span class="service-radio-circle"></span>
-                                <span class="service-option-icon" aria-hidden="true">
-                                    <!-- Tire icon -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <ellipse cx="14" cy="12" rx="6" ry="9" stroke-width="2.2"/>
-                                        <ellipse cx="14" cy="12" rx="2.5" ry="4.5" stroke-width="1.8"/>
-                                        <path d="M14 3H9C5.69 3 3 7.03 3 12s2.69 9 6 9h5" stroke-width="2.2"/>
-                                        <line x1="5" y1="7" x2="9" y2="7" stroke-width="1.8"/>
-                                        <line x1="3.5" y1="12" x2="8" y2="12" stroke-width="1.8"/>
-                                        <line x1="5" y1="17" x2="9" y2="17" stroke-width="1.8"/>
-                                    </svg>
-                                </span>
-                                <span class="service-option-content">
-                                    <strong class="service-option-title">Servis Ban</strong>
-                                    <span class="service-option-desc">Periksa tekanan, kondisi tapak, dan keseimbangan ban untuk kenyamanan berkendara.</span>
-                                </span>
-                            </label>
-
-                            <label class="service-option-card">
-                                <input type="radio" name="jenis_layanan" value="Konsultasi Terlebih Dahulu">
-                                <span class="service-radio-circle"></span>
-                                <span class="service-option-icon" aria-hidden="true">
-                                    <!-- Chat bubble icon -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 3C6.48 3 2 6.58 2 11c0 2.13 1.05 4.07 2.75 5.5-.18 1.24-.75 2.76-1.67 3.79-.21.24-.03.62.29.59 2.09-.2 3.92-1.08 5.14-1.88.96.26 1.97.4 3.04.4 5.52 0 10-3.58 10-8s-4.48-8-10-8zm-3.5 9.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm3.5 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm3.5 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/>
-                                    </svg>
-                                </span>
-                                <span class="service-option-content">
-                                    <strong class="service-option-title">Konsultasi Terlebih Dahulu</strong>
-                                    <span class="service-option-desc">Diskusi awal untuk menentukan layanan yang paling tepat sebelum booking.</span>
-                                </span>
-                            </label>
+                            @foreach ($layananAktif as $index => $layanan)
+                                @php
+                                    $estimasiLayanan = $layanan->estimasi_durasi ?: ($layanan->deskripsi ?: 'Standar pengerjaan bengkel');
+                                @endphp
+                                <label class="service-option-card">
+                                    <input
+                                        type="radio"
+                                        name="jenis_layanan"
+                                        value="{{ $layanan->id }}"
+                                        data-nama="{{ $layanan->nama_layanan }}"
+                                        data-harga="{{ number_format($layanan->harga, 0, ',', '.') }}"
+                                        {{ $index === 0 ? 'checked' : '' }}
+                                    >
+                                    <span class="service-radio-circle"></span>
+                                    <span class="service-option-icon" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                        </svg>
+                                    </span>
+                                    <span class="service-option-content" style="flex:1;">
+                                        <strong class="service-option-title">{{ $layanan->nama_layanan }}</strong>
+                                        <span class="service-option-desc">Estimasi pengerjaan: {{ $estimasiLayanan }}</span>
+                                    </span>
+                                    <span class="service-option-price">Rp {{ number_format($layanan->harga, 0, ',', '.') }}</span>
+                                </label>
+                            @endforeach
                         </div>
 
                         <hr class="booking-divider step2-divider">
@@ -373,8 +356,8 @@
                     <div class="booking-step-panel" id="stepPanel4" data-step="4">
                         <div class="booking-card-header">
                             <p class="booking-step-indicator">Langkah 4 Dari 4</p>
-                            <h2 class="booking-card-title">Konfirmasi Booking</h2>
-                            <p class="booking-card-subtitle">Periksa kembali data Anda sebelum Mengirim booking</p>
+                            <h2 class="booking-card-title">Konfirmasi Pemesanan</h2>
+                            <p class="booking-card-subtitle">Periksa kembali data Anda sebelum mengirim pesanan</p>
                         </div>
 
                         <div class="confirm-summary-box">
@@ -389,12 +372,12 @@
                                         <div class="confirm-row">
                                             <span class="confirm-key">Motor</span>
                                             <span class="confirm-colon">:</span>
-                                            <strong class="confirm-val" id="summaryMotor">0852199128</strong>
+                                            <strong class="confirm-val" id="summaryMotor">-</strong>
                                         </div>
                                         <div class="confirm-row">
                                             <span class="confirm-key">Nomor polisi</span>
                                             <span class="confirm-colon">:</span>
-                                            <strong class="confirm-val" id="summaryPlat">DA 1234 AB</strong>
+                                            <strong class="confirm-val" id="summaryPlat">-</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -409,12 +392,12 @@
                                         <div class="confirm-row">
                                             <span class="confirm-key">Jenis layanan</span>
                                             <span class="confirm-colon">:</span>
-                                            <strong class="confirm-val" id="summaryLayanan">Servis rutin</strong>
+                                            <strong class="confirm-val" id="summaryLayanan">-</strong>
                                         </div>
                                         <div class="confirm-row">
-                                            <span class="confirm-key">Keluhan</span>
+                                            <span class="confirm-key">Biaya layanan</span>
                                             <span class="confirm-colon">:</span>
-                                            <strong class="confirm-val" id="summaryKeluhan">Rem kurang responif</strong>
+                                            <strong class="confirm-val" id="summaryHarga">-</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -433,12 +416,12 @@
                                         <div class="confirm-row">
                                             <span class="confirm-key">Tanggal</span>
                                             <span class="confirm-colon">:</span>
-                                            <strong class="confirm-val" id="summaryTanggal">07 November 2026</strong>
+                                            <strong class="confirm-val" id="summaryTanggal">-</strong>
                                         </div>
                                         <div class="confirm-row">
                                             <span class="confirm-key">Jam</span>
                                             <span class="confirm-colon">:</span>
-                                            <strong class="confirm-val" id="summaryJam">10.00 WITA</strong>
+                                            <strong class="confirm-val" id="summaryJam">-</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -453,12 +436,12 @@
                                         <div class="confirm-row">
                                             <span class="confirm-key">Nama</span>
                                             <span class="confirm-colon">:</span>
-                                            <strong class="confirm-val" id="summaryNama">Justiceo</strong>
+                                            <strong class="confirm-val" id="summaryNama">{{ auth()->check() ? auth()->user()->name : '-' }}</strong>
                                         </div>
                                         <div class="confirm-row">
                                             <span class="confirm-key">No.telepon</span>
                                             <span class="confirm-colon">:</span>
-                                            <strong class="confirm-val" id="summaryTelepon">082929333</strong>
+                                            <strong class="confirm-val" id="summaryTelepon">-</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -471,92 +454,27 @@
                             <a href="{{ route('home') }}" class="booking-back-link">Kembali ke Beranda</a>
                             <div class="booking-btn-group">
                                 <button type="button" class="booking-prev-btn" onclick="prevStep()">Sebelumnya</button>
-                                <button type="button" class="booking-next-btn" id="btnConfirmBooking">Konfirmasi Booking</button>
+                                @auth
+                                    <form method="POST" action="{{ route('user.pesanan.store') }}" id="submitLayananOrderForm" style="display:inline;">
+                                        @csrf
+                                        <input type="hidden" name="kategori" value="layanan">
+                                        <input type="hidden" name="layanan_id" id="submitLayananId" value="">
+                                        <input type="hidden" name="jadwal_service" id="submitJadwalService" value="">
+                                        <button type="submit" class="booking-next-btn" id="btnConfirmBooking">Konfirmasi Pemesanan</button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}" class="booking-next-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">Masuk untuk Memesan</a>
+                                @endauth
                             </div>
                         </div>
                     </div>
                 </section>
+                @endif
             </div>
         </div>
     </main>
 
-    <footer class="site-footer">
-        <div class="footer-main">
-            <div class="footer-brand-col">
-                <a class="footer-brand" href="{{ url('/') }}">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo Hunter Garage" class="footer-logo">
-                    <div class="footer-brand-text">
-                        <span class="footer-brand-title">Hunter garage</span>
-                        <span class="footer-brand-subtitle">SERVICE DAN SPAREPART</span>
-                    </div>
-                </a>
-
-                <p class="footer-desc">
-                    Bengkel otomotif profesional untuk servis transparan, sparepart terverifikasi, dan perjalanan yang lebih tenang.
-                </p>
-
-                <div class="footer-socials">
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="Instagram Hunter Garage">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </a>
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="Facebook Hunter Garage">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                        </svg>
-                    </a>
-                    <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="YouTube Hunter Garage">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
-                            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-
-            <div class="footer-links-group">
-                <div class="footer-col">
-                    <h3 class="footer-col-title">JELAJAHI</h3>
-                    <ul class="footer-list">
-                        <li><a href="{{ route('home') }}">Beranda</a></li>
-                        <li><a href="{{ route('user.layanan') }}">Layanan</a></li>
-                        <li><a href="{{ route('user.produk') }}">Sparepart</a></li>
-                        <li><a href="{{ route('home') }}#beranda">Tentang kami</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-col">
-                    <h3 class="footer-col-title">LAYANAN</h3>
-                    <ul class="footer-list">
-                        <li><a href="{{ route('user.layanan') }}">Servis berkala</a></li>
-                        <li><a href="{{ route('user.layanan') }}">Diagnostik</a></li>
-                        <li><a href="{{ route('user.layanan') }}">Rem &amp; kaki</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-col">
-                    <h3 class="footer-col-title">WORKSHOP</h3>
-                    <div class="footer-workshop-info">
-                        <p class="footer-address">
-                            Jl. Taruna Praja Banjarbaru<br>
-                            Kalimantan selatan, Indonesia
-                        </p>
-                        <p class="footer-hours">
-                            Senin–Minggu. 08.00–22.00<br>
-                            Konsultasi online 24/7
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2026 Hunter Garage. Semua hak dilindungi.</p>
-        </div>
-    </footer>
+    <x-user-footer :layanan-aktif="$layananAktif ?? collect()" :produk-aktif="$produkAktif ?? collect()" />
     <script>
         function updateConfirmationSummary() {
             const merek = document.getElementById('merek')?.value || '';
@@ -564,31 +482,23 @@
             const tahun = document.getElementById('tahun')?.value || '';
             const plat = document.getElementById('plat_nomor')?.value.trim() || '';
             const layananEl = document.querySelector('input[name="jenis_layanan"]:checked');
-            const layanan = layananEl ? layananEl.value : '';
+            const layananId = layananEl ? layananEl.value : '';
+            const layananNama = layananEl ? (layananEl.dataset.nama || '-') : '-';
+            const layananHarga = layananEl && layananEl.dataset.harga ? ('Rp ' + layananEl.dataset.harga) : '-';
             const nama = document.getElementById('nama_lengkap')?.value.trim() || '';
             const telepon = document.getElementById('no_telepon')?.value.trim() || '';
             const jam = document.getElementById('jam_servis')?.value.trim() || '';
             const tanggal = document.getElementById('tanggal_servis')?.value.trim() || '';
 
             const motorText = [merek, model, tahun].filter(Boolean).join(' ');
-            if (motorText) {
-                document.getElementById('summaryMotor').textContent = motorText;
-            }
-            if (plat) {
-                document.getElementById('summaryPlat').textContent = plat.toUpperCase();
-            }
-            if (layanan) {
-                document.getElementById('summaryLayanan').textContent = layanan;
-            }
-            if (nama) {
-                document.getElementById('summaryNama').textContent = nama;
-            }
-            if (telepon) {
-                document.getElementById('summaryTelepon').textContent = telepon;
-            }
-            if (jam) {
-                document.getElementById('summaryJam').textContent = jam.replace(':', '.') + ' WITA';
-            }
+            document.getElementById('summaryMotor').textContent = motorText || '-';
+            document.getElementById('summaryPlat').textContent = plat ? plat.toUpperCase() : '-';
+            document.getElementById('summaryLayanan').textContent = layananNama;
+            document.getElementById('summaryHarga').textContent = layananHarga;
+            document.getElementById('summaryNama').textContent = nama || '-';
+            document.getElementById('summaryTelepon').textContent = telepon || '-';
+            document.getElementById('summaryJam').textContent = jam ? (jam.replace(':', '.') + ' WITA') : '-';
+
             if (tanggal) {
                 const parsed = new Date(tanggal);
                 if (!isNaN(parsed.getTime())) {
@@ -601,7 +511,36 @@
                 } else {
                     document.getElementById('summaryTanggal').textContent = tanggal;
                 }
+            } else {
+                document.getElementById('summaryTanggal').textContent = '-';
             }
+
+            const submitLayananId = document.getElementById('submitLayananId');
+            const submitJadwalService = document.getElementById('submitJadwalService');
+            if (submitLayananId) submitLayananId.value = layananId;
+            if (submitJadwalService) {
+                submitJadwalService.value = (tanggal && jam) ? `${tanggal} ${jam}:00` : '';
+            }
+        }
+
+        const submitLayananOrderForm = document.getElementById('submitLayananOrderForm');
+        if (submitLayananOrderForm) {
+            submitLayananOrderForm.addEventListener('submit', function (e) {
+                updateConfirmationSummary();
+                const layananId = document.getElementById('submitLayananId')?.value;
+                const jadwal = document.getElementById('submitJadwalService')?.value;
+                if (!layananId) {
+                    e.preventDefault();
+                    alert('Silakan pilih layanan terlebih dahulu.');
+                    goToStep(2);
+                    return;
+                }
+                if (!jadwal) {
+                    e.preventDefault();
+                    alert('Silakan lengkapi tanggal dan jam servis terlebih dahulu (pukul 08:00 - 22:00).');
+                    goToStep(3);
+                }
+            });
         }
 
         let currentStep = 1;

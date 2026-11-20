@@ -29,7 +29,7 @@
         
         <h3 id="logoutModalTitle" class="logout-modal-title">Konfirmasi Keluar</h3>
         <p id="logoutModalDesc" class="logout-modal-desc">
-            Apakah Anda yakin ingin keluar dari akun Hunter Garage? Anda perlu login kembali untuk mengakses panel dashboard.
+            Apakah Anda yakin ingin keluar dari akun Hunter Garage? Anda perlu masuk kembali untuk mengakses panel dasbor.
         </p>
 
         <div class="logout-modal-actions">

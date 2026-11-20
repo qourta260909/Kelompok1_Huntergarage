@@ -186,7 +186,7 @@
   <rect x="4" y="13" width="7" height="7" rx="1.5"/>
   <rect x="13" y="13" width="7" height="7" rx="1.5"/>
 </svg>
-</span> Dashboard
+</span> Dasbor
                 </a>
                 <a href="{{ route('dashboard.pesanan') }}" class="nav-link {{ request()->routeIs('dashboard.pesanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -383,15 +383,15 @@
 
             if (totalItems === 0) {
                 paginationControls.innerHTML = `
-                    <button type="button" class="page-btn" disabled>&lsaquo; Prev</button>
+                    <button type="button" class="page-btn" disabled>&lsaquo; Sebelumnya</button>
                     <button type="button" class="page-btn active">1</button>
-                    <button type="button" class="page-btn" disabled>Next &rsaquo;</button>
+                    <button type="button" class="page-btn" disabled>Berikutnya &rsaquo;</button>
                 `;
                 return;
             }
 
             let buttonsHtml = `
-                <button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&lsaquo; Prev</button>
+                <button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&lsaquo; Sebelumnya</button>
             `;
 
             for (let i = 1; i <= totalPages; i++) {
@@ -401,7 +401,7 @@
             }
 
             buttonsHtml += `
-                <button type="button" class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">Next &rsaquo;</button>
+                <button type="button" class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">Berikutnya &rsaquo;</button>
             `;
 
             paginationControls.innerHTML = buttonsHtml;

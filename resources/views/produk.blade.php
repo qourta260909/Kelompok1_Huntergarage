@@ -7,19 +7,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     @vite('resources/css/user.css')
 </head>
 <body>
     <header class="topbar">
         <div class="topbar-inner">
-            <a class="brand" href="{{ url('/') }}">
+            <a class="brand" href="{{ route('home') }}">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo Hunter Garage" class="brand-logo">
                 <div class="brand-text">
-                    <span class="brand-title">Hunter garage</span>
-                    <span class="brand-subtitle">Service dan sparepart</span>
+                    <span class="brand-title">Hunter Garage</span>
+                    <span class="brand-subtitle">Servis dan Suku Cadang</span>
                 </div>
             </a>
 
@@ -60,7 +57,7 @@
                                     <line x1="8" y1="2" x2="8" y2="6"></line>
                                     <line x1="3" y1="10" x2="21" y2="10"></line>
                                 </svg>
-                                <span>Booking Saya</span>
+                                <span>Jadwal Servis Saya</span>
                             </a>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
@@ -71,7 +68,7 @@
                                         <polyline points="16 17 21 12 16 7"></polyline>
                                         <line x1="21" y1="12" x2="9" y2="12"></line>
                                     </svg>
-                                    <span>Logout</span>
+                                    <span>Keluar</span>
                                 </button>
                             </form>
                         </div>
@@ -83,7 +80,157 @@
         </div>
     </header>
 
+    <main class="produk-page">
+        <div class="produk-container">
+            @if (session('success'))
+                <div class="user-alert user-alert-success">{{ session('success') }}</div>
+            @endif
+            @if ($errors->any())
+                <div class="user-alert user-alert-error">{{ $errors->first() }}</div>
+            @endif
+
+            <div class="produk-header">
+                <div>
+                    <span class="judul-layanan"><span>• </span> KATALOG PRODUK</span>
+                    <h1 class="produk-title">Produk &amp; Suku Cadang</h1>
+                    <p class="produk-subtitle">Suku cadang dan pelumas resmi yang tersedia di bengkel Hunter Garage.</p>
+                </div>
+
+                @if (($produkAktif ?? collect())->isNotEmpty())
+                    <div class="produk-search-wrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="produkSearchInput" class="produk-search-input" placeholder="Cari produk atau suku cadang...">
+                    </div>
+                @endif
+            </div>
+
+            @if (($produkAktif ?? collect())->isEmpty())
+                <div class="empty-catalog-box">
+                    <div class="empty-catalog-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h2 class="empty-catalog-title">Belum Ada Produk Tersedia</h2>
+                    <p class="empty-catalog-desc">Saat ini belum ada produk atau suku cadang aktif yang ditambahkan oleh Admin di dasbor.</p>
+                </div>
+            @else
+                <div class="produk-grid" id="produkGrid">
+                    @foreach ($produkAktif as $produk)
+                        @php
+                            $kodeProduk = $produk->kode_produk ?: ('HG-' . str_pad((string) $produk->id, 2, '0', STR_PAD_LEFT));
+                            $stokProduk = (int) ($produk->stok ?? 0);
+                            $stokHabis = $stokProduk <= 0;
+                        @endphp
+                        <article class="produk-card" data-search="{{ strtolower($produk->nama_produk . ' ' . $kodeProduk . ' ' . ($produk->deskripsi ?? '')) }}">
+                            <div class="produk-card-head">
+                                <span class="produk-code">{{ $kodeProduk }}</span>
+                                <span class="produk-stock-pill {{ $stokHabis ? 'stock-empty' : ($stokProduk < 5 ? 'stock-low' : 'stock-ok') }}">
+                                    {{ $stokHabis ? 'Stok habis' : 'Stok: ' . $stokProduk }}
+                                </span>
+                            </div>
+
+                            <h2 class="produk-card-name">{{ $produk->nama_produk }}</h2>
+                            <p class="produk-card-desc">{{ $produk->deskripsi ?: 'Suku cadang resmi Hunter Garage' }}</p>
+
+                            <div class="produk-card-footer">
+                                <div class="produk-price-wrap">
+                                    <span class="produk-price-label">Harga</span>
+                                    <strong class="produk-price-val">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</strong>
+                                </div>
+
+                                @auth
+                                    <button
+                                        type="button"
+                                        class="produk-order-btn"
+                                        {{ $stokHabis ? 'disabled' : '' }}
+                                        onclick="openProdukOrderModal({{ $produk->id }}, @js($produk->nama_produk), @js('Rp ' . number_format($produk->harga_jual, 0, ',', '.')))"
+                                    >
+                                        {{ $stokHabis ? 'Habis' : 'Pesan Produk' }}
+                                    </button>
+                                @else
+                                    <a href="{{ route('login') }}" class="produk-order-btn produk-order-link">Masuk untuk Memesan</a>
+                                @endauth
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+
+                <div class="empty-catalog-box" id="produkEmptySearch" style="display:none;">
+                    <h2 class="empty-catalog-title">Produk Tidak Ditemukan</h2>
+                    <p class="empty-catalog-desc">Tidak ada produk yang cocok dengan kata kunci pencarian Anda.</p>
+                </div>
+            @endif
+        </div>
+    </main>
+
+    @auth
+        <div class="produk-modal-overlay" id="produkOrderModal" aria-hidden="true">
+            <div class="produk-modal-card" role="dialog" aria-modal="true" aria-labelledby="produkModalTitle">
+                <div class="produk-modal-head">
+                    <h2 id="produkModalTitle" class="produk-modal-title">Pesan Produk</h2>
+                    <button type="button" class="produk-modal-close" onclick="closeProdukOrderModal()" aria-label="Tutup">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('user.pesanan.store') }}" id="produkOrderForm">
+                    @csrf
+                    <input type="hidden" name="kategori" value="produk">
+                    <input type="hidden" name="produk_id" id="modalProdukId" value="">
+                    <input type="hidden" name="jadwal_service" id="modalJadwalService" value="">
+
+                    <div class="produk-modal-summary">
+                        <strong id="modalProdukNama">-</strong>
+                        <span id="modalProdukHarga">-</span>
+                    </div>
+
+                    <div class="booking-field" style="margin-bottom:14px;">
+                        <label for="modalTanggalAmbil" class="booking-label">Tanggal Pengambilan</label>
+                        <input type="date" id="modalTanggalAmbil" class="booking-input" required>
+                    </div>
+
+                    <div class="booking-field" style="margin-bottom:20px;">
+                        <label for="modalJamAmbil" class="booking-label">Jam Pengambilan (08:00 - 22:00)</label>
+                        <input type="time" id="modalJamAmbil" class="booking-input" min="08:00" max="22:00" value="10:00" required>
+                    </div>
+
+                    <div class="produk-modal-actions">
+                        <button type="button" class="booking-prev-btn" onclick="closeProdukOrderModal()">Batal</button>
+                        <button type="submit" class="produk-order-btn">Kirim Pesanan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endauth
+
+    <x-user-footer :layanan-aktif="$layananAktif ?? collect()" :produk-aktif="$produkAktif ?? collect()" />
+
     <script>
+        function openProdukOrderModal(id, nama, harga) {
+            const modal = document.getElementById('produkOrderModal');
+            if (!modal) return;
+            document.getElementById('modalProdukId').value = id;
+            document.getElementById('modalProdukNama').textContent = nama;
+            document.getElementById('modalProdukHarga').textContent = harga;
+            const dateInput = document.getElementById('modalTanggalAmbil');
+            if (dateInput && !dateInput.value) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeProdukOrderModal() {
+            const modal = document.getElementById('produkOrderModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const dropdown = document.getElementById('userDropdown');
             const dropdownBtn = document.getElementById('userDropdownBtn');
@@ -106,7 +253,36 @@
                     if (e.key === 'Escape') {
                         dropdown.classList.remove('open');
                         dropdownBtn.setAttribute('aria-expanded', 'false');
+                        closeProdukOrderModal();
                     }
+                });
+            }
+
+            const searchInput = document.getElementById('produkSearchInput');
+            const cards = Array.from(document.querySelectorAll('.produk-card'));
+            const emptySearch = document.getElementById('produkEmptySearch');
+
+            if (searchInput && cards.length > 0) {
+                searchInput.addEventListener('input', function () {
+                    const q = this.value.toLowerCase().trim();
+                    let visible = 0;
+                    cards.forEach(function (card) {
+                        const match = (card.dataset.search || '').includes(q);
+                        card.style.display = match ? '' : 'none';
+                        if (match) visible++;
+                    });
+                    if (emptySearch) {
+                        emptySearch.style.display = visible === 0 ? '' : 'none';
+                    }
+                });
+            }
+
+            const orderForm = document.getElementById('produkOrderForm');
+            if (orderForm) {
+                orderForm.addEventListener('submit', function () {
+                    const tgl = document.getElementById('modalTanggalAmbil')?.value;
+                    const jam = document.getElementById('modalJamAmbil')?.value;
+                    document.getElementById('modalJadwalService').value = (tgl && jam) ? `${tgl} ${jam}:00` : '';
                 });
             }
         });

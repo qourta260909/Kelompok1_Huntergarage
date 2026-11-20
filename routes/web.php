@@ -66,16 +66,18 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
 
 Route::get('/layanan', function () {
     $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
+    $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
 
-    return view('layanan', compact('layananAktif'));
+    return view('layanan', compact('layananAktif', 'produkAktif'));
 })
     ->middleware(\App\Http\Middleware\PreventBackHistory::class)
     ->name('user.layanan');
 
 Route::get('/produk', function () {
+    $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
     $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
 
-    return view('produk', compact('produkAktif'));
+    return view('produk', compact('layananAktif', 'produkAktif'));
 })
     ->middleware(\App\Http\Middleware\PreventBackHistory::class)
     ->name('user.produk');
@@ -107,7 +109,7 @@ Route::get('/dashboard', function () {
         ));
     }
     
-    return redirect()->route('home')->withErrors(['akses' => 'Halaman Dashboard hanya dapat diakses menggunakan akun Admin.']);
+    return redirect()->route('home')->withErrors(['akses' => 'Halaman Dasbor hanya dapat diakses menggunakan akun Admin.']);
 })->middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

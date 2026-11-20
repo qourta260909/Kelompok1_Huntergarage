@@ -31,13 +31,16 @@ class AuthController extends Controller
         }
 
         // 4. Jika password salah, kembalikan ke halaman login
-        return back()->with('error', 'Email atau Password salah!');
+        return back()->with('error', 'Email atau kata sandi salah!');
     }
 
     // Fitur Logout
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
-        return redirect('/login');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home');
     }
 }

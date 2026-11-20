@@ -27,7 +27,7 @@ class PesananController extends Controller
                 function ($attribute, $value, $fail) {
                     $time = \Carbon\Carbon::parse($value)->format('H:i');
                     if ($time < '08:00' || $time > '22:00') {
-                        $fail('Jam booking hanya tersedia antara pukul 08:00 pagi hingga 22:00 malam.');
+                        $fail('Jam pemesanan hanya tersedia antara pukul 08:00 pagi hingga 22:00 malam.');
                     }
                 },
             ],
@@ -68,7 +68,7 @@ class PesananController extends Controller
 
         $kodeBooking = 'BKG-' . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
 
-        return redirect()->route('user.pesanan')->with('success', "Booking {$kodeBooking} ({$namaItem}) berhasil dikirim dan sedang menunggu konfirmasi Admin.");
+        return redirect()->route('user.pesanan')->with('success', "Pesanan {$kodeBooking} ({$namaItem}) berhasil dikirim dan sedang menunggu konfirmasi Admin.");
     }
     public function index()
     {
@@ -130,7 +130,7 @@ class PesananController extends Controller
                 function ($attribute, $value, $fail) {
                     $time = \Carbon\Carbon::parse($value)->format('H:i');
                     if ($time < '08:00' || $time > '22:00') {
-                        $fail('Jam service hanya tersedia antara pukul 08:00 pagi hingga 22:00 malam.');
+                        $fail('Jam servis hanya tersedia antara pukul 08:00 pagi hingga 22:00 malam.');
                     }
                 },
             ],
@@ -166,7 +166,7 @@ class PesananController extends Controller
                 function ($attribute, $value, $fail) {
                     $time = \Carbon\Carbon::parse($value)->format('H:i');
                     if ($time < '08:00' || $time > '22:00') {
-                        $fail('Jam service hanya tersedia antara pukul 08:00 pagi hingga 22:00 malam.');
+                        $fail('Jam servis hanya tersedia antara pukul 08:00 pagi hingga 22:00 malam.');
                     }
                 },
             ],
