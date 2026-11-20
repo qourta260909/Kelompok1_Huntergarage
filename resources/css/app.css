@@ -143,6 +143,11 @@ input, button {
     color: rgba(17, 17, 17, 0.38);
 }
 
+.field-shell input::-ms-reveal,
+.field-shell input::-ms-clear {
+    display: none;
+}
+
 .field-action {
     position: absolute;
     right: 0.8rem;

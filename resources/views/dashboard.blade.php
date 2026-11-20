@@ -320,7 +320,7 @@
             if (totalItems === 0) {
                 paginationControls.innerHTML = `
                     <button type="button" class="page-btn" disabled>&lsaquo; Prev</button>
-                    <button type="button" class="page-btn active" disabled>1</button>
+                    <button type="button" class="page-btn active">1</button>
                     <button type="button" class="page-btn" disabled>Next &rsaquo;</button>
                 `;
                 return;

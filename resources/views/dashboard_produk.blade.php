@@ -45,10 +45,10 @@
             transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
         }
         .toggle-btn.active {
-            background-color: #2563eb;
+            background-color: #000000;
             color: #ffffff;
             border-radius: 9999px;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         }
         .search-box-wrapper {
             position: relative;
@@ -75,12 +75,12 @@
         }
         .search-input:focus {
             outline: none;
-            border-color: #2563eb;
+            border-color: #000000;
         }
         .btn-add-primary {
-            background-color: #2563eb;
+            background-color: #000000;
             color: #ffffff;
-            border: 1.5px solid #2563eb;
+            border: 1.5px solid #000000;
             padding: 11px 22px;
             border-radius: 12px;
             font-size: 13.5px;
@@ -88,7 +88,7 @@
             letter-spacing: -0.01em;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
         }
         .btn-add-primary:hover {
             transform: translateY(-1px);
@@ -162,8 +162,8 @@
             align-items: center;
             gap: 6px;
             background-color: #ffffff;
-            color: #2563eb;
-            border: 1.5px solid #2563eb;
+            color: #000000;
+            border: 1.5px solid #000000;
             padding: 5px 14px;
             border-radius: 9999px;
             font-size: 12.5px;
@@ -172,7 +172,7 @@
             transition: all 0.18s ease;
         }
         .btn-pill-edit:hover {
-            background-color: #eff6ff;
+            background-color: #f4f4f5;
         }
         .btn-pill-delete {
             display: inline-flex;
@@ -262,8 +262,8 @@
             color: #09090b;
         }
         .form-control:focus {
-            outline: 2px solid #2563eb;
-            border-color: #2563eb;
+            outline: 2px solid #000000;
+            border-color: #000000;
         }
         .form-row-2 {
             display: grid;
@@ -287,7 +287,7 @@
             cursor: pointer;
         }
         .btn-save-crud {
-            background: #2563eb;
+            background: #000000;
             color: #ffffff;
             border: none;
             padding: 10px 20px;
@@ -593,7 +593,7 @@
             if (totalItems === 0) {
                 paginationControls.innerHTML = `
                     <button type="button" class="page-btn" disabled>&lsaquo; Prev</button>
-                    <button type="button" class="page-btn active" disabled>1</button>
+                    <button type="button" class="page-btn active">1</button>
                     <button type="button" class="page-btn" disabled>Next &rsaquo;</button>
                 `;
                 return;

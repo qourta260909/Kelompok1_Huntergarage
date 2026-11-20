@@ -11,6 +11,7 @@ use App\Models\Produk;
 use App\Models\Pesanan;
 use Illuminate\Support\Facades\DB;
 
+
 Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->group(function () {
     Route::redirect('/dashboard-pemesanan', '/dashboard-pesanan');
 
@@ -41,19 +42,9 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::
         $pesananUser = Pesanan::where('user_id', auth()->id())->orderBy('id', 'desc')->get();
         $activePage = 'pesanan';
 
-        return view('user_home', compact('layananAktif', 'produkAktif', 'pesananUser', 'activePage'));
+        return view('welcome', compact('layananAktif', 'produkAktif', 'pesananUser', 'activePage'));
     })->name('user.pesanan');
 });
-
-$renderPublicUserPage = function (string $activePage) {
-    $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
-    $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
-    $pesananUser = auth()->check()
-        ? Pesanan::where('user_id', auth()->id())->orderBy('id', 'desc')->get()
-        : collect();
-
-    return view('user_home', compact('layananAktif', 'produkAktif', 'pesananUser', 'activePage'));
-};
 
 Route::get('/', function (\Illuminate\Http\Request $request) {
     if (auth()->check() && auth()->user()->role === 'admin') {
@@ -62,16 +53,30 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
         $request->session()->regenerateToken();
     }
 
-    return view('welcome');
+    $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
+    $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
+    $pesananUser = auth()->check()
+        ? Pesanan::where('user_id', auth()->id())->orderBy('id', 'desc')->get()
+        : collect();
+
+    return view('welcome', compact('layananAktif', 'produkAktif', 'pesananUser'));
 })
     ->middleware(\App\Http\Middleware\PreventBackHistory::class)
     ->name('home');
 
-Route::get('/layanan', fn () => $renderPublicUserPage('layanan'))
+Route::get('/layanan', function () {
+    $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
+
+    return view('layanan', compact('layananAktif'));
+})
     ->middleware(\App\Http\Middleware\PreventBackHistory::class)
     ->name('user.layanan');
 
-Route::get('/produk', fn () => $renderPublicUserPage('produk'))
+Route::get('/produk', function () {
+    $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
+
+    return view('produk', compact('produkAktif'));
+})
     ->middleware(\App\Http\Middleware\PreventBackHistory::class)
     ->name('user.produk');
 

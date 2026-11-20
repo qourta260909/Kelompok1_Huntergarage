@@ -36,10 +36,10 @@
             transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
         }
         .toggle-btn.active {
-            background-color: #2563eb;
+            background-color: #000000;
             color: #ffffff;
             border-radius: 9999px;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         }
         .search-box-wrapper {
             position: relative;
@@ -343,7 +343,7 @@
             if (totalItems === 0) {
                 paginationControls.innerHTML = `
                     <button type="button" class="page-btn" disabled>&lsaquo; Prev</button>
-                    <button type="button" class="page-btn active" disabled>1</button>
+                    <button type="button" class="page-btn active">1</button>
                     <button type="button" class="page-btn" disabled>Next &rsaquo;</button>
                 `;
                 return;
