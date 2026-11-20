@@ -23,6 +23,10 @@
     color: var(--surface-light);
 }
 
+html {
+    overflow-y: scroll;
+}
+
 body {
     min-height: 100vh;
     margin: 0;
@@ -103,15 +107,33 @@ body {
 }
 
 .nav-link {
+    position: relative;
     color: var(--text-primary);
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
-    transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    padding: 6px 0;
+    transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
 }
 
 .nav-link:hover {
     opacity: 0.65;
+}
+
+.nav-link.active {
+    font-weight: 700;
+    opacity: 1;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2.5px;
+    background-color: var(--accent-black);
+    border-radius: 999px;
 }
 
 .nav-link:focus-visible {
@@ -946,5 +968,558 @@ h1 {
     .footer-links-group {
         flex-direction: column;
         gap: 24px;
+    }
+}
+
+/* ================= HALAMAN LAYANAN ================= */
+
+.container {
+    width: 100%;
+    min-height: calc(100vh - 83px);
+    background-image: url('../images/layanan-hero.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px 56px;
+}
+
+.booking-wrapper {
+    width: min(940px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+}
+
+/* Stepper */
+.stepper {
+    width: 100%;
+    max-width: 850px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.stepper-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.stepper-item:focus-visible {
+    outline: 2px solid var(--accent-black);
+    outline-offset: 4px;
+    border-radius: 999px;
+}
+
+.stepper-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: var(--surface-light);
+    border: 1.5px solid #27272a;
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.stepper-item.active .stepper-circle {
+    background-color: #3f3f46;
+    border-color: #18181b;
+    color: var(--surface-light);
+    font-weight: 500;
+}
+
+.stepper-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.stepper-line {
+    flex: 1;
+    height: 1.5px;
+    background-color: #52525b;
+    min-width: 28px;
+}
+
+/* Booking Card */
+.booking-card {
+    width: 100%;
+    background-color: var(--surface-light);
+    border-radius: 18px;
+    padding: 40px 48px 36px;
+    box-shadow: 0 22px 48px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.booking-card-header {
+    margin-bottom: 24px;
+}
+
+.booking-step-indicator {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #71717a;
+    margin-bottom: 4px;
+}
+
+.booking-card-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    max-width: none;
+}
+
+.booking-card-subtitle {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #71717a;
+    margin-top: 4px;
+}
+
+.booking-step-panel {
+    display: none;
+    animation: fadeStepIn 0.22s ease;
+}
+
+.booking-step-panel.active {
+    display: block;
+}
+
+@keyframes fadeStepIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Step 2: Pilih Layanan */
+.service-option-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 0 12px;
+}
+
+.service-option-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 22px;
+    border-radius: 12px;
+    border: 1.2px solid #27272a;
+    background-color: var(--surface-light);
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.service-option-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.service-option-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.service-radio-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.2px solid #27272a;
+    background-color: var(--surface-light);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.service-radio-circle::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: var(--accent-black);
+    transform: scale(0);
+    transition: transform 0.18s ease;
+}
+
+.service-option-card input[type="radio"]:checked + .service-radio-circle::after {
+    transform: scale(1);
+}
+
+.service-option-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+.service-option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.service-option-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.service-option-desc {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #71717a;
+    line-height: 1.45;
+}
+
+.step2-divider {
+    margin: 26px 0 22px;
+}
+
+/* Step 3: Jadwal Dan Kontak */
+.schedule-inner-box {
+    border: 1px solid #d4d4d8;
+    border-radius: 10px;
+    padding: 36px 34px 40px;
+    margin: 0 12px;
+}
+
+.booking-input-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.booking-input.has-trailing-icon {
+    padding-right: 46px;
+}
+
+.input-trailing-icon {
+    position: absolute;
+    right: 16px;
+    color: #27272a;
+    pointer-events: none;
+}
+
+.step3-divider {
+    margin: 44px 0 24px;
+}
+
+/* Step 4: Konfirmasi Booking */
+.confirm-summary-box {
+    border: 1px solid #a1a1aa;
+    border-radius: 10px;
+    padding: 26px 32px 30px;
+    margin: 0 8px;
+}
+
+.confirm-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 48px;
+    row-gap: 20px;
+}
+
+.confirm-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.confirm-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.confirm-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.confirm-edit-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-style: italic;
+    color: #71717a;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.confirm-edit-btn:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}
+
+.confirm-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.confirm-row {
+    display: grid;
+    grid-template-columns: 105px 14px 1fr;
+    align-items: baseline;
+    font-size: 13px;
+}
+
+.confirm-key {
+    color: #71717a;
+    font-weight: 500;
+}
+
+.confirm-colon {
+    color: #71717a;
+    font-weight: 600;
+}
+
+.confirm-val {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.confirm-inner-divider {
+    border: none;
+    border-top: 1px solid #a1a1aa;
+    margin: 26px 0 22px;
+}
+
+.step4-divider {
+    margin: 48px 0 24px;
+}
+
+.booking-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 32px;
+    row-gap: 24px;
+}
+
+.booking-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.booking-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.booking-select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.booking-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: 1.2px solid #27272a;
+    background-color: var(--surface-light);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-input::placeholder {
+    color: #71717a;
+    font-weight: 500;
+}
+
+.booking-input:focus {
+    border-color: var(--accent-black);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.booking-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 44px;
+    cursor: pointer;
+    color: #52525b;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 16px;
+    pointer-events: none;
+    color: var(--text-primary);
+}
+
+.booking-note {
+    margin-top: 28px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #71717a;
+}
+
+.booking-divider {
+    border: none;
+    border-top: 1px solid #a1a1aa;
+    margin: 56px 0 28px;
+}
+
+.booking-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.booking-back-link {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.booking-back-link:hover {
+    opacity: 0.7;
+}
+
+.booking-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.booking-prev-btn {
+    height: 44px;
+    padding: 0 22px;
+    border: 1.5px solid var(--accent-black);
+    border-radius: 10px;
+    background-color: var(--surface-light);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.booking-prev-btn:hover {
+    background-color: #f4f4f5;
+    transform: translateY(-1px);
+}
+
+.booking-next-btn {
+    min-width: 260px;
+    height: 44px;
+    padding: 0 28px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--accent-black);
+    color: var(--surface-light);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-next-btn:hover {
+    background-color: #222222;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+@media (max-width: 768px) {
+    .stepper {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .stepper-line {
+        display: none;
+    }
+
+    .booking-card {
+        padding: 28px 22px;
+    }
+
+    .booking-grid {
+        grid-template-columns: 1fr;
+        row-gap: 18px;
+    }
+
+    .service-option-list,
+    .schedule-inner-box,
+    .confirm-summary-box {
+        margin: 0;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .confirm-grid {
+        grid-template-columns: 1fr;
+        row-gap: 20px;
+    }
+
+    .booking-divider {
+        margin: 32px 0 22px;
+    }
+
+    .booking-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .booking-back-link {
+        text-align: center;
+        padding: 8px 0;
+    }
+
+    .booking-next-btn {
+        width: 100%;
     }
 }

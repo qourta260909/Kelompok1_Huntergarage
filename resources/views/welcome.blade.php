@@ -26,9 +26,9 @@
 
             <nav class="nav" aria-label="Navigasi utama">
                 <div class="nav-links">
-                    <a class="nav-link" href="{{ route('home') }}">Beranda</a>
-                    <a class="nav-link" href="{{ route('user.layanan') }}">Layanan</a>
-                    <a class="nav-link" href="{{ route('user.produk') }}">Produk</a>
+                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Beranda</a>
+                    <a class="nav-link {{ request()->routeIs('user.layanan') ? 'active' : '' }}" href="{{ route('user.layanan') }}">Layanan</a>
+                    <a class="nav-link {{ request()->routeIs('user.produk') ? 'active' : '' }}" href="{{ route('user.produk') }}">Produk</a>
                 </div>
                 @auth
                     <div class="user-dropdown" id="userDropdown">
