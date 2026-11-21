@@ -449,7 +449,7 @@
                                                 Ubah
                                             </button>
 
-                                            <form method="POST" action="{{ route('dashboard.layanan.destroy', $layanan->id) }}" onsubmit="return confirm('Yakin ingin menghapus layanan {{ $layanan->nama_layanan }}?');" style="display:inline;">
+                                            <form method="POST" action="{{ route('dashboard.layanan.destroy', $layanan->id) }}" onsubmit="return confirm({{ json_encode('Yakin ingin menghapus layanan ' . $layanan->nama_layanan . '?') }});" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn-pill-delete">

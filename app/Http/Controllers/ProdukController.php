@@ -84,7 +84,12 @@ class ProdukController extends Controller
             Storage::disk('public')->delete($produk->gambar);
         }
 
-        $produk->delete();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($produk) {
+            \Illuminate\Support\Facades\DB::table('tb_pesanan')->where('produk_id', $produk->id)->update(['produk_id' => null]);
+            \Illuminate\Support\Facades\DB::table('tb_datapesanan')->where('produk_id', $produk->id)->update(['produk_id' => null]);
+            \Illuminate\Support\Facades\DB::table('tb_dataproduk')->where('produk_id', $produk->id)->delete();
+            $produk->delete();
+        });
 
         return redirect()->route('dashboard.produk')->with('success', 'Data produk berhasil dihapus.');
     }

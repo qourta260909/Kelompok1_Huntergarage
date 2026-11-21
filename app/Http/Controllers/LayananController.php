@@ -64,7 +64,12 @@ class LayananController extends Controller
 
     public function destroy(Layanan $layanan)
     {
-        $layanan->delete();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($layanan) {
+            \Illuminate\Support\Facades\DB::table('tb_pesanan')->where('layanan_id', $layanan->id)->update(['layanan_id' => null]);
+            \Illuminate\Support\Facades\DB::table('tb_datapesanan')->where('layanan_id', $layanan->id)->update(['layanan_id' => null]);
+            \Illuminate\Support\Facades\DB::table('tb_jadwalservice')->where('layanan_id', $layanan->id)->update(['layanan_id' => null]);
+            $layanan->delete();
+        });
 
         return redirect()->route('dashboard.layanan')->with('success', 'Data layanan berhasil dihapus.');
     }

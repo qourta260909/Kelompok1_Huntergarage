@@ -610,7 +610,7 @@
                                                 Edit
                                             </button>
 
-                                            <form method="POST" action="{{ route('dashboard.produk.destroy', $produk->id) }}" onsubmit="return confirm('Yakin ingin menghapus produk {{ $produk->nama_produk }}?');" style="display:inline;">
+                                            <form method="POST" action="{{ route('dashboard.produk.destroy', $produk->id) }}" onsubmit="return confirm({{ json_encode('Yakin ingin menghapus produk ' . $produk->nama_produk . '?') }});" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn-pill-delete">

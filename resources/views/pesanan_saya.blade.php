@@ -23,17 +23,17 @@
         .user-panel-layout {
             display: grid;
             grid-template-columns: 245px 1fr;
-            min-height: calc(100vh - 83px);
+            min-height: calc(100vh - 79px);
             flex: 1;
         }
 
         .user-sidebar {
             background-color: #1c1c1e;
             color: #ffffff;
-            padding: 26px 18px;
+            padding: 28px 18px;
             display: flex;
             flex-direction: column;
-            gap: 32px;
+            gap: 28px;
         }
 
         .user-sidebar-profile {
@@ -44,12 +44,12 @@
         }
 
         .user-sidebar-avatar {
-            width: 48px;
-            height: 48px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             background-color: #d4d4d8;
             color: #18181b;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
@@ -58,7 +58,7 @@
         }
 
         .user-sidebar-name {
-            font-size: 14px;
+            font-size: 14.5px;
             font-weight: 700;
             color: #ffffff;
             overflow: hidden;
@@ -80,7 +80,7 @@
             padding: 12px 16px;
             border-radius: 10px;
             color: #a1a1aa;
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 600;
             text-decoration: none;
             background: transparent;
@@ -94,7 +94,7 @@
 
         .user-sidebar-link:hover {
             color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.06);
         }
 
         .user-sidebar-link.active {
@@ -128,7 +128,7 @@
         }
 
         .user-panel-header {
-            padding: 30px 38px 22px;
+            padding: 32px 42px 22px;
         }
 
         .user-panel-title {
@@ -152,30 +152,30 @@
             background-color: #ffffff;
             border-top: 1px solid #d4d4d8;
             border-bottom: 1px solid #d4d4d8;
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             align-items: center;
-            justify-content: flex-start;
-            gap: 28px;
-            padding: 0 38px;
-            overflow-x: auto;
+            padding: 0 42px;
         }
 
         .status-tab-btn {
             position: relative;
             background: transparent;
             border: none;
-            padding: 16px 18px;
+            padding: 16px 12px;
             font-family: inherit;
             font-size: 14.5px;
             font-weight: 600;
-            color: #18181b;
+            color: #52525b;
             cursor: pointer;
             white-space: nowrap;
+            text-align: center;
+            width: 100%;
             transition: color 0.16s ease;
         }
 
         .status-tab-btn:hover {
-            color: #f59e0b;
+            color: #111111;
         }
 
         .status-tab-btn.active {
@@ -186,38 +186,79 @@
         .status-tab-btn.active::after {
             content: '';
             position: absolute;
-            left: 14px;
-            right: 14px;
-            bottom: 10px;
-            height: 2.5px;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 96px;
+            height: 3px;
             background-color: #f59e0b;
-            border-radius: 999px;
+            border-radius: 999px 999px 0 0;
         }
 
         /* Panel Body & Empty State */
         .user-panel-body {
             flex: 1;
-            padding: 28px 38px 48px;
+            padding: 28px 42px 48px;
             display: flex;
             flex-direction: column;
         }
 
         .orders-empty-state {
             flex: 1;
-            min-height: 360px;
+            min-height: 430px;
+            background-color: #ffffff;
+            border: 1px solid #e4e4e7;
+            border-radius: 18px;
+            padding: 72px 32px 48px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            gap: 18px;
+            gap: 14px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        }
+
+        .orders-empty-illustration {
+            margin-top: 12px;
+            margin-bottom: 4px;
         }
 
         .orders-empty-title {
-            font-size: 22px;
+            font-size: 21px;
             font-weight: 700;
             color: #09090b;
             margin: 0;
+        }
+
+        .orders-empty-desc {
+            max-width: 44ch;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #52525b;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .orders-empty-cta {
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 24px;
+            border-radius: 10px;
+            background-color: #111111;
+            color: #ffffff;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.16s ease, transform 0.16s ease;
+        }
+
+        .orders-empty-cta:hover {
+            background-color: #27272a;
+            transform: translateY(-1px);
         }
 
         /* Order List Cards */
@@ -229,21 +270,29 @@
 
         .user-order-item-card {
             background-color: #ffffff;
-            border: 1px solid #d4d4d8;
-            border-radius: 14px;
+            border: 1px solid #e4e4e7;
+            border-radius: 16px;
             padding: 20px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
+            gap: 24px;
             flex-wrap: wrap;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.035);
+            transition: border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .user-order-item-card:hover {
+            border-color: #d4d4d8;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.055);
         }
 
         .user-order-item-left {
             display: flex;
             flex-direction: column;
             gap: 6px;
+            flex: 1;
+            min-width: 240px;
         }
 
         .user-order-item-top {
@@ -254,19 +303,32 @@
         }
 
         .user-order-code {
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 800;
             color: #09090b;
             background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
             padding: 4px 10px;
             border-radius: 7px;
+            letter-spacing: 0.02em;
         }
 
         .user-order-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 11.5px;
             font-weight: 700;
             padding: 4px 12px;
             border-radius: 999px;
+        }
+
+        .user-order-status-pill::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: currentColor;
         }
 
         .user-order-status-pill.waiting {
@@ -285,28 +347,64 @@
         }
 
         .user-order-item-title {
-            font-size: 17px;
+            font-size: 16.5px;
             font-weight: 700;
             color: #09090b;
             margin: 2px 0 0;
+            line-height: 1.35;
+        }
+
+        .user-order-item-meta-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 2px;
         }
 
         .user-order-item-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 12.5px;
+            font-weight: 500;
             color: #52525b;
+        }
+
+        .user-order-item-meta svg {
+            width: 14px;
+            height: 14px;
+            color: #71717a;
+            flex-shrink: 0;
         }
 
         .user-order-item-right {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 10px;
+            gap: 12px;
+        }
+
+        .user-order-price-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1px;
+        }
+
+        .user-order-price-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #71717a;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
         .user-order-item-price {
             font-size: 18px;
             font-weight: 800;
             color: #09090b;
+            font-variant-numeric: tabular-nums;
         }
 
         .user-order-item-actions {
@@ -355,53 +453,64 @@
 
         /* ================= HALAMAN KONFIRMASI (SETELAH CHECKOUT / KLIK DETAIL) ================= */
         .confirm-page-wrap {
-            background-color: #ffffff;
+            background-image: linear-gradient(180deg, rgba(228, 228, 231, 0.88) 0%, rgba(161, 161, 170, 0.72) 40%, rgba(24, 24, 27, 0.65) 100%), url('{{ Vite::asset("resources/images/layanan-hero.png") }}');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             flex: 1;
         }
         .order-hero-banner {
             width: 100%;
-            min-height: 235px;
-            background-image: linear-gradient(90deg, rgba(212, 212, 216, 0.92) 0%, rgba(161, 161, 170, 0.72) 48%, rgba(24, 24, 27, 0.35) 100%), url('{{ Vite::asset("resources/images/layanan-hero.png") }}');
-            background-position: center;
-            background-size: cover;
-            background-repeat: no-repeat;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #d4d4d8;
+            padding-top: 32px;
         }
         .order-hero-inner {
-            width: min(1320px, 100%);
+            width: min(1180px, 100%);
             margin: 0 auto;
-            padding: 34px 42px;
+            padding: 0 28px;
+        }
+        .order-hero-card {
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border: 1.2px solid rgba(212, 212, 216, 0.9);
+            border-radius: 18px;
+            padding: 28px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+        }
+        .order-hero-copy {
+            max-width: 640px;
         }
         .order-hero-title {
-            max-width: 18ch;
-            font-size: clamp(26px, 3vw, 38px);
+            font-size: clamp(24px, 2.8vw, 34px);
             font-weight: 800;
-            line-height: 1.16;
+            line-height: 1.18;
             color: #09090b;
             letter-spacing: -0.02em;
-            margin: 0 0 10px;
+            margin: 0 0 8px;
         }
         .order-hero-desc {
-            max-width: 60ch;
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 500;
-            color: #27272a;
-            line-height: 1.55;
-            margin-bottom: 18px;
+            color: #3f3f46;
+            line-height: 1.6;
+            margin: 0;
         }
         .order-hero-pills {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .hero-pill-amber {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 8px 20px;
+            padding: 9px 20px;
             border-radius: 999px;
             background-color: #f59e0b;
             border: 1.5px solid #18181b;
@@ -414,14 +523,19 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 8px 22px;
+            padding: 9px 22px;
             border-radius: 999px;
-            background-color: #ffffff;
-            border: 1.5px solid #18181b;
-            color: #09090b;
+            background-color: #111111;
+            border: 1.5px solid #111111;
+            color: #ffffff;
             font-size: 12.5px;
             font-weight: 700;
             text-decoration: none;
+            transition: background-color 0.16s ease, transform 0.16s ease;
+        }
+        .hero-pill-white:hover {
+            background-color: #27272a;
+            transform: translateY(-1px);
         }
         .order-success-page {
             max-width: 1180px;
@@ -662,7 +776,13 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            margin-bottom: 42px;
+            max-width: 560px;
+            margin: 0 auto 36px;
+            background-color: #ffffff;
+            border: 1.2px solid #d4d4d8;
+            border-radius: 18px;
+            padding: 28px 24px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
         }
         .success-check-circle {
             width: 74px;
@@ -681,7 +801,7 @@
         .order-content-grid {
             display: grid;
             grid-template-columns: 1.38fr 0.92fr;
-            gap: 54px;
+            gap: 36px;
             align-items: flex-start;
         }
         .detail-card {
@@ -689,6 +809,14 @@
             border: 1.2px solid #d4d4d8;
             border-radius: 18px;
             padding: 26px 28px 24px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+        .next-steps-box {
+            background-color: #ffffff;
+            border: 1.2px solid #d4d4d8;
+            border-radius: 18px;
+            padding: 26px 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
         }
         .detail-card-title { font-size: 17px; font-weight: 800; color: #09090b; }
         .detail-card-subtitle { font-size: 11.5px; color: #71717a; margin-top: 2px; padding-bottom: 10px; border-bottom: 1px solid #e4e4e7; }
@@ -776,6 +904,23 @@
         @media (max-width: 900px) {
             .user-panel-layout {
                 grid-template-columns: 1fr;
+            }
+            .user-panel-header,
+            .user-panel-body {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .status-tabs-bar {
+                padding: 0 12px;
+            }
+            .user-order-item-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .user-order-item-right,
+            .user-order-price-box {
+                align-items: flex-start;
+                width: 100%;
             }
             .bkg-main-card,
             .order-content-grid {
@@ -877,13 +1022,17 @@
         <div class="confirm-page-wrap">
             <section class="order-hero-banner" aria-label="Banner Layanan Hunter Garage">
                 <div class="order-hero-inner">
-                    <h1 class="order-hero-title">Perawatan tepat.<br>Perjalanan lebih nyaman.</h1>
-                    <p class="order-hero-desc">
-                        Isi data kendaraan, pilih layanan yang tepat, tambahkan keluhan jika ada, dan lengkapi jadwal kunjungan sebelum dikirim ke tim bengkel.
-                    </p>
-                    <div class="order-hero-pills">
-                        <span class="hero-pill-amber">{{ ($layananAktif ?? collect())->count() }} layanan tersedia</span>
-                        <a href="{{ route('user.layanan') }}" class="hero-pill-white">Booking servis</a>
+                    <div class="order-hero-card">
+                        <div class="order-hero-copy">
+                            <h1 class="order-hero-title">Perawatan tepat. Perjalanan lebih nyaman.</h1>
+                            <p class="order-hero-desc">
+                                Isi data kendaraan, pilih layanan yang tepat, tambahkan keluhan jika ada, dan lengkapi jadwal kunjungan sebelum dikirim ke tim bengkel.
+                            </p>
+                        </div>
+                        <div class="order-hero-pills">
+                            <span class="hero-pill-amber">{{ ($layananAktif ?? collect())->count() }} layanan tersedia</span>
+                            <a href="{{ route('user.layanan') }}" class="hero-pill-white">Booking servis</a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1130,7 +1279,7 @@
                                 <div class="detail-info-row"><span class="detail-info-key">Id Pesanan</span><strong class="detail-info-val">{{ $kodePesanan }}</strong></div>
                                 <div class="detail-info-row"><span class="detail-info-key">Alamat</span><strong class="detail-info-val">{{ $pesananAktif->alamat ?: 'Jl. Taruna Praja Banjarbaru' }}</strong></div>
                                 <div class="detail-info-row"><span class="detail-info-key">Tanggal, Waktu Transaksi</span><strong class="detail-info-val">{{ $tanggalWaktuTransaksi }}</strong></div>
-                                <div class="detail-info-row"><span class="detail-info-key">Metode Pembayaran</span><strong class="detail-info-val">Transfer Bank BCA</strong></div>
+                                <div class="detail-info-row"><span class="detail-info-key">Metode Pembayaran</span><strong class="detail-info-val">Qris / Tunai</strong></div>
                             </div>
 
                             <div class="detail-total-row">
@@ -1260,12 +1409,18 @@
                                 } elseif ($st === 'proses') {
                                     $filterGroup = 'konfirmasi';
                                     $pillCls = 'waiting';
-                                    $pillLbl = 'Proses';
+                                    $pillLbl = 'Sedang Diproses';
                                 } else {
                                     $filterGroup = 'konfirmasi';
                                     $pillCls = 'waiting';
                                     $pillLbl = 'Menunggu Konfirmasi';
                                 }
+
+                                $jadwalSvc = $item->jadwalService;
+                                $infoKendaraanCard = ($jadwalSvc && ($jadwalSvc->tipe_kendaraan || $jadwalSvc->no_plat_kendaraan))
+                                    ? trim(($jadwalSvc->tipe_kendaraan ?? '') . ($jadwalSvc->no_plat_kendaraan ? ' • ' . $jadwalSvc->no_plat_kendaraan : ''))
+                                    : null;
+                                $labelWaktu = $katItem === 'layanan' ? 'Jadwal Servis' : 'Waktu Transaksi';
                             @endphp
                             <article
                                 class="user-order-item-card"
@@ -1278,11 +1433,32 @@
                                         <span class="user-order-status-pill {{ $pillCls }}">{{ $pillLbl }}</span>
                                     </div>
                                     <h3 class="user-order-item-title">{{ $item->nama_layanan }}</h3>
-                                    <span class="user-order-item-meta">Jadwal: {{ $tglFormat }}</span>
+                                    <div class="user-order-item-meta-group">
+                                        <span class="user-order-item-meta">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                            {{ $labelWaktu }}: {{ $tglFormat }}
+                                        </span>
+                                        @if ($katItem === 'layanan' && $infoKendaraanCard)
+                                            <span class="user-order-item-meta">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                                </svg>
+                                                {{ $infoKendaraanCard }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <div class="user-order-item-right">
-                                    <strong class="user-order-item-price">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</strong>
+                                    <div class="user-order-price-box">
+                                        <span class="user-order-price-label">Total Pembayaran</span>
+                                        <strong class="user-order-item-price">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</strong>
+                                    </div>
                                     <div class="user-order-item-actions">
                                         @if ($katItem === 'layanan')
                                             <a href="{{ route('user.pesanan.pdf', $item->id) }}" class="btn-order-pdf">Unduh Bukti PDF</a>
@@ -1296,7 +1472,7 @@
 
                     <!-- Empty State Sesuai Desain Figma -->
                     <div class="orders-empty-state" id="ordersEmptyState" style="display:none;">
-                        <svg width="160" height="160" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <svg class="orders-empty-illustration" width="170" height="170" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <!-- Lingkaran Latar Abu Muda -->
                             <circle cx="95" cy="95" r="52" fill="#E5E7EB"/>
                             <!-- Titik Dekorasi -->
@@ -1336,6 +1512,12 @@
                         <h2 class="orders-empty-title" id="ordersEmptyTitle">
                             {{ $activeSidebarTab === 'jadwal' ? 'Belum ada Booking Servis yang menunggu konfirmasi' : 'Belum ada Pesanan yang menunggu konfirmasi' }}
                         </h2>
+                        <p class="orders-empty-desc" id="ordersEmptyDesc">
+                            {{ $activeSidebarTab === 'jadwal' ? 'Jadwal booking servis kendaraan kamu akan muncul di sini setelah dikirim.' : 'Pesanan suku cadang dan produk bengkel kamu akan muncul di sini.' }}
+                        </p>
+                        <a href="{{ $activeSidebarTab === 'jadwal' ? route('user.layanan') : route('user.produk') }}" class="orders-empty-cta" id="ordersEmptyCta">
+                            {{ $activeSidebarTab === 'jadwal' ? 'Booking Servis Sekarang' : 'Belanja Produk Sekarang' }}
+                        </a>
                     </div>
                 </div>
             </main>
@@ -1386,6 +1568,8 @@
             const orderCards = Array.from(document.querySelectorAll('.user-order-item-card'));
             const emptyState = document.getElementById('ordersEmptyState');
             const emptyTitle = document.getElementById('ordersEmptyTitle');
+            const emptyDesc = document.getElementById('ordersEmptyDesc');
+            const emptyCta = document.getElementById('ordersEmptyCta');
             const panelTitle = document.getElementById('panelMainTitle');
             const panelSubtitle = document.getElementById('panelMainSubtitle');
 
@@ -1429,6 +1613,30 @@
                         emptyTitle.textContent = 'Belum ada ' + labelJenis + ' yang sudah selesai';
                     } else {
                         emptyTitle.textContent = 'Belum ada ' + labelJenis + ' yang menunggu konfirmasi';
+                    }
+                }
+                if (emptyDesc) {
+                    if (currentMenu === 'jadwal') {
+                        emptyDesc.textContent = currentStatus === 'ditolak'
+                            ? 'Booking servis yang ditolak oleh admin akan tampil di sini.'
+                            : (currentStatus === 'selesai'
+                                ? 'Riwayat booking servis kendaraan yang telah selesai akan tampil di sini.'
+                                : 'Jadwal booking servis kendaraan kamu akan muncul di sini setelah dikirim.');
+                    } else {
+                        emptyDesc.textContent = currentStatus === 'ditolak'
+                            ? 'Pesanan produk yang ditolak atau dibatalkan akan tampil di sini.'
+                            : (currentStatus === 'selesai'
+                                ? 'Pesanan suku cadang yang sudah diambil akan tampil di sini.'
+                                : 'Pesanan suku cadang dan produk bengkel kamu akan muncul di sini.');
+                    }
+                }
+                if (emptyCta) {
+                    if (currentMenu === 'jadwal') {
+                        emptyCta.href = @js(route('user.layanan'));
+                        emptyCta.textContent = 'Booking Servis Sekarang';
+                    } else {
+                        emptyCta.href = @js(route('user.produk'));
+                        emptyCta.textContent = 'Belanja Produk Sekarang';
                     }
                 }
             }

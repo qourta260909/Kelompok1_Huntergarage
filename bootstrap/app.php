@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'logout',
+            'dashboard-pesanan*',
+            'dashboard-layanan*',
+            'dashboard-produk*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

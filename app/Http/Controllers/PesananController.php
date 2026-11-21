@@ -476,6 +476,7 @@ class PesananController extends Controller
 
             $jadwalServiceId = $lockedPesanan->jadwalservice_id;
 
+            DB::table('tb_datapesanan')->where('pesanan_id', $lockedPesanan->id)->delete();
             DB::table('tb_pembayaran')->where('pesanan_id', $lockedPesanan->id)->delete();
             DB::table('tb_riwayatpesanan')->where('pesanan_id', $lockedPesanan->id)->delete();
             $lockedPesanan->delete();
@@ -487,7 +488,8 @@ class PesananController extends Controller
 
         session(['last_order_tab' => $kategoriTab]);
 
-        return back()
+        return redirect()
+            ->route('dashboard.riwayat', ['tab' => $kategoriTab])
             ->with('active_category', $kategoriTab)
             ->with('success', 'Data pesanan berhasil dihapus.');
     }
