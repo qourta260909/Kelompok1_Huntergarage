@@ -21,6 +21,7 @@ class Pesanan extends Model
         'jadwalservice_id',
         'nama_pelanggan',
         'no_telepon',
+        'alamat',
         'kategori',
         'nama_layanan',
         'jadwal_service',

@@ -1128,9 +1128,9 @@
                             <div class="detail-info-list">
                                 <div class="detail-info-row"><span class="detail-info-key">Nama</span><strong class="detail-info-val">{{ $pesananAktif->nama_pelanggan ?: Auth::user()->name }}</strong></div>
                                 <div class="detail-info-row"><span class="detail-info-key">Id Pesanan</span><strong class="detail-info-val">{{ $kodePesanan }}</strong></div>
-                                <div class="detail-info-row"><span class="detail-info-key">Alamat</span><strong class="detail-info-val">Jl. Taruna Praja Banjarbaru</strong></div>
+                                <div class="detail-info-row"><span class="detail-info-key">Alamat</span><strong class="detail-info-val">{{ $pesananAktif->alamat ?: 'Jl. Taruna Praja Banjarbaru' }}</strong></div>
                                 <div class="detail-info-row"><span class="detail-info-key">Tanggal, Waktu Transaksi</span><strong class="detail-info-val">{{ $tanggalWaktuTransaksi }}</strong></div>
-                                <div class="detail-info-row"><span class="detail-info-key">Metode Pembayaran</span><strong class="detail-info-val">Qris / Tunai</strong></div>
+                                <div class="detail-info-row"><span class="detail-info-key">Metode Pembayaran</span><strong class="detail-info-val">Transfer Bank BCA</strong></div>
                             </div>
 
                             <div class="detail-total-row">

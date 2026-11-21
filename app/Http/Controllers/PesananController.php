@@ -136,6 +136,7 @@ class PesananController extends Controller
             ],
             'nama_lengkap' => ['nullable', 'string', 'max:255'],
             'no_telepon' => ['nullable', 'string', 'max:30'],
+            'alamat' => ['nullable', 'required_if:kategori,produk', 'string', 'max:500'],
             'merek' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
             'tahun' => ['nullable', 'integer', 'min:1990', 'max:2030'],
@@ -249,6 +250,7 @@ class PesananController extends Controller
 
             $namaPelanggan = trim((string) ($validated['nama_lengkap'] ?? '')) ?: $user->name;
             $noTelepon = trim((string) ($validated['no_telepon'] ?? '')) ?: null;
+            $alamat = trim((string) ($validated['alamat'] ?? '')) ?: null;
 
             $pesanan = Pesanan::create([
                 'user_id' => $user->id,
@@ -257,6 +259,7 @@ class PesananController extends Controller
                 'jadwalservice_id' => $jadwalServiceId,
                 'nama_pelanggan' => $namaPelanggan,
                 'no_telepon' => $noTelepon,
+                'alamat' => $alamat,
                 'kategori' => $validated['kategori'],
                 'nama_layanan' => $namaItem,
                 'jadwal_service' => $validated['jadwal_service'],
@@ -283,30 +286,28 @@ class PesananController extends Controller
 
     public function index()
     {
-        $daftarPesanan = DB::table('tb_pesanan')
-            ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
-            ->select(
-                'tb_pesanan.*',
-                DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan_tampil')
-            )
-            ->where('tb_pesanan.status', 'baru')
-            ->orderBy('tb_pesanan.id', 'asc')
-            ->get();
+        $daftarPesanan = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk'])
+            ->where('status', 'baru')
+            ->orderBy('id', 'asc')
+            ->get()
+            ->map(function (Pesanan $pesanan) {
+                $pesanan->nama_pelanggan_tampil = $pesanan->nama_pelanggan ?: ($pesanan->user->name ?? 'Pelanggan');
+                return $pesanan;
+            });
 
         return view('dashboard_pesanan', compact('daftarPesanan'));
     }
 
     public function riwayat()
     {
-        $daftarRiwayat = DB::table('tb_pesanan')
-            ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
-            ->select(
-                'tb_pesanan.*',
-                DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan_tampil')
-            )
-            ->whereIn('tb_pesanan.status', ['proses', 'selesai', 'dibatalkan'])
-            ->orderBy('tb_pesanan.id', 'asc')
-            ->get();
+        $daftarRiwayat = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk'])
+            ->whereIn('status', ['proses', 'selesai', 'dibatalkan'])
+            ->orderBy('id', 'asc')
+            ->get()
+            ->map(function (Pesanan $pesanan) {
+                $pesanan->nama_pelanggan_tampil = $pesanan->nama_pelanggan ?: ($pesanan->user->name ?? 'Pelanggan');
+                return $pesanan;
+            });
 
         return view('dashboard_riwayat', compact('daftarRiwayat'));
     }

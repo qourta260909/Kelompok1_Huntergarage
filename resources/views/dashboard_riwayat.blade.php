@@ -128,6 +128,129 @@
         .btn-delete:hover {
             background-color: #fef2f2;
         }
+        .btn-detail-admin {
+            background-color: #f4f4f5;
+            color: #18181b;
+            border: 1.5px solid #d4d4d8;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+        .btn-detail-admin:hover {
+            background-color: #e4e4e7;
+            border-color: #a1a1aa;
+        }
+        .admin-detail-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(9, 9, 11, 0.55);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+        .admin-detail-overlay.active {
+            display: flex;
+        }
+        .admin-detail-modal {
+            width: 100%;
+            max-width: 560px;
+            background-color: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e4e4e7;
+            box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.28);
+            overflow: hidden;
+        }
+        .admin-detail-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e4e4e7;
+            background-color: #fafafa;
+        }
+        .admin-detail-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #09090b;
+            margin: 0;
+        }
+        .admin-detail-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid #d4d4d8;
+            background-color: #ffffff;
+            color: #18181b;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .admin-detail-body {
+            padding: 20px 24px 24px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+        .admin-info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .admin-info-row {
+            display: grid;
+            grid-template-columns: 145px 1fr;
+            gap: 12px;
+            font-size: 13.5px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #e4e4e7;
+        }
+        .admin-info-key {
+            color: #71717a;
+            font-weight: 600;
+        }
+        .admin-info-val {
+            color: #09090b;
+            font-weight: 700;
+            word-break: break-word;
+        }
+        .admin-items-box {
+            border: 1px solid #e4e4e7;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .admin-items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .admin-items-table th {
+            background-color: #f4f4f5;
+            font-size: 12px;
+            font-weight: 700;
+            color: #3f3f46;
+            padding: 10px 14px;
+            text-align: left;
+        }
+        .admin-items-table td {
+            font-size: 13px;
+            font-weight: 600;
+            color: #18181b;
+            padding: 10px 14px;
+            border-top: 1px solid #f4f4f5;
+        }
+        .cell-sub-meta {
+            display: block;
+            font-size: 11.5px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 2px;
+        }
         .alert-success {
             margin-top: 16px;
             padding: 12px 16px;
@@ -258,6 +381,7 @@
                                 <th>ID</th>
                                 <th>Pelanggan</th>
                                 <th id="historyCategoryHeading">Layanan</th>
+                                <th id="historyExtraInfoHeading">Kendaraan</th>
                                 <th>Tanggal, jam</th>
                                 <th>Total</th>
                                 <th>Status</th>
@@ -268,7 +392,8 @@
                             @forelse ($daftarRiwayat ?? [] as $riwayat)
                                 @php
                                     $kategoriRow = $riwayat->kategori ?? 'layanan';
-                                    $kodeBooking = 'BKG-' . str_pad((string) $riwayat->id, 4, '0', STR_PAD_LEFT);
+                                    $prefixKode = $kategoriRow === 'produk' ? 'PSN-' : 'BKG-';
+                                    $kodeBooking = $prefixKode . str_pad((string) $riwayat->id, 4, '0', STR_PAD_LEFT);
                                     $waktuService = $riwayat->jadwal_service ?? $riwayat->created_at;
                                     $carbonWaktu = $waktuService ? \Carbon\Carbon::parse($waktuService)->locale('id') : null;
                                     $tanggalJamFormat = $carbonWaktu
@@ -284,11 +409,58 @@
                                         $badgeClass = 'badge-success';
                                         $statusLabel = $kategoriRow === 'produk' ? 'Sudah Diambil' : 'Sudah Selesai';
                                     }
+
+                                    $jadwalSvc = $riwayat->jadwalService;
+                                    $infoKendaraan = $jadwalSvc
+                                        ? trim(($jadwalSvc->tipe_kendaraan ?? '') . ($jadwalSvc->no_plat_kendaraan ? ' (' . $jadwalSvc->no_plat_kendaraan . ')' : ''))
+                                        : '-';
+                                    $alamatAtauKendaraan = $kategoriRow === 'produk'
+                                        ? ($riwayat->alamat ?: '-')
+                                        : ($infoKendaraan ?: '-');
+
+                                    $itemsPayload = [];
+                                    if ($kategoriRow === 'produk' && $riwayat->details && $riwayat->details->isNotEmpty()) {
+                                        foreach ($riwayat->details as $dt) {
+                                            $itemsPayload[] = [
+                                                'nama' => $dt->nama_item,
+                                                'qty' => (int) $dt->qty,
+                                                'harga' => 'Rp ' . number_format((float) $dt->harga, 0, ',', '.'),
+                                                'subtotal' => 'Rp ' . number_format((float) $dt->subtotal, 0, ',', '.'),
+                                            ];
+                                        }
+                                    } else {
+                                        $itemsPayload[] = [
+                                            'nama' => $riwayat->nama_layanan ?? '-',
+                                            'qty' => 1,
+                                            'harga' => 'Rp ' . number_format((float) $riwayat->total_harga, 0, ',', '.'),
+                                            'subtotal' => 'Rp ' . number_format((float) $riwayat->total_harga, 0, ',', '.'),
+                                        ];
+                                    }
+
+                                    $detailData = [
+                                        'kode' => $kodeBooking,
+                                        'kategori' => ucfirst($kategoriRow),
+                                        'pelanggan' => $riwayat->nama_pelanggan_tampil ?? 'Pelanggan',
+                                        'telepon' => $riwayat->no_telepon ?: '-',
+                                        'alamat' => $riwayat->alamat ?: '-',
+                                        'kendaraan' => $infoKendaraan ?: '-',
+                                        'jadwal' => $tanggalJamFormat,
+                                        'metode' => $kategoriRow === 'produk' ? 'Transfer Bank BCA' : 'QRIS / Tunai',
+                                        'total' => 'Rp ' . number_format((float) $riwayat->total_harga, 0, ',', '.'),
+                                        'status' => $statusLabel,
+                                        'items' => $itemsPayload,
+                                    ];
                                 @endphp
                                 <tr class="history-row" data-kategori="{{ $kategoriRow }}">
                                     <td class="td-bold">{{ $kodeBooking }}</td>
-                                    <td>{{ $riwayat->nama_pelanggan_tampil ?? 'Pelanggan' }}</td>
+                                    <td>
+                                        {{ $riwayat->nama_pelanggan_tampil ?? 'Pelanggan' }}
+                                        @if ($riwayat->no_telepon)
+                                            <span class="cell-sub-meta">{{ $riwayat->no_telepon }}</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $riwayat->nama_layanan ?? '-' }}</td>
+                                    <td>{{ $alamatAtauKendaraan }}</td>
                                     <td>{{ $tanggalJamFormat }}</td>
                                     <td class="td-bold">Rp {{ number_format($riwayat->total_harga, 0, ',', '.') }}</td>
                                     <td>
@@ -296,6 +468,10 @@
                                     </td>
                                     <td>
                                         <div class="history-actions">
+                                            <button type="button" class="btn-detail-admin" onclick='openAdminOrderDetail(@json($detailData))'>
+                                                Detail
+                                            </button>
+
                                             @if ($riwayat->status === 'proses')
                                                 <form method="POST" action="{{ route('dashboard.pesanan.status', $riwayat->id) }}" style="display:inline;">
                                                     @csrf
@@ -325,7 +501,7 @@
                                 </tr>
                             @empty
                                 <tr id="emptyServerRow">
-                                    <td colspan="7" class="empty-state-cell">
+                                    <td colspan="8" class="empty-state-cell">
                                         <div class="empty-state-box">
                                             <div class="empty-state-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -343,7 +519,7 @@
                                 </tr>
                             @endforelse
                             <tr id="emptyFilterRow" style="display:none;">
-                                <td colspan="7" class="empty-state-cell">
+                                <td colspan="8" class="empty-state-cell">
                                     <div class="empty-state-box">
                                         <div class="empty-state-icon">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -371,6 +547,7 @@
     <script>
         const historyTabButtons = document.querySelectorAll('[data-history-tab]');
         const historyCategoryHeading = document.getElementById('historyCategoryHeading');
+        const historyExtraInfoHeading = document.getElementById('historyExtraInfoHeading');
         const historyTableBody = document.getElementById('historyTableBody');
         const searchInput = document.getElementById('searchInput');
         const historyRows = Array.from(document.querySelectorAll('.history-row'));
@@ -402,11 +579,14 @@
             if (historyCategoryHeading) {
                 historyCategoryHeading.textContent = activeCategory === 'produk' ? 'Produk' : 'Layanan';
             }
+            if (historyExtraInfoHeading) {
+                historyExtraInfoHeading.textContent = activeCategory === 'produk' ? 'Alamat' : 'Kendaraan';
+            }
         }
         syncHistoryTabHeadingAndButtons();
 
         function triggerTabAnimation() {
-            [historyTableBody, historyCategoryHeading].forEach((el) => {
+            [historyTableBody, historyCategoryHeading, historyExtraInfoHeading].forEach((el) => {
                 if (!el) return;
                 el.classList.remove('tab-animating');
                 void el.offsetWidth;
@@ -477,7 +657,7 @@
             if (resetPage) currentPage = 1;
 
             if (emptyServerRow) {
-                syncFillerRows(0, 7);
+                syncFillerRows(0, 8);
                 renderPagination(0, 1);
                 return;
             }
@@ -506,7 +686,7 @@
                 emptyFilterRow.style.display = totalItems === 0 ? '' : 'none';
             }
 
-            syncFillerRows(pageRows.length, 7);
+            syncFillerRows(pageRows.length, 8);
             renderPagination(totalItems, totalPages);
         }
 
@@ -530,6 +710,86 @@
         }
 
         filterHistory(true);
+    </script>
+
+    <!-- Modal Detail Riwayat Pesanan Admin -->
+    <div class="admin-detail-overlay" id="adminOrderDetailModal" aria-hidden="true">
+        <div class="admin-detail-modal" role="dialog" aria-modal="true" aria-labelledby="adminDetailModalTitle">
+            <div class="admin-detail-head">
+                <h3 class="admin-detail-title" id="adminDetailModalTitle">Detail Pesanan</h3>
+                <button type="button" class="admin-detail-close" onclick="closeAdminOrderDetail()">&times;</button>
+            </div>
+            <div class="admin-detail-body">
+                <div class="admin-info-grid">
+                    <div class="admin-info-row"><span class="admin-info-key">ID Pesanan</span><span class="admin-info-val" id="admDetailKode">-</span></div>
+                    <div class="admin-info-row"><span class="admin-info-key">Kategori</span><span class="admin-info-val" id="admDetailKategori">-</span></div>
+                    <div class="admin-info-row"><span class="admin-info-key">Nama Pelanggan</span><span class="admin-info-val" id="admDetailPelanggan">-</span></div>
+                    <div class="admin-info-row"><span class="admin-info-key">No. Telepon / WA</span><span class="admin-info-val" id="admDetailTelepon">-</span></div>
+                    <div class="admin-info-row" id="admRowAlamat"><span class="admin-info-key">Alamat Pengiriman</span><span class="admin-info-val" id="admDetailAlamat">-</span></div>
+                    <div class="admin-info-row" id="admRowKendaraan"><span class="admin-info-key">Kendaraan</span><span class="admin-info-val" id="admDetailKendaraan">-</span></div>
+                    <div class="admin-info-row"><span class="admin-info-key">Jadwal / Waktu</span><span class="admin-info-val" id="admDetailJadwal">-</span></div>
+                    <div class="admin-info-row"><span class="admin-info-key">Metode Pembayaran</span><span class="admin-info-val" id="admDetailMetode">-</span></div>
+                    <div class="admin-info-row"><span class="admin-info-key">Status</span><span class="admin-info-val" id="admDetailStatus">-</span></div>
+                    <div class="admin-info-row"><span class="admin-info-key">Total Harga</span><span class="admin-info-val" id="admDetailTotal">-</span></div>
+                </div>
+
+                <div style="font-size:13px; font-weight:800; color:#09090b; margin-bottom:6px;">Rincian Item Pesanan</div>
+                <div class="admin-items-box">
+                    <table class="admin-items-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th style="width:65px; text-align:center;">Qty</th>
+                                <th>Harga</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admDetailItemsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openAdminOrderDetail(data) {
+            const modal = document.getElementById('adminOrderDetailModal');
+            if (!modal || !data) return;
+
+            document.getElementById('admDetailKode').textContent = data.kode || '-';
+            document.getElementById('admDetailKategori').textContent = data.kategori || '-';
+            document.getElementById('admDetailPelanggan').textContent = data.pelanggan || '-';
+            document.getElementById('admDetailTelepon').textContent = data.telepon || '-';
+            document.getElementById('admDetailAlamat').textContent = data.alamat || '-';
+            document.getElementById('admDetailKendaraan').textContent = data.kendaraan || '-';
+            document.getElementById('admDetailJadwal').textContent = data.jadwal || '-';
+            document.getElementById('admDetailMetode').textContent = data.metode || '-';
+            document.getElementById('admDetailStatus').textContent = data.status || '-';
+            document.getElementById('admDetailTotal').textContent = data.total || '-';
+
+            const isProduk = (data.kategori || '').toLowerCase() === 'produk';
+            document.getElementById('admRowAlamat').style.display = isProduk ? '' : 'none';
+            document.getElementById('admRowKendaraan').style.display = isProduk ? 'none' : '';
+
+            const tbody = document.getElementById('admDetailItemsBody');
+            tbody.innerHTML = (data.items || []).map(function (it) {
+                return `
+                    <tr>
+                        <td>${it.nama}</td>
+                        <td style="text-align:center;">${it.qty}</td>
+                        <td>${it.harga}</td>
+                        <td>${it.subtotal}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            modal.classList.add('active');
+        }
+
+        function closeAdminOrderDetail() {
+            const modal = document.getElementById('adminOrderDetailModal');
+            if (modal) modal.classList.remove('active');
+        }
     </script>
 
     <x-logout-modal />

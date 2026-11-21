@@ -215,6 +215,8 @@
                                 <th>ID</th>
                                 <th>Pelanggan</th>
                                 <th>Layanan / Produk</th>
+                                <th>Kendaraan</th>
+                                <th>Alamat</th>
                                 <th>Tanggal, jam</th>
                                 <th>Total</th>
                                 <th>Status</th>
@@ -224,18 +226,25 @@
                             @forelse ($pesananTerbaru as $pesanan)
                                 @php
                                     $kategoriRow = $pesanan->kategori ?? 'layanan';
-                                    $kodeBooking = 'BKG-' . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+                                    $prefixKode = $kategoriRow === 'produk' ? 'PSN-' : 'BKG-';
+                                    $kodeBooking = $prefixKode . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
                                     $waktuService = $pesanan->jadwal_service ?? $pesanan->created_at;
                                     $carbonWaktu = $waktuService ? \Carbon\Carbon::parse($waktuService)->locale('id') : null;
                                     $tanggalJamFormat = $carbonWaktu
                                         ? strtolower($carbonWaktu->translatedFormat('d M Y')) . ', ' . $carbonWaktu->format('H:i')
                                         : '-';
                                     $statusLabel = in_array($pesanan->status, ['baru', 'proses'], true) ? 'Menunggu' : ucfirst($pesanan->status);
+                                    $jadwalSvc = $pesanan->jadwalService;
+                                    $infoKendaraan = $jadwalSvc
+                                        ? trim(($jadwalSvc->tipe_kendaraan ?? '') . ($jadwalSvc->no_plat_kendaraan ? ' (' . $jadwalSvc->no_plat_kendaraan . ')' : ''))
+                                        : '-';
                                 @endphp
                                 <tr class="order-row" data-kategori="{{ $kategoriRow }}">
                                     <td>{{ $kodeBooking }}</td>
                                     <td>{{ $pesanan->nama_pelanggan ?? 'Pelanggan dihapus' }}</td>
                                     <td>{{ $pesanan->nama_layanan ?? '-' }}</td>
+                                    <td>{{ $infoKendaraan ?: '-' }}</td>
+                                    <td>{{ $pesanan->alamat ?: '-' }}</td>
                                     <td>{{ $tanggalJamFormat }}</td>
                                     <td>Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                                     <td>
@@ -244,7 +253,7 @@
                                 </tr>
                             @empty
                                 <tr id="emptyServerRow">
-                                    <td colspan="6" class="empty-state-cell">
+                                    <td colspan="8" class="empty-state-cell">
                                         <div class="empty-state-box">
                                             <div class="empty-state-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -260,7 +269,7 @@
                                 </tr>
                             @endforelse
                             <tr id="emptyFilterRow" style="display:none;">
-                                <td colspan="6" class="empty-state-cell">
+                                <td colspan="8" class="empty-state-cell">
                                     <div class="empty-state-box">
                                         <div class="empty-state-icon">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -357,7 +366,7 @@
             if (resetPage) currentPage = 1;
 
             if (emptyServerRow) {
-                syncFillerRows(0, 6);
+                syncFillerRows(0, 8);
                 renderPagination(0, 1);
                 return;
             }
@@ -383,7 +392,7 @@
                 emptyFilterRow.style.display = totalItems === 0 ? '' : 'none';
             }
 
-            syncFillerRows(pageRows.length, 6);
+            syncFillerRows(pageRows.length, 8);
             renderPagination(totalItems, totalPages);
         }
 
