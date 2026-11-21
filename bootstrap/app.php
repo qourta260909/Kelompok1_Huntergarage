@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'dashboard-pesanan*',
             'dashboard-layanan*',
             'dashboard-produk*',
+            'dashboard-users*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seeder dinonaktifkan. Data admin dan user dikelola secara nyata melalui sistem aplikasi.
+        $this->call([
+            UserSeeder::class,
+        ]);
     }
 }

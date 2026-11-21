@@ -451,91 +451,350 @@
             background-color: #f4f4f5;
         }
 
-        /* ================= HALAMAN KONFIRMASI (SETELAH CHECKOUT / KLIK DETAIL) ================= */
+        /* ================= HALAMAN KONFIRMASI ALA GOJEK SETELAH BAYAR ================= */
         .confirm-page-wrap {
-            background-image: linear-gradient(180deg, rgba(228, 228, 231, 0.88) 0%, rgba(161, 161, 170, 0.72) 40%, rgba(24, 24, 27, 0.65) 100%), url('{{ Vite::asset("resources/images/layanan-hero.png") }}');
+            background-image: linear-gradient(180deg, rgba(24, 24, 27, 0.52) 0%, rgba(24, 24, 27, 0.72) 100%), url('{{ Vite::asset("resources/images/layanan-hero.png") }}');
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
             flex: 1;
+            padding: 34px 20px 64px;
         }
-        .order-hero-banner {
-            width: 100%;
-            padding-top: 32px;
-        }
-        .order-hero-inner {
-            width: min(1180px, 100%);
+        .gojek-receipt-shell {
+            max-width: 700px;
             margin: 0 auto;
-            padding: 0 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
-        .order-hero-card {
-            background-color: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(8px);
-            border: 1.2px solid rgba(212, 212, 216, 0.9);
-            border-radius: 18px;
-            padding: 28px 32px;
+        .gojek-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #e4e4e7;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+            overflow: hidden;
+        }
+        .gojek-status-head {
+            padding: 24px 26px 20px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .gojek-status-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .gojek-status-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .gojek-status-circle.done { background-color: #dcfce7; color: #15803d; }
+        .gojek-status-circle.waiting { background-color: #fef3c7; color: #b45309; }
+        .gojek-status-circle.rejected { background-color: #fee2e2; color: #b91c1c; }
+        .gojek-status-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: #09090b;
+            margin: 0 0 3px;
+            line-height: 1.25;
+        }
+        .gojek-status-sub {
+            font-size: 13px;
+            font-weight: 500;
+            color: #52525b;
+            margin: 0;
+        }
+        .gojek-code-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #09090b;
+        }
+        .gojek-copy-btn {
+            background: transparent;
+            border: none;
+            color: #52525b;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            padding: 2px;
+        }
+        .gojek-copy-btn:hover { color: #09090b; }
+
+        /* Horizontal Gojek Tracker */
+        .gojek-tracker {
+            padding: 18px 26px 24px;
+            border-top: 1px solid #f4f4f5;
+            background-color: #fafafa;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            position: relative;
+        }
+        .gojek-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .gojek-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: calc(50% + 18px);
+            right: calc(-50% + 18px);
+            height: 3px;
+            background-color: #e4e4e7;
+            z-index: 0;
+        }
+        .gojek-step.done:not(:last-child)::after {
+            background-color: #16a34a;
+        }
+        .gojek-step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e4e4e7;
+            color: #71717a;
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        .gojek-step.done .gojek-step-dot {
+            background-color: #16a34a;
+            color: #ffffff;
+        }
+        .gojek-step.active .gojek-step-dot {
+            background-color: #111111;
+            color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.12);
+        }
+        .gojek-step-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #71717a;
+            line-height: 1.3;
+        }
+        .gojek-step.done .gojek-step-label,
+        .gojek-step.active .gojek-step-label {
+            color: #09090b;
+        }
+        .gojek-rejected-bar {
+            padding: 14px 26px;
+            background-color: #fef2f2;
+            border-top: 1px solid #fecaca;
+            color: #991b1b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Merchant & Receipt Body */
+        .gojek-merchant-row {
+            padding: 20px 26px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 24px;
+            gap: 14px;
             flex-wrap: wrap;
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
         }
-        .order-hero-copy {
-            max-width: 640px;
+        .gojek-merchant-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .order-hero-title {
-            font-size: clamp(24px, 2.8vw, 34px);
+        .gojek-merchant-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
+            padding: 5px;
+            object-fit: contain;
+        }
+        .gojek-merchant-name {
+            font-size: 15px;
             font-weight: 800;
-            line-height: 1.18;
             color: #09090b;
-            letter-spacing: -0.02em;
-            margin: 0 0 8px;
-        }
-        .order-hero-desc {
-            font-size: 13.5px;
-            font-weight: 500;
-            color: #3f3f46;
-            line-height: 1.6;
             margin: 0;
         }
-        .order-hero-pills {
+        .gojek-merchant-addr {
+            font-size: 12px;
+            font-weight: 500;
+            color: #71717a;
+            margin: 2px 0 0;
+        }
+        .gojek-type-tag {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background-color: #f4f4f5;
+            color: #18181b;
+        }
+        .gojek-receipt-divider {
+            position: relative;
+            border-top: 1.5px dashed #d4d4d8;
+            margin: 0 26px;
+        }
+        .gojek-section {
+            padding: 20px 26px;
+        }
+        .gojek-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #71717a;
+            margin: 0 0 14px;
+        }
+        .gojek-item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .gojek-item-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+        }
+        .gojek-item-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .gojek-qty-badge {
+            min-width: 26px;
+            height: 24px;
+            padding: 0 6px;
+            border-radius: 6px;
+            background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
+            font-size: 12px;
+            font-weight: 800;
+            color: #09090b;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .gojek-item-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #09090b;
+            line-height: 1.35;
+        }
+        .gojek-item-sub {
+            font-size: 12px;
+            color: #71717a;
+            margin-top: 2px;
+        }
+        .gojek-item-price {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #09090b;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+        .gojek-kv-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .gojek-kv-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            font-size: 13px;
+        }
+        .gojek-kv-key { color: #71717a; font-weight: 500; }
+        .gojek-kv-val { color: #09090b; font-weight: 700; text-align: right; }
+        .gojek-total-box {
+            margin: 0 26px 20px;
+            padding: 16px 20px;
+            border-radius: 14px;
+            background-color: #f4f4f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .gojek-total-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #18181b;
+        }
+        .gojek-total-amount {
+            font-size: 21px;
+            font-weight: 800;
+            color: #09090b;
+            font-variant-numeric: tabular-nums;
+        }
+        .gojek-actions-bar {
+            padding: 0 26px 24px;
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
         }
-        .hero-pill-amber {
+        .gojek-btn-primary {
+            flex: 1;
+            min-width: 170px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 9px 20px;
-            border-radius: 999px;
-            background-color: #f59e0b;
-            border: 1.5px solid #18181b;
-            color: #09090b;
-            font-size: 12.5px;
-            font-weight: 700;
-            text-decoration: none;
-        }
-        .hero-pill-white {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 9px 22px;
+            gap: 8px;
+            padding: 12px 20px;
             border-radius: 999px;
             background-color: #111111;
-            border: 1.5px solid #111111;
             color: #ffffff;
-            font-size: 12.5px;
+            font-size: 13.5px;
             font-weight: 700;
             text-decoration: none;
-            transition: background-color 0.16s ease, transform 0.16s ease;
+            transition: background-color 0.16s ease;
         }
-        .hero-pill-white:hover {
-            background-color: #27272a;
-            transform: translateY(-1px);
+        .gojek-btn-primary:hover { background-color: #27272a; }
+        .gojek-btn-outline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            background-color: #ffffff;
+            border: 1.5px solid #d4d4d8;
+            color: #09090b;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background-color 0.16s ease, border-color 0.16s ease;
+        }
+        .gojek-btn-outline:hover {
+            background-color: #f4f4f5;
+            border-color: #a1a1aa;
         }
         .order-success-page {
             max-width: 1180px;
@@ -1014,91 +1273,75 @@
     </header>
 
     @if ($pesananDetail)
-        {{-- ================= TAMPILAN BUKTI KONFIRMASI SETELAH CHECKOUT / KLIK DETAIL ================= --}}
+        {{-- ================= TAMPILAN STRUK & TRACKING ALA GOJEK SETELAH BAYAR ================= --}}
         @php
             $pesananAktif = $pesananDetail;
             $isLayananView = ($pesananAktif->kategori ?? 'layanan') === 'layanan';
+            $kodeTransaksi = ($isLayananView ? 'BKG-' : 'PSN-') . str_pad((string) $pesananAktif->id, 4, '0', STR_PAD_LEFT);
+            $statusPesanan = $pesananAktif->status ?? 'baru';
+
+            $waktuPesanan = $pesananAktif->jadwal_service ?? $pesananAktif->created_at;
+            $carbonWaktu = $waktuPesanan ? \Carbon\Carbon::parse($waktuPesanan)->locale('id') : null;
+            $tanggalWaktuTransaksi = $carbonWaktu ? $carbonWaktu->translatedFormat('j F Y, H:i') . ' WITA' : '-';
+
+            if ($statusPesanan === 'selesai') {
+                $statusCircleClass = 'done';
+                $statusHeadline = $isLayananView ? 'Servis kendaraan selesai' : 'Pesanan sudah diambil';
+                $statusSubtext = $isLayananView
+                    ? 'Terima kasih telah mempercayakan servis di Hunter Garage.'
+                    : 'Terima kasih telah berbelanja suku cadang di Hunter Garage.';
+            } elseif ($statusPesanan === 'proses') {
+                $statusCircleClass = 'waiting';
+                $statusHeadline = $isLayananView ? 'Jadwal servis dikonfirmasi' : 'Pesanan sedang disiapkan';
+                $statusSubtext = $isLayananView
+                    ? 'Silakan datang ke bengkel sesuai jadwal kunjungan Anda.'
+                    : 'Pesanan Anda sedang disiapkan untuk diambil di bengkel.';
+            } elseif ($statusPesanan === 'dibatalkan') {
+                $statusCircleClass = 'rejected';
+                $statusHeadline = $isLayananView ? 'Booking servis ditolak' : 'Pesanan ditolak';
+                $statusSubtext = 'Mohon maaf, pesanan ini tidak dapat diproses oleh bengkel.';
+            } else {
+                $statusCircleClass = 'waiting';
+                $statusHeadline = $isLayananView ? 'Booking berhasil dikirim' : 'Pembayaran berhasil dicatat';
+                $statusSubtext = 'Pesanan sudah masuk dan menunggu konfirmasi admin bengkel.';
+            }
+
+            $step2State = in_array($statusPesanan, ['proses', 'selesai'], true) ? 'done' : 'active';
+            $step3State = $statusPesanan === 'selesai' ? 'done' : ($statusPesanan === 'proses' ? 'active' : '');
         @endphp
         <div class="confirm-page-wrap">
-            <section class="order-hero-banner" aria-label="Banner Layanan Hunter Garage">
-                <div class="order-hero-inner">
-                    <div class="order-hero-card">
-                        <div class="order-hero-copy">
-                            <h1 class="order-hero-title">Perawatan tepat. Perjalanan lebih nyaman.</h1>
-                            <p class="order-hero-desc">
-                                Isi data kendaraan, pilih layanan yang tepat, tambahkan keluhan jika ada, dan lengkapi jadwal kunjungan sebelum dikirim ke tim bengkel.
-                            </p>
-                        </div>
-                        <div class="order-hero-pills">
-                            <span class="hero-pill-amber">{{ ($layananAktif ?? collect())->count() }} layanan tersedia</span>
-                            <a href="{{ route('user.layanan') }}" class="hero-pill-white">Booking servis</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <main class="order-success-page">
-                @if ($isLayananView)
-                    @php
-                        $kodeBooking = 'BKG-' . str_pad((string) $pesananAktif->id, 4, '0', STR_PAD_LEFT);
-                        $jadwalRow = $pesananAktif->jadwalService;
-                        $rawTipe = trim((string) ($jadwalRow->tipe_kendaraan ?? ''));
-                        $namaKendaraan = '-';
-                        $tahunKendaraan = '-';
-
-                        if ($rawTipe !== '') {
-                            if (preg_match('/^(.*?)\s*\b((?:19|20)\d{2})\b$/', $rawTipe, $matches)) {
-                                $namaKendaraan = trim($matches[1]) ?: $rawTipe;
-                                $tahunKendaraan = $matches[2];
-                            } else {
-                                $namaKendaraan = $rawTipe;
-                            }
-                        }
-
-                        $platNomor = ($jadwalRow && !empty($jadwalRow->no_plat_kendaraan))
-                            ? $jadwalRow->no_plat_kendaraan
-                            : '-';
-
-                        $waktuPesanan = $pesananAktif->jadwal_service ?? $pesananAktif->created_at;
-                        $carbonWaktu = $waktuPesanan ? \Carbon\Carbon::parse($waktuPesanan)->locale('id') : null;
-                        $tanggalBooking = $carbonWaktu ? $carbonWaktu->translatedFormat('j F Y') : '-';
-                        $jamBooking = $carbonWaktu ? ($carbonWaktu->format('H.i') . ' WITA') : '-';
-
-                        $statusPesanan = $pesananAktif->status ?? 'baru';
-                        if ($statusPesanan === 'selesai') {
-                            $pillClass = 'done';
-                            $pillText = 'Jadwal Dikonfirmasi';
-                        } elseif ($statusPesanan === 'dibatalkan') {
-                            $pillClass = 'rejected';
-                            $pillText = 'Booking Ditolak';
-                        } else {
-                            $pillClass = 'waiting';
-                            $pillText = 'Menunggu Konfirmasi';
-                        }
-                    @endphp
-
-                    <div class="bkg-top-banner">
-                        <div class="bkg-top-left">
-                            <div class="bkg-calendar-circle" aria-hidden="true">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                    <path d="m11 16 2 2 4-4"></path>
-                                </svg>
+            <main class="gojek-receipt-shell">
+                {{-- Card 1: Status & Progress Tracker --}}
+                <section class="gojek-card" aria-label="Status Pesanan">
+                    <div class="gojek-status-head">
+                        <div class="gojek-status-left">
+                            <div class="gojek-status-circle {{ $statusCircleClass }}" aria-hidden="true">
+                                @if ($statusPesanan === 'dibatalkan')
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                @elseif ($statusPesanan === 'selesai')
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                @else
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                @endif
                             </div>
-                            <div class="bkg-top-divider" aria-hidden="true"></div>
-                            <div class="bkg-top-text">
-                                <h2>Booking Berhasil dikirim</h2>
-                                <p>Jadwal servis kamu sudah terdaftar. Silakan simpan kode berikut</p>
+                            <div>
+                                <h1 class="gojek-status-title">{{ $statusHeadline }}</h1>
+                                <p class="gojek-status-sub">{{ $statusSubtext }}</p>
                             </div>
                         </div>
 
-                        <div class="bkg-code-box">
-                            <span class="bkg-code-text" id="bookingCodeValue">{{ $kodeBooking }}</span>
-                            <button type="button" class="bkg-copy-btn" onclick="copyBookingCode()" title="Salin Kode Booking">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <div class="gojek-code-pill">
+                            <span id="bookingCodeValue">{{ $kodeTransaksi }}</span>
+                            <button type="button" class="gojek-copy-btn" onclick="copyBookingCode()" title="Salin Kode">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                                 </svg>
@@ -1106,229 +1349,150 @@
                         </div>
                     </div>
 
-                    <div class="bkg-main-card">
-                        <section class="bkg-detail-col" aria-label="Detail Booking">
-                            <div class="bkg-detail-header">
-                                <h3 class="bkg-detail-title">Detail Booking</h3>
-                                <span class="bkg-status-pill {{ $pillClass }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                    </svg>
-                                    {{ $pillText }}
-                                </span>
-                            </div>
-
-                            <div class="bkg-rows-list">
-                                <div class="bkg-row"><span class="bkg-row-key">Id booking</span><strong class="bkg-row-val">{{ $kodeBooking }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Kendaraan</span><strong class="bkg-row-val">{{ $namaKendaraan }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Tahun</span><strong class="bkg-row-val">{{ $tahunKendaraan }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Plat Nomor</span><strong class="bkg-row-val">{{ $platNomor }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Layanan</span><strong class="bkg-row-val">{{ $pesananAktif->nama_layanan ?? '-' }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Tanggal</span><strong class="bkg-row-val">{{ $tanggalBooking }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Waktu</span><strong class="bkg-row-val">{{ $jamBooking }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Nama</span><strong class="bkg-row-val">{{ $pesananAktif->nama_pelanggan ?: Auth::user()->name }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Nomor WhatsApp</span><strong class="bkg-row-val">{{ $pesananAktif->no_telepon ?: '-' }}</strong></div>
-                                <div class="bkg-row"><span class="bkg-row-key">Metode Pembayaran</span><strong class="bkg-row-val">Qris</strong></div>
-                            </div>
-
-                            <div class="bkg-detail-bottom">
-                                <div class="bkg-total-bar">
-                                    <span class="bkg-total-label">Total</span>
-                                    <span class="bkg-total-val">Rp{{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</span>
-                                </div>
-
-                                <div class="bkg-actions-row">
-                                    <a href="{{ route('user.pesanan.pdf', $pesananAktif->id) }}" class="btn-simpan-bukti">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="7 10 12 15 17 10"></polyline>
-                                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                                        </svg>
-                                        Simpan Bukti Booking
-                                    </a>
-
-                                    <a href="{{ route('home') }}" class="btn-kembali-beranda">Kembali Ke Beranda</a>
-                                </div>
-                            </div>
-                        </section>
-
-                        <aside class="bkg-steps-col" aria-label="Langkah Selanjutnya">
-                            <div>
-                                <h3 class="bkg-steps-title">Langkah Selanjutnya</h3>
-                                <p class="bkg-steps-sub">Ikuti Langkah Berikut Untuk Proses<br>Service</p>
-
-                                <div class="bkg-timeline">
-                                    <div class="bkg-timeline-item">
-                                        <span class="bkg-timeline-circle">1</span>
-                                        <div>
-                                            <strong class="bkg-timeline-heading">Admin akan mengkonfirmasikan<br>Jadwal</strong>
-                                            <span class="bkg-timeline-desc">Kami akan Menghubungi anda lewat<br>whatsApp</span>
-                                        </div>
-                                    </div>
-                                    <div class="bkg-timeline-item">
-                                        <span class="bkg-timeline-circle">2</span>
-                                        <div>
-                                            <strong class="bkg-timeline-heading">Datang sesuai jadwal yang di<br>setujui</strong>
-                                            <span class="bkg-timeline-desc">Pastikan datang tepat waktu</span>
-                                        </div>
-                                    </div>
-                                    <div class="bkg-timeline-item">
-                                        <span class="bkg-timeline-circle">3</span>
-                                        <div>
-                                            <strong class="bkg-timeline-heading">Tunjukan Kode booking</strong>
-                                            <span class="bkg-timeline-desc">Tunjukan Kode booking yang kami kirim<br>ke pada anda</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="bkg-info-note">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                                </svg>
-                                <span>Simpan bukti booking untuk memudahkan pengecekan</span>
-                            </div>
-                        </aside>
-                    </div>
-                @else
-                    @php
-                        $kodePesanan = 'PSN-' . str_pad((string) $pesananAktif->id, 4, '0', STR_PAD_LEFT);
-                        $detailDeskripsi = ($pesananAktif->produk)
-                            ? ($pesananAktif->produk->deskripsi ?: ($pesananAktif->produk->kategori ?: 'Suku Cadang Resmi'))
-                            : 'Suku Cadang Resmi';
-
-                        $waktuPesanan = $pesananAktif->jadwal_service ?? $pesananAktif->created_at;
-                        $carbonWaktu = $waktuPesanan ? \Carbon\Carbon::parse($waktuPesanan)->locale('id') : null;
-                        $tanggalWaktuTransaksi = $carbonWaktu
-                            ? $carbonWaktu->translatedFormat('j F Y, H:i')
-                            : '-';
-
-                        $statusPesanan = $pesananAktif->status ?? 'baru';
-                        if ($statusPesanan === 'selesai') {
-                            $statusClass = 'status-done';
-                            $statusText = 'Pesanan Dikonfirmasi';
-                        } elseif ($statusPesanan === 'dibatalkan') {
-                            $statusClass = 'status-rejected';
-                            $statusText = 'Pesanan Ditolak';
-                        } else {
-                            $statusClass = 'status-waiting';
-                            $statusText = 'Menunggu Konfirmasi';
-                        }
-                    @endphp
-
-                    <div class="success-top-center">
-                        <div class="success-check-circle" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
+                    @if ($statusPesanan === 'dibatalkan')
+                        <div class="gojek-rejected-bar">
+                            Status: Ditolak — Silakan buat pesanan atau booking baru melalui katalog jika diperlukan.
                         </div>
-                        <h2 class="success-main-heading">Pemesanan berhasil</h2>
-                        <p class="success-sub-heading">Pesananmu sudah masuk dan menunggu konfirmasi</p>
-                        <p class="success-order-id">ID pesanan:{{ $kodePesanan }}</p>
+                    @else
+                        <div class="gojek-tracker" aria-label="Progres Pesanan">
+                            <div class="gojek-step done">
+                                <div class="gojek-step-dot">&#10003;</div>
+                                <span class="gojek-step-label">{{ $isLayananView ? 'Booking Masuk' : 'Pesanan Masuk' }}</span>
+                            </div>
+                            <div class="gojek-step {{ $step2State }}">
+                                <div class="gojek-step-dot">{{ $step2State === 'done' ? '✓' : '2' }}</div>
+                                <span class="gojek-step-label">{{ $isLayananView ? 'Dikonfirmasi' : 'Disiapkan' }}</span>
+                            </div>
+                            <div class="gojek-step {{ $step3State }}">
+                                <div class="gojek-step-dot">{{ $step3State === 'done' ? '✓' : '3' }}</div>
+                                <span class="gojek-step-label">{{ $isLayananView ? 'Servis Selesai' : 'Sudah Diambil' }}</span>
+                            </div>
+                        </div>
+                    @endif
+                </section>
+
+                {{-- Card 2: Struk & Rincian Pesanan --}}
+                <section class="gojek-card" aria-label="Struk Detail Pesanan">
+                    <div class="gojek-merchant-row">
+                        <div class="gojek-merchant-left">
+                            <img src="{{ asset('images/logo.png') }}" alt="Hunter Garage" class="gojek-merchant-logo">
+                            <div>
+                                <h2 class="gojek-merchant-name">Hunter Garage</h2>
+                                <p class="gojek-merchant-addr">Jl. Taruna Praja Banjarbaru</p>
+                            </div>
+                        </div>
+                        <span class="gojek-type-tag">{{ $isLayananView ? 'Booking Servis' : 'Ambil di Bengkel' }}</span>
                     </div>
 
-                    <div class="order-content-grid">
-                        <section class="detail-card" aria-label="Detail Pesanan">
-                            <h3 class="detail-card-title">Detail Pesanan</h3>
-                            <p class="detail-card-subtitle">Berikut informasi lengkap pesanan kamu</p>
+                    <div class="gojek-receipt-divider"></div>
 
-                            <table class="detail-items-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width:36px;">No</th>
-                                        <th>Nama</th>
-                                        <th>detail</th>
-                                        <th>Harga</th>
-                                        <th style="width:64px; text-align:center;">Jumlah</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if ($pesananAktif->details && $pesananAktif->details->isNotEmpty())
-                                        @foreach ($pesananAktif->details as $idx => $detailItem)
-                                            @php
-                                                $produkDetailRef = $detailItem->produk;
-                                                $ketDetail = $produkDetailRef
-                                                    ? ($produkDetailRef->deskripsi ?: ($produkDetailRef->kategori ?: 'Suku Cadang Resmi'))
-                                                    : $detailDeskripsi;
-                                            @endphp
-                                            <tr>
-                                                <td>{{ $idx + 1 }}.</td>
-                                                <td>{{ $detailItem->nama_item }}</td>
-                                                <td>{{ $ketDetail }}</td>
-                                                <td>Rp {{ number_format($detailItem->harga, 0, ',', '.') }}</td>
-                                                <td style="text-align:center;">{{ $detailItem->qty }}</td>
-                                            </tr>
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td>1.</td>
-                                            <td>{{ $pesananAktif->nama_layanan ?? '-' }}</td>
-                                            <td>{{ $detailDeskripsi }}</td>
-                                            <td>Rp {{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</td>
-                                            <td style="text-align:center;">1</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
+                    <div class="gojek-section">
+                        <h3 class="gojek-section-title">{{ $isLayananView ? 'Rincian Servis & Kendaraan' : 'Rincian Produk' }}</h3>
 
-                            <div class="detail-info-list">
-                                <div class="detail-info-row"><span class="detail-info-key">Nama</span><strong class="detail-info-val">{{ $pesananAktif->nama_pelanggan ?: Auth::user()->name }}</strong></div>
-                                <div class="detail-info-row"><span class="detail-info-key">Id Pesanan</span><strong class="detail-info-val">{{ $kodePesanan }}</strong></div>
-                                <div class="detail-info-row"><span class="detail-info-key">Alamat</span><strong class="detail-info-val">{{ $pesananAktif->alamat ?: 'Jl. Taruna Praja Banjarbaru' }}</strong></div>
-                                <div class="detail-info-row"><span class="detail-info-key">Tanggal, Waktu Transaksi</span><strong class="detail-info-val">{{ $tanggalWaktuTransaksi }}</strong></div>
-                                <div class="detail-info-row"><span class="detail-info-key">Metode Pembayaran</span><strong class="detail-info-val">Qris / Tunai</strong></div>
+                        @if ($isLayananView)
+                            @php
+                                $jadwalRow = $pesananAktif->jadwalService;
+                                $rawTipe = trim((string) ($jadwalRow->tipe_kendaraan ?? ''));
+                                $namaKendaraan = '-';
+                                $tahunKendaraan = '-';
+
+                                if ($rawTipe !== '') {
+                                    if (preg_match('/^(.*?)\s*\b((?:19|20)\d{2})\b$/', $rawTipe, $matches)) {
+                                        $namaKendaraan = trim($matches[1]) ?: $rawTipe;
+                                        $tahunKendaraan = $matches[2];
+                                    } else {
+                                        $namaKendaraan = $rawTipe;
+                                    }
+                                }
+
+                                $platNomor = ($jadwalRow && !empty($jadwalRow->no_plat_kendaraan))
+                                    ? $jadwalRow->no_plat_kendaraan
+                                    : '-';
+                                $tanggalBooking = $carbonWaktu ? $carbonWaktu->translatedFormat('j F Y') : '-';
+                                $jamBooking = $carbonWaktu ? ($carbonWaktu->format('H.i') . ' WITA') : '-';
+                            @endphp
+                            <div class="gojek-kv-list">
+                                <div class="gojek-kv-row"><span class="gojek-kv-key">Layanan</span><span class="gojek-kv-val">{{ $pesananAktif->nama_layanan ?? '-' }}</span></div>
+                                <div class="gojek-kv-row"><span class="gojek-kv-key">Kendaraan</span><span class="gojek-kv-val">{{ $namaKendaraan }} ({{ $tahunKendaraan }})</span></div>
+                                <div class="gojek-kv-row"><span class="gojek-kv-key">Plat Nomor</span><span class="gojek-kv-val">{{ $platNomor }}</span></div>
+                                <div class="gojek-kv-row"><span class="gojek-kv-key">Jadwal Kunjungan</span><span class="gojek-kv-val">{{ $tanggalBooking }}, {{ $jamBooking }}</span></div>
                             </div>
-
-                            <div class="detail-total-row">
-                                <span class="detail-total-label">Total</span>
-                                <span class="detail-total-amount">Rp {{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</span>
-                            </div>
-
-                            <div class="detail-card-footer">
-                                <span class="status-indicator {{ $statusClass }}">
-                                    <span class="status-dot"></span>
-                                    {{ $statusText }}
-                                </span>
-
-                                <a href="{{ route('user.pesanan') }}" class="btn-lihat-pesanan">
-                                    Lihat pesanan anda
-                                </a>
-                            </div>
-                        </section>
-
-                        <aside class="next-steps-box" aria-label="Langkah Selanjutnya">
-                            <h3 class="next-steps-title">Langkah Selanjutnya</h3>
-                            <p class="next-steps-sub">Ikuti Langkah Berikut Untuk pemesanan produk</p>
-
-                            <div class="timeline-list">
-                                <div class="timeline-item">
-                                    <span class="timeline-circle">1</span>
-                                    <div>
-                                        <strong class="timeline-step-title">Pesanan Dikonfirmasi</strong>
-                                        <span class="timeline-step-desc">Admin mengkonfirmasi pesanan anda dan mengecek produk</span>
+                        @else
+                            @php
+                                $detailDeskripsi = ($pesananAktif->produk)
+                                    ? ($pesananAktif->produk->deskripsi ?: ($pesananAktif->produk->kategori ?: 'Suku Cadang Resmi'))
+                                    : 'Suku Cadang Resmi';
+                            @endphp
+                            <div class="gojek-item-list">
+                                @if ($pesananAktif->details && $pesananAktif->details->isNotEmpty())
+                                    @foreach ($pesananAktif->details as $detailItem)
+                                        @php
+                                            $produkDetailRef = $detailItem->produk;
+                                            $ketDetail = $produkDetailRef
+                                                ? ($produkDetailRef->deskripsi ?: ($produkDetailRef->kategori ?: 'Suku Cadang Resmi'))
+                                                : $detailDeskripsi;
+                                        @endphp
+                                        <div class="gojek-item-row">
+                                            <div class="gojek-item-left">
+                                                <span class="gojek-qty-badge">{{ $detailItem->qty }}x</span>
+                                                <div>
+                                                    <div class="gojek-item-name">{{ $detailItem->nama_item }}</div>
+                                                    <div class="gojek-item-sub">{{ $ketDetail }}</div>
+                                                </div>
+                                            </div>
+                                            <span class="gojek-item-price">Rp {{ number_format($detailItem->subtotal, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="gojek-item-row">
+                                        <div class="gojek-item-left">
+                                            <span class="gojek-qty-badge">1x</span>
+                                            <div>
+                                                <div class="gojek-item-name">{{ $pesananAktif->nama_layanan ?? '-' }}</div>
+                                                <div class="gojek-item-sub">{{ $detailDeskripsi }}</div>
+                                            </div>
+                                        </div>
+                                        <span class="gojek-item-price">Rp {{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</span>
                                     </div>
-                                </div>
-                                <div class="timeline-item">
-                                    <span class="timeline-circle">2</span>
-                                    <div>
-                                        <strong class="timeline-step-title">Produk di pesan dan disiapkan</strong>
-                                        <span class="timeline-step-desc">Produk disiapkan oleh tim bengkel sesuai jadwal pengambilan anda</span>
-                                    </div>
-                                </div>
-                                <div class="timeline-item">
-                                    <span class="timeline-circle">3</span>
-                                    <div>
-                                        <strong class="timeline-step-title">Terima dan periksa pesanan</strong>
-                                        <span class="timeline-step-desc">Terima produk dan mengkonfirmasi pesanan anda</span>
-                                    </div>
-                                </div>
+                                @endif
                             </div>
-                        </aside>
+                        @endif
                     </div>
-                @endif
+
+                    <div class="gojek-receipt-divider"></div>
+
+                    <div class="gojek-section">
+                        <h3 class="gojek-section-title">Detail Transaksi</h3>
+                        <div class="gojek-kv-list">
+                            <div class="gojek-kv-row"><span class="gojek-kv-key">Nama Pelanggan</span><span class="gojek-kv-val">{{ $pesananAktif->nama_pelanggan ?: Auth::user()->name }}</span></div>
+                            @if ($pesananAktif->no_telepon)
+                                <div class="gojek-kv-row"><span class="gojek-kv-key">Nomor WhatsApp</span><span class="gojek-kv-val">{{ $pesananAktif->no_telepon }}</span></div>
+                            @endif
+                            @if (!$isLayananView && $pesananAktif->alamat)
+                                <div class="gojek-kv-row"><span class="gojek-kv-key">Alamat</span><span class="gojek-kv-val">{{ $pesananAktif->alamat }}</span></div>
+                            @endif
+                            <div class="gojek-kv-row"><span class="gojek-kv-key">Waktu Transaksi</span><span class="gojek-kv-val">{{ $tanggalWaktuTransaksi }}</span></div>
+                            <div class="gojek-kv-row"><span class="gojek-kv-key">Metode Pembayaran</span><span class="gojek-kv-val">{{ $isLayananView ? 'Qris' : 'Qris / Tunai' }}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="gojek-total-box">
+                        <span class="gojek-total-label">Total Pembayaran</span>
+                        <span class="gojek-total-amount">Rp {{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</span>
+                    </div>
+
+                    <div class="gojek-actions-bar">
+                        <a href="{{ route('user.pesanan', $isLayananView ? ['tab' => 'jadwal'] : []) }}" class="gojek-btn-primary">
+                            {{ $isLayananView ? 'Lihat Booking Saya' : 'Lihat Pesanan Saya' }}
+                        </a>
+                        @if ($isLayananView)
+                            <a href="{{ route('user.pesanan.pdf', $pesananAktif->id) }}" class="gojek-btn-outline">
+                                Unduh Bukti PDF
+                            </a>
+                        @endif
+                        <a href="{{ route('home') }}" class="gojek-btn-outline">Beranda</a>
+                    </div>
+                </section>
             </main>
         </div>
     @else

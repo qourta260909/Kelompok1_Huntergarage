@@ -6,6 +6,7 @@ use App\Http\Controllers\LayananController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,11 @@ Route::middleware(['auth', 'verified', 'admin', PreventBackHistory::class])->gro
     Route::delete('/dashboard-produk/{produk}', [ProdukController::class, 'destroy'])->name('dashboard.produk.destroy');
 
     Route::get('/dashboard-riwayat', [PesananController::class, 'riwayat'])->name('dashboard.riwayat');
+
+    Route::get('/dashboard-users', [UserController::class, 'index'])->name('dashboard.users');
+    Route::post('/dashboard-users', [UserController::class, 'store'])->name('dashboard.users.store');
+    Route::put('/dashboard-users/{user}', [UserController::class, 'update'])->name('dashboard.users.update');
+    Route::delete('/dashboard-users/{user}', [UserController::class, 'destroy'])->name('dashboard.users.destroy');
 });
 
 // Profil akun

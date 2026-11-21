@@ -249,8 +249,8 @@ class PesananController extends Controller
             }
 
             $namaPelanggan = trim((string) ($validated['nama_lengkap'] ?? '')) ?: $user->name;
-            $noTelepon = trim((string) ($validated['no_telepon'] ?? '')) ?: null;
-            $alamat = trim((string) ($validated['alamat'] ?? '')) ?: null;
+            $noTelepon = trim((string) ($validated['no_telepon'] ?? '')) ?: ($user->no_telepon ?: null);
+            $alamat = trim((string) ($validated['alamat'] ?? '')) ?: ($user->alamat ?: null);
 
             $pesanan = Pesanan::create([
                 'user_id' => $user->id,
@@ -276,7 +276,30 @@ class PesananController extends Controller
             return [$pesanan, $namaItem];
         });
 
-        $kodeBooking = 'BKG-' . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+        $prefixKode = $pesanan->kategori === 'produk' ? 'PSN-' : 'BKG-';
+        $kodeBooking = $prefixKode . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+
+        if ($request->expectsJson()) {
+            $pesanan->load('details');
+
+            return response()->json([
+                'ok' => true,
+                'pesanan_id' => $pesanan->id,
+                'kode_pesanan' => $kodeBooking,
+                'nama_pelanggan' => $pesanan->nama_pelanggan,
+                'alamat' => $pesanan->alamat,
+                'total_harga' => (float) $pesanan->total_harga,
+                'waktu_transaksi' => Carbon::parse($pesanan->created_at)->locale('id')->translatedFormat('j F Y, H:i') . ' WITA',
+                'items' => $pesanan->details->map(fn ($d) => [
+                    'nama_item' => $d->nama_item,
+                    'qty' => (int) $d->qty,
+                    'harga' => (float) $d->harga,
+                    'subtotal' => (float) $d->subtotal,
+                ])->values(),
+                'redirect_pesanan_url' => route('user.pesanan'),
+                'redirect_detail_url' => route('user.pesanan', ['detail' => $pesanan->id]),
+            ]);
+        }
 
         return redirect()
             ->route('user.pesanan')

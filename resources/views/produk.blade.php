@@ -686,6 +686,222 @@
             font-weight: 500;
             border-top: 1px solid #e5e7eb;
         }
+        /* Pop-up Setelah Bayar Ala Gojek */
+        .gojek-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 9, 11, 0.62);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 18px;
+        }
+        .gojek-popup-overlay.active {
+            display: flex;
+        }
+        .gojek-popup-card {
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background-color: #ffffff;
+            border-radius: 22px;
+            border: 1px solid #e4e4e7;
+            box-shadow: 0 24px 54px rgba(0, 0, 0, 0.28);
+            animation: gojekPopIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes gojekPopIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .gojek-pop-head {
+            padding: 24px 26px 18px;
+            text-align: center;
+            border-bottom: 1px solid #f4f4f5;
+        }
+        .gojek-pop-check {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #dcfce7;
+            color: #16a34a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .gojek-pop-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #09090b;
+            margin: 0 0 4px;
+        }
+        .gojek-pop-sub {
+            font-size: 13px;
+            color: #52525b;
+            margin: 0 0 12px;
+        }
+        .gojek-pop-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #09090b;
+        }
+        .gojek-pop-tracker {
+            padding: 16px 24px;
+            background-color: #fafafa;
+            border-bottom: 1px solid #f4f4f5;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .gojek-pop-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .gojek-pop-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 13px;
+            left: calc(50% + 16px);
+            right: calc(-50% + 16px);
+            height: 2.5px;
+            background-color: #e4e4e7;
+        }
+        .gojek-pop-step.done:not(:last-child)::after {
+            background-color: #16a34a;
+        }
+        .gojek-pop-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #e4e4e7;
+            color: #71717a;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+        .gojek-pop-step.done .gojek-pop-dot {
+            background-color: #16a34a;
+            color: #ffffff;
+        }
+        .gojek-pop-step.active .gojek-pop-dot {
+            background-color: #111111;
+            color: #ffffff;
+        }
+        .gojek-pop-step-lbl {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #71717a;
+        }
+        .gojek-pop-step.done .gojek-pop-step-lbl,
+        .gojek-pop-step.active .gojek-pop-step-lbl {
+            color: #09090b;
+        }
+        .gojek-pop-body {
+            padding: 18px 26px;
+        }
+        .gojek-pop-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-bottom: 14px;
+            border-bottom: 1.5px dashed #d4d4d8;
+            margin-bottom: 14px;
+        }
+        .gojek-pop-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .gojek-pop-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #09090b;
+            font-weight: 700;
+        }
+        .gojek-pop-qty {
+            background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
+            border-radius: 6px;
+            padding: 2px 7px;
+            font-size: 11.5px;
+            font-weight: 800;
+        }
+        .gojek-pop-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 12.5px;
+        }
+        .gojek-pop-meta-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+        }
+        .gojek-pop-meta-row span { color: #71717a; }
+        .gojek-pop-meta-row strong { color: #09090b; text-align: right; }
+        .gojek-pop-total {
+            margin: 0 26px 18px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background-color: #f4f4f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .gojek-pop-total span { font-size: 13.5px; font-weight: 700; color: #18181b; }
+        .gojek-pop-total strong { font-size: 19px; font-weight: 800; color: #09090b; }
+        .gojek-pop-actions {
+            padding: 0 26px 24px;
+            display: flex;
+            gap: 10px;
+        }
+        .gojek-pop-btn-primary {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 18px;
+            border-radius: 999px;
+            background-color: #111111;
+            color: #ffffff;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .gojek-pop-btn-primary:hover { background-color: #27272a; }
+        .gojek-pop-btn-close {
+            padding: 11px 20px;
+            border-radius: 999px;
+            border: 1.5px solid #d4d4d8;
+            background-color: #ffffff;
+            color: #09090b;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .gojek-pop-btn-close:hover { background-color: #f4f4f5; }
         .cart-toast {
             position: fixed;
             right: 24px;
@@ -1044,7 +1260,7 @@
                             class="cart-address-input"
                             placeholder="Masukkan alamat lengkap pengiriman (Nama jalan, No. rumah, Kecamatan, Kota)..."
                             required
-                        >{{ old('alamat') }}</textarea>
+                        >{{ old('alamat', auth()->user()->alamat ?? '') }}</textarea>
                     </div>
 
                     <!-- Metode Pembayaran: Transfer Bank BCA -->
@@ -1074,6 +1290,57 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Pop-up Setelah Bayar Ala Gojek -->
+        <div class="gojek-popup-overlay" id="gojekPaymentSuccessModal" aria-hidden="true">
+            <div class="gojek-popup-card" role="dialog" aria-modal="true" aria-labelledby="gojekPopTitle">
+                <div class="gojek-pop-head">
+                    <div class="gojek-pop-check" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h2 id="gojekPopTitle" class="gojek-pop-title">Pembayaran Berhasil Dicatat!</h2>
+                    <p class="gojek-pop-sub">Pesanan Anda sudah masuk dan menunggu konfirmasi bengkel.</p>
+                    <span class="gojek-pop-code" id="gojekPopKode">PSN-0000</span>
+                </div>
+
+                <div class="gojek-pop-tracker">
+                    <div class="gojek-pop-step done">
+                        <div class="gojek-pop-dot">&#10003;</div>
+                        <span class="gojek-pop-step-lbl">Pesanan Masuk</span>
+                    </div>
+                    <div class="gojek-pop-step active">
+                        <div class="gojek-pop-dot">2</div>
+                        <span class="gojek-pop-step-lbl">Diproses Bengkel</span>
+                    </div>
+                    <div class="gojek-pop-step">
+                        <div class="gojek-pop-dot">3</div>
+                        <span class="gojek-pop-step-lbl">Siap Diambil</span>
+                    </div>
+                </div>
+
+                <div class="gojek-pop-body">
+                    <div class="gojek-pop-items" id="gojekPopItems"></div>
+                    <div class="gojek-pop-meta">
+                        <div class="gojek-pop-meta-row"><span>Bengkel</span><strong>Hunter Garage • Ambil di Bengkel</strong></div>
+                        <div class="gojek-pop-meta-row"><span>Alamat Pembeli</span><strong id="gojekPopAlamat">-</strong></div>
+                        <div class="gojek-pop-meta-row"><span>Waktu Transaksi</span><strong id="gojekPopWaktu">-</strong></div>
+                        <div class="gojek-pop-meta-row"><span>Metode Pembayaran</span><strong>Transfer Bank BCA</strong></div>
+                    </div>
+                </div>
+
+                <div class="gojek-pop-total">
+                    <span>Total Pembayaran</span>
+                    <strong id="gojekPopTotal">Rp 0</strong>
+                </div>
+
+                <div class="gojek-pop-actions">
+                    <a href="{{ route('user.pesanan') }}" class="gojek-pop-btn-primary" id="gojekPopLihatPesanan">Lihat Pesanan Saya</a>
+                    <button type="button" class="gojek-pop-btn-close" onclick="closeGojekPaymentPopup()">Tutup</button>
+                </div>
             </div>
         </div>
     @endauth
@@ -1322,6 +1589,49 @@
             }
         }
 
+        function showGojekPaymentPopup(data) {
+            const modal = document.getElementById('gojekPaymentSuccessModal');
+            if (!modal) return;
+
+            const kodeEl = document.getElementById('gojekPopKode');
+            const itemsEl = document.getElementById('gojekPopItems');
+            const alamatEl = document.getElementById('gojekPopAlamat');
+            const waktuEl = document.getElementById('gojekPopWaktu');
+            const totalEl = document.getElementById('gojekPopTotal');
+            const linkEl = document.getElementById('gojekPopLihatPesanan');
+
+            if (kodeEl) kodeEl.textContent = data.kode_pesanan || '-';
+            if (alamatEl) alamatEl.textContent = data.alamat || '-';
+            if (waktuEl) waktuEl.textContent = data.waktu_transaksi || '-';
+            if (totalEl) totalEl.textContent = formatRupiah(data.total_harga || 0);
+            if (linkEl && data.redirect_pesanan_url) linkEl.href = data.redirect_pesanan_url;
+
+            if (itemsEl) {
+                const rows = (data.items || []).map(function (item) {
+                    return `
+                        <div class="gojek-pop-item-row">
+                            <div class="gojek-pop-item-left">
+                                <span class="gojek-pop-qty">${item.qty}x</span>
+                                <span>${item.nama_item}</span>
+                            </div>
+                            <span>${formatRupiah(item.subtotal)}</span>
+                        </div>
+                    `;
+                });
+                itemsEl.innerHTML = rows.join('');
+            }
+
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeGojekPaymentPopup() {
+            const modal = document.getElementById('gojekPaymentSuccessModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
         // =====================================================================
         // 4. INISIALISASI SAAT HALAMAN SELESAI DIMUAT
         // =====================================================================
@@ -1346,12 +1656,14 @@
                 });
             }
 
-            // 3. Saat tombol "Bayar" di modal keranjang disubmit
+            // 3. Saat tombol "Bayar" di modal keranjang disubmit -> kirim via AJAX & tampilkan Pop-Up ala Gojek
             const orderForm = document.getElementById('produkOrderForm');
+            const btnCheckoutSubmit = document.getElementById('btnCheckoutSubmit');
             if (orderForm) {
-                orderForm.addEventListener('submit', function (e) {
+                orderForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
                     if (keranjang.length === 0) {
-                        e.preventDefault();
                         alert('Keranjang belanja masih kosong.');
                         return;
                     }
@@ -1361,8 +1673,42 @@
                     const tanggal = sekarang.toISOString().slice(0, 10);
                     document.getElementById('modalJadwalService').value = tanggal + ' 10:00:00';
 
-                    // Bersihkan keranjang setelah berhasil disubmit
-                    localStorage.removeItem(KEY_KERANJANG);
+                    if (btnCheckoutSubmit) {
+                        btnCheckoutSubmit.disabled = true;
+                        btnCheckoutSubmit.textContent = 'Memproses...';
+                    }
+
+                    try {
+                        const formData = new FormData(orderForm);
+                        const response = await fetch(orderForm.action, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: formData,
+                        });
+
+                        const result = await response.json();
+                        if (!response.ok || !result.ok) {
+                            const msg = result.message || (result.errors ? Object.values(result.errors).flat().join('\n') : 'Gagal memproses pesanan.');
+                            alert(msg);
+                            return;
+                        }
+
+                        // Bersihkan keranjang setelah berhasil
+                        keranjang = [];
+                        simpanKeranjang();
+                        closeProdukOrderModal();
+                        showGojekPaymentPopup(result);
+                    } catch (err) {
+                        alert('Terjadi kesalahan jaringan saat memproses pembayaran. Silakan coba lagi.');
+                    } finally {
+                        if (btnCheckoutSubmit) {
+                            btnCheckoutSubmit.disabled = false;
+                            btnCheckoutSubmit.textContent = 'Bayar';
+                        }
+                    }
                 });
             }
 
