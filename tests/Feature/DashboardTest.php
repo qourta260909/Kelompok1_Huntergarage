@@ -106,7 +106,7 @@ class DashboardTest extends TestCase
             'jadwal_service' => '2026-11-05T10:00',
             'total_harga' => '250,000',
             'status' => 'baru',
-        ])->assertRedirect(route('dashboard.pesanan'));
+        ])->assertRedirect(route('dashboard.pesanan', ['tab' => 'layanan']));
 
         // Verify appears in Pesanan page
         $this->actingAs($admin)->get(route('dashboard.pesanan'))
@@ -136,7 +136,7 @@ class DashboardTest extends TestCase
             'jadwal_service' => '2026-11-05T10:00',
             'total_harga' => '250,000',
             'status' => 'selesai',
-        ])->assertRedirect(route('dashboard.pesanan'));
+        ])->assertRedirect(route('dashboard.pesanan', ['tab' => 'layanan']));
 
         // Should disappear from main dashboard list and Pesanan list, and money added to Total Pendapatan
         $this->actingAs($admin)->get(route('dashboard'))
@@ -149,13 +149,13 @@ class DashboardTest extends TestCase
             ->assertOk()
             ->assertDontSee('Budi Santoso');
 
-        // Should appear in Riwayat page with status Diterima
+        // Should appear in Riwayat page with status Sudah Selesai
         $this->actingAs($admin)->get(route('dashboard.riwayat'))
             ->assertOk()
             ->assertSee('BKG-0001')
             ->assertSee('Budi Santoso')
             ->assertSee('Tune Up Mesin')
-            ->assertSee('Diterima');
+            ->assertSee('Sudah Selesai');
 
         // Delete pesanan
         $this->actingAs($admin)->delete(route('dashboard.pesanan.destroy', $pesananId))

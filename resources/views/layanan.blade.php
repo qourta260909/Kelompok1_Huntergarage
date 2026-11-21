@@ -60,7 +60,7 @@
                                     <line x1="8" y1="2" x2="8" y2="6"></line>
                                     <line x1="3" y1="10" x2="21" y2="10"></line>
                                 </svg>
-                                <span>Jadwal Servis Saya</span>
+                                <span>Booking Saya</span>
                             </a>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
@@ -143,7 +143,7 @@
                                 <div class="booking-field">
                                     <label for="merek" class="booking-label">Merek</label>
                                     <div class="booking-select-wrap">
-                                        <select id="merek" name="merek" class="booking-input booking-select">
+                                        <select id="merek" name="merek" class="booking-input booking-select" required>
                                             <option value="" disabled selected>Pilih merek kendaraan</option>
                                             <option value="Honda">Honda</option>
                                             <option value="Yamaha">Yamaha</option>
@@ -160,7 +160,7 @@
                                 <div class="booking-field">
                                     <label for="model" class="booking-label">Model</label>
                                     <div class="booking-select-wrap">
-                                        <select id="model" name="model" class="booking-input booking-select">
+                                        <select id="model" name="model" class="booking-input booking-select" required>
                                             <option value="" disabled selected>Pilih model kendaraan</option>
                                             <option value="Vario 160">Vario 160</option>
                                             <option value="Beat">Beat</option>
@@ -178,7 +178,7 @@
                                 <div class="booking-field">
                                     <label for="tahun" class="booking-label">Tahun</label>
                                     <div class="booking-select-wrap">
-                                        <select id="tahun" name="tahun" class="booking-input booking-select">
+                                        <select id="tahun" name="tahun" class="booking-input booking-select" required>
                                             <option value="" disabled selected>Pilih tahun kendaraan</option>
                                             @for ($year = 2026; $year >= 2010; $year--)
                                                 <option value="{{ $year }}">{{ $year }}</option>
@@ -198,6 +198,7 @@
                                         name="plat_nomor"
                                         class="booking-input"
                                         placeholder="Masukkan plat nomor kendaraan.........."
+                                        required
                                     >
                                 </div>
                             </div>
@@ -279,6 +280,7 @@
                                         class="booking-input"
                                         placeholder="Masukkan Nama lengkap"
                                         value="{{ auth()->check() ? auth()->user()->name : '' }}"
+                                        required
                                     >
                                 </div>
 
@@ -290,13 +292,14 @@
                                         name="no_telepon"
                                         class="booking-input"
                                         placeholder="Contoh:082318****"
+                                        required
                                     >
                                 </div>
 
                                 <div class="booking-field">
                                     <label for="jam_servis" class="booking-label">Jam servis <span style="font-weight:500; color:#71717a; font-size:11.5px;">(08.00 – 22.00 WITA)</span></label>
                                     <div class="booking-select-wrap">
-                                        <select id="jam_servis" name="jam_servis" class="booking-input booking-select">
+                                        <select id="jam_servis" name="jam_servis" class="booking-input booking-select" required>
                                             <option value="" disabled selected>Pilih jam kedatangan</option>
                                             <optgroup label="Pagi">
                                                 <option value="08:00">08.00 WITA (Pagi)</option>
@@ -336,6 +339,7 @@
                                             class="booking-input"
                                             min="{{ now()->toDateString() }}"
                                             value="{{ now()->toDateString() }}"
+                                            required
                                         >
                                     </div>
                                 </div>
@@ -481,8 +485,48 @@
         </div>
     </main>
 
-    <x-user-footer :layanan-aktif="$layananAktif ?? collect()" :produk-aktif="$produkAktif ?? collect()" />
     <script>
+        function validateStepFields(step) {
+            if (step === 1) {
+                const step1Fields = [
+                    document.getElementById('merek'),
+                    document.getElementById('model'),
+                    document.getElementById('tahun'),
+                    document.getElementById('plat_nomor'),
+                ];
+                for (const field of step1Fields) {
+                    if (!field) continue;
+                    if (!field.value || !field.value.trim()) {
+                        field.reportValidity();
+                        field.focus();
+                        return false;
+                    }
+                }
+            } else if (step === 2) {
+                const layananChecked = document.querySelector('input[name="jenis_layanan"]:checked');
+                if (!layananChecked) {
+                    alert('Silakan pilih jenis layanan terlebih dahulu.');
+                    return false;
+                }
+            } else if (step === 3) {
+                const step3Fields = [
+                    document.getElementById('nama_lengkap'),
+                    document.getElementById('no_telepon'),
+                    document.getElementById('jam_servis'),
+                    document.getElementById('tanggal_servis'),
+                ];
+                for (const field of step3Fields) {
+                    if (!field) continue;
+                    if (!field.value || !field.value.trim()) {
+                        field.reportValidity();
+                        field.focus();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         function updateConfirmationSummary() {
             const merek = document.getElementById('merek')?.value || '';
             const model = document.getElementById('model')?.value || '';
@@ -569,6 +613,15 @@
             if (stepNumber < 1 || stepNumber > totalSteps) {
                 return;
             }
+
+            if (stepNumber > currentStep) {
+                for (let s = currentStep; s < stepNumber; s++) {
+                    if (!validateStepFields(s)) {
+                        return;
+                    }
+                }
+            }
+
             currentStep = stepNumber;
 
             if (stepNumber === 4) {

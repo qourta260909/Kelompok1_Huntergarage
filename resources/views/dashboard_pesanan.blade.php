@@ -366,21 +366,32 @@
         const emptyServerRow = document.getElementById('emptyServerRow');
         const paginationControls = document.getElementById('paginationControls');
         const ITEMS_PER_PAGE = 5;
+        const urlTabParam = new URLSearchParams(window.location.search).get('tab');
+        const sessionCategory = @js(session('active_category', session('last_order_tab')));
         const hasLayananRows = orderRows.some((row) => (row.dataset.kategori || 'layanan') === 'layanan');
         const hasProdukRows = orderRows.some((row) => (row.dataset.kategori || 'layanan') === 'produk');
-        let activeCategory = (!hasLayananRows && hasProdukRows) ? 'produk' : 'layanan';
+
+        let activeCategory = 'layanan';
+        if (urlTabParam === 'produk' || urlTabParam === 'layanan') {
+            activeCategory = urlTabParam;
+        } else if (sessionCategory === 'produk' || sessionCategory === 'layanan') {
+            activeCategory = sessionCategory;
+        } else if (!hasLayananRows && hasProdukRows) {
+            activeCategory = 'produk';
+        }
         let currentPage = 1;
 
-        if (activeCategory === 'produk') {
+        function syncTabHeadingAndButtons() {
             orderTabButtons.forEach((tabButton) => {
-                const isActive = tabButton.dataset.orderTab === 'produk';
+                const isActive = tabButton.dataset.orderTab === activeCategory;
                 tabButton.classList.toggle('active', isActive);
                 tabButton.setAttribute('aria-pressed', String(isActive));
             });
             if (orderCategoryHeading) {
-                orderCategoryHeading.textContent = 'Produk';
+                orderCategoryHeading.textContent = activeCategory === 'produk' ? 'Produk' : 'Layanan';
             }
         }
+        syncTabHeadingAndButtons();
 
         function triggerTabAnimation() {
             [orderTableBody, orderCategoryHeading].forEach((el) => {
@@ -492,13 +503,11 @@
                 if (activeCategory === button.dataset.orderTab) return;
                 activeCategory = button.dataset.orderTab;
 
-                orderTabButtons.forEach((tabButton) => {
-                    const isActive = tabButton === button;
-                    tabButton.classList.toggle('active', isActive);
-                    tabButton.setAttribute('aria-pressed', String(isActive));
-                });
+                syncTabHeadingAndButtons();
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', activeCategory);
+                window.history.replaceState(null, '', url.toString());
 
-                orderCategoryHeading.textContent = activeCategory === 'produk' ? 'Produk' : 'Layanan';
                 filterOrders(true);
                 triggerTabAnimation();
             });

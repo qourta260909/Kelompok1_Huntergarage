@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataPesanan;
 use App\Models\JadwalService;
 use App\Models\Layanan;
 use App\Models\Pesanan;
@@ -85,7 +86,7 @@ class PesananController extends Controller
         $userId = $request->user()->id;
         $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
         $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
-        $pesananUser = Pesanan::with(['jadwalService', 'layanan', 'produk'])
+        $pesananUser = Pesanan::with(['jadwalService', 'layanan', 'produk', 'details.produk'])
             ->where('user_id', $userId)
             ->orderBy('id', 'desc')
             ->get();
@@ -121,7 +122,8 @@ class PesananController extends Controller
         $validated = $request->validate([
             'kategori' => ['required', 'in:layanan,produk'],
             'layanan_id' => ['nullable', 'required_if:kategori,layanan', 'exists:tb_layanan,id'],
-            'produk_id' => ['nullable', 'required_if:kategori,produk', 'exists:tb_produk,id'],
+            'produk_id' => ['nullable', 'exists:tb_produk,id'],
+            'cart_items' => ['nullable', 'string'],
             'jadwal_service' => [
                 'required',
                 'date',
@@ -146,6 +148,7 @@ class PesananController extends Controller
             $jadwalServiceId = null;
             $namaItem = '';
             $totalHarga = 0;
+            $orderDetailsToCreate = [];
 
             if ($validated['kategori'] === 'layanan') {
                 $layanan = Layanan::findOrFail($validated['layanan_id']);
@@ -179,22 +182,69 @@ class PesananController extends Controller
                 ]);
                 $jadwalServiceId = $jadwalService->id;
             } else {
-                $produk = Produk::whereKey($validated['produk_id'])->lockForUpdate()->firstOrFail();
-                if ($produk->status !== 'aktif') {
-                    throw ValidationException::withMessages([
-                        'produk_id' => 'Produk yang dipilih sedang tidak aktif.',
-                    ]);
+                $cartList = [];
+                if (!empty($validated['cart_items'])) {
+                    $decoded = json_decode($validated['cart_items'], true);
+                    if (is_array($decoded)) {
+                        foreach ($decoded as $entry) {
+                            $pid = (int) ($entry['id'] ?? $entry['produk_id'] ?? 0);
+                            $qty = max(1, (int) ($entry['qty'] ?? 1));
+                            if ($pid > 0) {
+                                $cartList[$pid] = ($cartList[$pid] ?? 0) + $qty;
+                            }
+                        }
+                    }
+                } elseif (!empty($validated['produk_id'])) {
+                    $cartList[(int) $validated['produk_id']] = 1;
                 }
-                if ($produk->stok <= 0) {
+
+                if (empty($cartList)) {
                     throw ValidationException::withMessages([
-                        'produk_id' => 'Stok produk yang dipilih sedang habis.',
+                        'produk_id' => 'Keranjang belanja masih kosong. Silakan pilih produk terlebih dahulu.',
                     ]);
                 }
 
-                $produkId = $produk->id;
-                $namaItem = $produk->nama_produk;
-                $totalHarga = $produk->harga_jual;
-                $produk->decrement('stok');
+                $namaItemsSummary = [];
+                foreach ($cartList as $pid => $qty) {
+                    $produk = Produk::whereKey($pid)->lockForUpdate()->first();
+                    if (!$produk) {
+                        throw ValidationException::withMessages([
+                            'produk_id' => 'Produk yang dipilih tidak ditemukan.',
+                        ]);
+                    }
+                    if ($produk->status !== 'aktif') {
+                        throw ValidationException::withMessages([
+                            'produk_id' => "Produk {$produk->nama_produk} sedang tidak aktif.",
+                        ]);
+                    }
+                    if ($produk->stok < $qty) {
+                        throw ValidationException::withMessages([
+                            'produk_id' => $produk->stok <= 0
+                                ? 'Stok produk yang dipilih sedang habis.'
+                                : "Stok {$produk->nama_produk} hanya tersisa {$produk->stok} Pcs.",
+                        ]);
+                    }
+
+                    if ($produkId === null) {
+                        $produkId = $produk->id;
+                    }
+
+                    $subtotal = (float) $produk->harga_jual * $qty;
+                    $totalHarga += $subtotal;
+                    $namaItemsSummary[] = $qty > 1 ? "{$produk->nama_produk} (x{$qty})" : $produk->nama_produk;
+
+                    $produk->decrement('stok', $qty);
+
+                    $orderDetailsToCreate[] = [
+                        'produk_id' => $produk->id,
+                        'nama_item' => $produk->nama_produk,
+                        'harga' => $produk->harga_jual,
+                        'qty' => $qty,
+                        'subtotal' => $subtotal,
+                    ];
+                }
+
+                $namaItem = implode(', ', $namaItemsSummary);
             }
 
             $namaPelanggan = trim((string) ($validated['nama_lengkap'] ?? '')) ?: $user->name;
@@ -214,6 +264,12 @@ class PesananController extends Controller
                 'status' => 'baru',
             ]);
 
+            foreach ($orderDetailsToCreate as $detailRow) {
+                DataPesanan::create(array_merge($detailRow, [
+                    'pesanan_id' => $pesanan->id,
+                ]));
+            }
+
             return [$pesanan, $namaItem];
         });
 
@@ -221,6 +277,7 @@ class PesananController extends Controller
 
         return redirect()
             ->route('user.pesanan')
+            ->with('just_ordered_id', $pesanan->id)
             ->with('success', "Pesanan {$kodeBooking} ({$namaItem}) berhasil dikirim dan sedang menunggu konfirmasi Admin.");
     }
 
@@ -232,7 +289,7 @@ class PesananController extends Controller
                 'tb_pesanan.*',
                 DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan_tampil')
             )
-            ->whereIn('tb_pesanan.status', ['baru', 'proses'])
+            ->where('tb_pesanan.status', 'baru')
             ->orderBy('tb_pesanan.id', 'asc')
             ->get();
 
@@ -247,7 +304,7 @@ class PesananController extends Controller
                 'tb_pesanan.*',
                 DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan_tampil')
             )
-            ->whereIn('tb_pesanan.status', ['selesai', 'dibatalkan'])
+            ->whereIn('tb_pesanan.status', ['proses', 'selesai', 'dibatalkan'])
             ->orderBy('tb_pesanan.id', 'asc')
             ->get();
 
@@ -286,7 +343,12 @@ class PesananController extends Controller
             $this->syncRiwayat($pesanan);
         });
 
-        return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil ditambahkan.');
+        $kategoriTab = $validated['kategori'] ?? 'layanan';
+
+        return redirect()
+            ->route('dashboard.pesanan', ['tab' => $kategoriTab])
+            ->with('active_category', $kategoriTab)
+            ->with('success', 'Pesanan berhasil ditambahkan.');
     }
 
     public function update(Request $request, Pesanan $pesanan)
@@ -328,20 +390,31 @@ class PesananController extends Controller
             $this->syncJadwalService($lockedPesanan);
         });
 
-        return redirect()->route('dashboard.pesanan')->with('success', 'Pesanan berhasil diperbarui.');
+        $kategoriTab = $validated['kategori'] ?? 'layanan';
+
+        return redirect()
+            ->route('dashboard.pesanan', ['tab' => $kategoriTab])
+            ->with('active_category', $kategoriTab)
+            ->with('success', 'Pesanan berhasil diperbarui.');
     }
 
     public function updateStatus(Request $request, Pesanan $pesanan)
     {
         $validated = $request->validate([
-            'aksi' => ['required', 'in:terima,tolak'],
+            'aksi' => ['required', 'in:terima,tolak,selesai'],
         ]);
 
-        $statusBaru = $validated['aksi'] === 'terima' ? 'selesai' : 'dibatalkan';
+        $statusBaru = match ($validated['aksi']) {
+            'terima' => 'proses',
+            'selesai' => 'selesai',
+            default => 'dibatalkan',
+        };
+        $kategoriTab = $pesanan->kategori ?: 'layanan';
 
-        DB::transaction(function () use ($pesanan, $statusBaru) {
+        DB::transaction(function () use ($pesanan, $statusBaru, &$kategoriTab) {
             $lockedPesanan = Pesanan::whereKey($pesanan->id)->lockForUpdate()->firstOrFail();
             $statusLama = $lockedPesanan->status;
+            $kategoriTab = $lockedPesanan->kategori ?: 'layanan';
 
             $this->syncProdukStockOnStatusChange($lockedPesanan, $statusLama, $statusBaru);
 
@@ -355,24 +428,49 @@ class PesananController extends Controller
         });
 
         $kodePesanan = 'BKG-' . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+        session(['last_order_tab' => $kategoriTab]);
+
+        if ($validated['aksi'] === 'selesai') {
+            $labelSelesai = $kategoriTab === 'produk' ? 'Sudah Diambil' : 'Sudah Selesai';
+
+            return redirect()
+                ->route('dashboard.riwayat', ['tab' => $kategoriTab])
+                ->with('active_category', $kategoriTab)
+                ->with('success', "Pesanan {$kodePesanan} telah diperbarui menjadi {$labelSelesai}.");
+        }
+
         $pesanNotifikasi = $validated['aksi'] === 'terima'
-            ? "Pesanan {$kodePesanan} berhasil diterima dan dipindahkan ke Riwayat Pesanan."
+            ? "Pesanan {$kodePesanan} berhasil diterima (status: Proses) dan dipindahkan ke Riwayat Pesanan."
             : "Pesanan {$kodePesanan} telah ditolak dan dipindahkan ke Riwayat Pesanan.";
 
-        return redirect()->route('dashboard.riwayat')->with('success', $pesanNotifikasi);
+        return redirect()
+            ->route('dashboard.pesanan', ['tab' => $kategoriTab])
+            ->with('active_category', $kategoriTab)
+            ->with('success', $pesanNotifikasi);
     }
 
     public function destroy(Pesanan $pesanan)
     {
-        DB::transaction(function () use ($pesanan) {
+        $kategoriTab = $pesanan->kategori ?: 'layanan';
+
+        DB::transaction(function () use ($pesanan, &$kategoriTab) {
             $lockedPesanan = Pesanan::whereKey($pesanan->id)->lockForUpdate()->firstOrFail();
+            $kategoriTab = $lockedPesanan->kategori ?: 'layanan';
 
             if (
                 $lockedPesanan->kategori === 'produk'
-                && $lockedPesanan->produk_id
                 && in_array($lockedPesanan->status, ['baru', 'proses'], true)
             ) {
-                Produk::whereKey($lockedPesanan->produk_id)->lockForUpdate()->increment('stok');
+                $details = DataPesanan::where('pesanan_id', $lockedPesanan->id)->get();
+                if ($details->isNotEmpty()) {
+                    foreach ($details as $detail) {
+                        if ($detail->produk_id) {
+                            Produk::whereKey($detail->produk_id)->lockForUpdate()->increment('stok', max(1, (int) $detail->qty));
+                        }
+                    }
+                } elseif ($lockedPesanan->produk_id) {
+                    Produk::whereKey($lockedPesanan->produk_id)->lockForUpdate()->increment('stok');
+                }
             }
 
             $jadwalServiceId = $lockedPesanan->jadwalservice_id;
@@ -386,28 +484,58 @@ class PesananController extends Controller
             }
         });
 
-        return back()->with('success', 'Data pesanan berhasil dihapus.');
+        session(['last_order_tab' => $kategoriTab]);
+
+        return back()
+            ->with('active_category', $kategoriTab)
+            ->with('success', 'Data pesanan berhasil dihapus.');
     }
 
     private function syncProdukStockOnStatusChange(Pesanan $pesanan, string $statusLama, string $statusBaru): void
     {
-        if ($pesanan->kategori !== 'produk' || !$pesanan->produk_id) {
+        if ($pesanan->kategori !== 'produk') {
             return;
         }
 
+        $details = DataPesanan::where('pesanan_id', $pesanan->id)->get();
+
         if ($statusLama !== 'dibatalkan' && $statusBaru === 'dibatalkan') {
-            Produk::whereKey($pesanan->produk_id)->lockForUpdate()->increment('stok');
+            if ($details->isNotEmpty()) {
+                foreach ($details as $detail) {
+                    if ($detail->produk_id) {
+                        Produk::whereKey($detail->produk_id)->lockForUpdate()->increment('stok', max(1, (int) $detail->qty));
+                    }
+                }
+            } elseif ($pesanan->produk_id) {
+                Produk::whereKey($pesanan->produk_id)->lockForUpdate()->increment('stok');
+            }
             return;
         }
 
         if ($statusLama === 'dibatalkan' && $statusBaru !== 'dibatalkan') {
-            $produk = Produk::whereKey($pesanan->produk_id)->lockForUpdate()->first();
-            if (!$produk || $produk->stok <= 0) {
-                throw ValidationException::withMessages([
-                    'status' => 'Stok produk tidak mencukupi untuk mengaktifkan kembali pesanan ini.',
-                ]);
+            if ($details->isNotEmpty()) {
+                foreach ($details as $detail) {
+                    if (!$detail->produk_id) {
+                        continue;
+                    }
+                    $qty = max(1, (int) $detail->qty);
+                    $produk = Produk::whereKey($detail->produk_id)->lockForUpdate()->first();
+                    if (!$produk || $produk->stok < $qty) {
+                        throw ValidationException::withMessages([
+                            'status' => 'Stok produk tidak mencukupi untuk mengaktifkan kembali pesanan ini.',
+                        ]);
+                    }
+                    $produk->decrement('stok', $qty);
+                }
+            } elseif ($pesanan->produk_id) {
+                $produk = Produk::whereKey($pesanan->produk_id)->lockForUpdate()->first();
+                if (!$produk || $produk->stok <= 0) {
+                    throw ValidationException::withMessages([
+                        'status' => 'Stok produk tidak mencukupi untuk mengaktifkan kembali pesanan ini.',
+                    ]);
+                }
+                $produk->decrement('stok');
             }
-            $produk->decrement('stok');
         }
     }
 
@@ -434,10 +562,14 @@ class PesananController extends Controller
 
     private function syncRiwayat(Pesanan $pesanan): void
     {
-        if (in_array($pesanan->status, ['selesai', 'dibatalkan'], true)) {
+        if (in_array($pesanan->status, ['proses', 'selesai', 'dibatalkan'], true)) {
             $now = now();
             $existing = DB::table('tb_riwayatpesanan')->where('pesanan_id', $pesanan->id)->first();
-            $catatan = $pesanan->status === 'selesai' ? 'Pesanan diterima' : 'Pesanan ditolak';
+            $catatan = match ($pesanan->status) {
+                'selesai' => $pesanan->kategori === 'produk' ? 'Produk sudah diambil' : 'Layanan sudah selesai',
+                'proses' => 'Pesanan sedang diproses',
+                default => 'Pesanan ditolak',
+            };
 
             if ($existing) {
                 DB::table('tb_riwayatpesanan')

@@ -132,10 +132,10 @@ class UserOrderFlowTest extends TestCase
         $this->assertSame(4, $produk->fresh()->stok);
         $pesanan = Pesanan::first();
 
-        // Admin rejects order -> stock restored to 5 and moved to riwayat
+        // Admin rejects order -> stock restored to 5 and stays on produk tab
         $this->actingAs($admin)->patch(route('dashboard.pesanan.status', $pesanan), [
             'aksi' => 'tolak',
-        ])->assertRedirect(route('dashboard.riwayat'));
+        ])->assertRedirect(route('dashboard.pesanan', ['tab' => 'produk']));
 
         $this->assertSame(5, $produk->fresh()->stok);
         $this->assertSame('dibatalkan', $pesanan->fresh()->status);
@@ -203,9 +203,21 @@ class UserOrderFlowTest extends TestCase
 
         $pesanan = Pesanan::first();
 
+        // 1. Admin accepts order ('terima') -> status becomes 'proses' in Riwayat
         $this->actingAs($admin)->patch(route('dashboard.pesanan.status', $pesanan), [
             'aksi' => 'terima',
-        ])->assertRedirect(route('dashboard.riwayat'));
+        ])->assertRedirect(route('dashboard.pesanan', ['tab' => 'layanan']));
+
+        $this->assertSame('proses', $pesanan->fresh()->status);
+        $this->assertDatabaseHas('tb_jadwalservice', [
+            'id' => $pesanan->jadwalservice_id,
+            'status' => 'proses',
+        ]);
+
+        // 2. Admin marks order as finished ('selesai') from Riwayat -> status becomes 'selesai' ("Sudah Selesai")
+        $this->actingAs($admin)->patch(route('dashboard.pesanan.status', $pesanan), [
+            'aksi' => 'selesai',
+        ])->assertRedirect(route('dashboard.riwayat', ['tab' => 'layanan']));
 
         $this->assertSame('selesai', $pesanan->fresh()->status);
         $this->assertDatabaseHas('tb_jadwalservice', [

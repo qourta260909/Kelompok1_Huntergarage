@@ -82,6 +82,35 @@
             background-color: #fef2f2;
             color: #dc2626;
         }
+        .badge-proses {
+            background-color: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+        .history-actions {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .btn-finish {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #16a34a;
+            color: #ffffff;
+            border: 1.5px solid #16a34a;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+        .btn-finish:hover {
+            background-color: #15803d;
+            border-color: #15803d;
+        }
         .btn-delete {
             display: inline-flex;
             align-items: center;
@@ -245,8 +274,16 @@
                                     $tanggalJamFormat = $carbonWaktu
                                         ? strtolower($carbonWaktu->translatedFormat('d M Y')) . ', ' . $carbonWaktu->format('H:i')
                                         : '-';
-                                    $badgeClass = $riwayat->status === 'dibatalkan' ? 'badge-cancelled' : 'badge-success';
-                                    $statusLabel = $riwayat->status === 'dibatalkan' ? 'Ditolak' : 'Diterima';
+                                    if ($riwayat->status === 'dibatalkan') {
+                                        $badgeClass = 'badge-cancelled';
+                                        $statusLabel = 'Ditolak';
+                                    } elseif ($riwayat->status === 'proses') {
+                                        $badgeClass = 'badge-proses';
+                                        $statusLabel = 'Proses';
+                                    } else {
+                                        $badgeClass = 'badge-success';
+                                        $statusLabel = $kategoriRow === 'produk' ? 'Sudah Diambil' : 'Sudah Selesai';
+                                    }
                                 @endphp
                                 <tr class="history-row" data-kategori="{{ $kategoriRow }}">
                                     <td class="td-bold">{{ $kodeBooking }}</td>
@@ -258,16 +295,32 @@
                                         <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
                                     </td>
                                     <td>
-                                        <form method="POST" action="{{ route('dashboard.pesanan.destroy', $riwayat->id) }}" onsubmit="return confirm('Yakin ingin menghapus riwayat {{ $kodeBooking }}?');" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-delete">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                                                </svg>
-                                                Hapus
-                                            </button>
-                                        </form>
+                                        <div class="history-actions">
+                                            @if ($riwayat->status === 'proses')
+                                                <form method="POST" action="{{ route('dashboard.pesanan.status', $riwayat->id) }}" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="aksi" value="selesai">
+                                                    <button type="submit" class="btn-finish">
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                                        </svg>
+                                                        {{ $kategoriRow === 'produk' ? 'Sudah Diambil' : 'Sudah Selesai' }}
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                            <form method="POST" action="{{ route('dashboard.pesanan.destroy', $riwayat->id) }}" onsubmit="return confirm('Yakin ingin menghapus riwayat {{ $kodeBooking }}?');" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-delete">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                                    </svg>
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -325,21 +378,32 @@
         const emptyServerRow = document.getElementById('emptyServerRow');
         const paginationControls = document.getElementById('paginationControls');
         const ITEMS_PER_PAGE = 5;
+        const urlTabParam = new URLSearchParams(window.location.search).get('tab');
+        const sessionCategory = @js(session('active_category', session('last_order_tab')));
         const hasLayananRows = historyRows.some((row) => (row.dataset.kategori || 'layanan') === 'layanan');
         const hasProdukRows = historyRows.some((row) => (row.dataset.kategori || 'layanan') === 'produk');
-        let activeCategory = (!hasLayananRows && hasProdukRows) ? 'produk' : 'layanan';
+
+        let activeCategory = 'layanan';
+        if (urlTabParam === 'produk' || urlTabParam === 'layanan') {
+            activeCategory = urlTabParam;
+        } else if (sessionCategory === 'produk' || sessionCategory === 'layanan') {
+            activeCategory = sessionCategory;
+        } else if (!hasLayananRows && hasProdukRows) {
+            activeCategory = 'produk';
+        }
         let currentPage = 1;
 
-        if (activeCategory === 'produk') {
+        function syncHistoryTabHeadingAndButtons() {
             historyTabButtons.forEach((tabButton) => {
-                const isActive = tabButton.dataset.historyTab === 'produk';
+                const isActive = tabButton.dataset.historyTab === activeCategory;
                 tabButton.classList.toggle('active', isActive);
                 tabButton.setAttribute('aria-pressed', String(isActive));
             });
             if (historyCategoryHeading) {
-                historyCategoryHeading.textContent = 'Produk';
+                historyCategoryHeading.textContent = activeCategory === 'produk' ? 'Produk' : 'Layanan';
             }
         }
+        syncHistoryTabHeadingAndButtons();
 
         function triggerTabAnimation() {
             [historyTableBody, historyCategoryHeading].forEach((el) => {
@@ -449,16 +513,13 @@
         historyTabButtons.forEach((button) => {
             button.addEventListener('click', () => {
                 if (activeCategory === button.dataset.historyTab) return;
-                activeStatus = button.dataset.historyTab;
                 activeCategory = button.dataset.historyTab;
 
-                historyTabButtons.forEach((tabButton) => {
-                    const isActive = tabButton === button;
-                    tabButton.classList.toggle('active', isActive);
-                    tabButton.setAttribute('aria-pressed', String(isActive));
-                });
+                syncHistoryTabHeadingAndButtons();
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', activeCategory);
+                window.history.replaceState(null, '', url.toString());
 
-                historyCategoryHeading.textContent = activeCategory === 'produk' ? 'Produk' : 'Layanan';
                 filterHistory(true);
                 triggerTabAnimation();
             });

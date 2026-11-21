@@ -686,8 +686,8 @@
                             </svg>
                         </div>
                         <div style="flex:1;">
-                            <input type="file" id="inputGambar" name="gambar" class="form-control" accept="image/png,image/jpeg,image/jpg,image/webp">
-                            <div class="foto-input-help">Format JPG, PNG, atau WEBP (maks. 2MB)</div>
+                            <input type="file" id="inputGambar" name="gambar" class="form-control" accept="image/*">
+                            <div class="foto-input-help">Format JPG, PNG, WEBP, JFIF, AVIF (maks. 20MB)</div>
                         </div>
                     </div>
                 </div>
