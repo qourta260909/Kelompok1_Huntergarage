@@ -1702,18 +1702,18 @@ h1 {
 
 .produk-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
 }
 
 .produk-card {
     background-color: var(--surface-light);
-    border-radius: 16px;
+    border-radius: 14px;
     border: 1px solid #e4e4e7;
-    padding: 24px;
+    padding: 16px 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
     box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -1762,28 +1762,28 @@ h1 {
 }
 
 .produk-card-name {
-    font-size: 18px;
+    font-size: 15.5px;
     font-weight: 700;
     color: var(--text-primary);
-    margin-top: 4px;
+    margin-top: 2px;
     line-height: 1.3;
 }
 
 .produk-card-desc {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-secondary);
-    line-height: 1.55;
+    line-height: 1.5;
     flex: 1;
 }
 
 .produk-card-footer {
-    margin-top: 14px;
-    padding-top: 14px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid #f4f4f5;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 8px;
 }
 
 .produk-price-wrap {
@@ -1792,12 +1792,12 @@ h1 {
 }
 
 .produk-price-label {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--text-secondary);
 }
 
 .produk-price-val {
-    font-size: 16px;
+    font-size: 14.5px;
     font-weight: 700;
     color: var(--text-primary);
     font-variant-numeric: tabular-nums;
@@ -1807,14 +1807,14 @@ h1 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 40px;
-    padding: 0 18px;
-    border-radius: 10px;
+    height: 36px;
+    padding: 0 13px;
+    border-radius: 9px;
     border: none;
     background-color: var(--accent-black);
     color: var(--surface-light);
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
@@ -1850,11 +1850,178 @@ h1 {
 
 .produk-modal-card {
     width: 100%;
-    max-width: 440px;
+    max-width: 480px;
     background-color: var(--surface-light);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 26px;
     box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.28);
+}
+
+.pickup-section {
+    margin-bottom: 18px;
+}
+
+.pickup-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pickup-hint-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #52525b;
+    background-color: #f4f4f5;
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+
+.pickup-quick-dates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.pickup-chip-btn {
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid #d4d4d8;
+    background-color: #fafafa;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.pickup-chip-btn:hover {
+    border-color: #18181b;
+    background-color: #f4f4f5;
+}
+
+.pickup-chip-btn.active {
+    background-color: var(--accent-black);
+    border-color: var(--accent-black);
+    color: var(--surface-light);
+}
+
+.pickup-time-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.pickup-time-slot {
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid #d4d4d8;
+    background-color: #ffffff;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.pickup-time-slot:hover {
+    border-color: #18181b;
+    background-color: #f4f4f5;
+}
+
+.pickup-time-slot.active {
+    background-color: var(--accent-black);
+    border-color: var(--accent-black);
+    color: var(--surface-light);
+}
+
+.pickup-custom-time-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background-color: #fafafa;
+    border: 1px solid #e4e4e7;
+}
+
+.pickup-custom-time-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #52525b;
+}
+
+.pickup-custom-time-input {
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid #d4d4d8;
+    background-color: #ffffff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    outline: none;
+}
+
+.pickup-custom-time-input:focus {
+    border-color: var(--accent-black);
+}
+
+.pickup-preview-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 15px;
+    border-radius: 12px;
+    background-color: #fffbeb;
+    border: 1px solid #fde68a;
+    margin-bottom: 20px;
+}
+
+.pickup-preview-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background-color: #fef3c7;
+    color: #b45309;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.pickup-preview-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pickup-preview-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #92400e;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.pickup-preview-datetime {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #18181b;
+    line-height: 1.35;
+}
+
+.pickup-preview-sub {
+    font-size: 11.5px;
+    color: #71717a;
 }
 
 .produk-modal-head {

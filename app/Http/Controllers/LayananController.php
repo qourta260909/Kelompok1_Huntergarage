@@ -9,10 +9,6 @@ class LayananController extends Controller
 {
     public function index()
     {
-        if (!auth()->check() || auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-
         $daftarLayanan = Layanan::orderBy('id', 'asc')->get();
 
         return view('dashboard_layanan', compact('daftarLayanan'));
@@ -20,10 +16,6 @@ class LayananController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-
         if ($request->has('harga')) {
             $request->merge([
                 'harga' => preg_replace('/[^\d]/', '', (string) $request->input('harga')),
@@ -41,7 +33,7 @@ class LayananController extends Controller
         $layanan = Layanan::create($validated);
 
         $layanan->update([
-            'kode_layanan' => 'HG-' . str_pad((string) $layanan->id, 2, '0', STR_PAD_LEFT),
+            'kode_layanan' => (string) $layanan->id,
         ]);
 
         return redirect()->route('dashboard.layanan')->with('success', 'Data layanan berhasil ditambahkan.');
@@ -49,10 +41,6 @@ class LayananController extends Controller
 
     public function update(Request $request, Layanan $layanan)
     {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-
         if ($request->has('harga')) {
             $request->merge([
                 'harga' => preg_replace('/[^\d]/', '', (string) $request->input('harga')),
@@ -66,7 +54,7 @@ class LayananController extends Controller
             'harga' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $validated['kode_layanan'] = 'HG-' . str_pad((string) $layanan->id, 2, '0', STR_PAD_LEFT);
+        $validated['kode_layanan'] = (string) $layanan->id;
         $validated['estimasi_durasi'] = $validated['deskripsi'];
 
         $layanan->update($validated);
@@ -76,10 +64,6 @@ class LayananController extends Controller
 
     public function destroy(Layanan $layanan)
     {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-
         $layanan->delete();
 
         return redirect()->route('dashboard.layanan')->with('success', 'Data layanan berhasil dihapus.');

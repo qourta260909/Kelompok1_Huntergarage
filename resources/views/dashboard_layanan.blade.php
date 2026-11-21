@@ -413,7 +413,7 @@
                             @forelse ($daftarLayanan ?? [] as $layanan)
                                 @php
                                     $statusRow = $layanan->status ?? 'aktif';
-                                    $kodeTampil = 'HG-' . str_pad((string) $layanan->id, 2, '0', STR_PAD_LEFT);
+                                    $kodeTampil = (string) $layanan->id;
                                     $estimasiTampil = $layanan->estimasi_durasi ?: ($layanan->deskripsi ?: '-');
                                 @endphp
                                 <tr class="layanan-row" data-status="{{ $statusRow }}">

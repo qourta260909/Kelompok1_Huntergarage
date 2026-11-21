@@ -80,6 +80,9 @@ class MakeAdminCommand extends Command
             'role' => 'admin',
         ]);
 
+        $newAdmin->email_verified_at = now();
+        $newAdmin->save();
+
         $this->info("==========================================");
         $this->info("Akun Admin berhasil dibuat!");
         $this->line("Nama  : {$newAdmin->name}");

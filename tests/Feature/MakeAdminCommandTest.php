@@ -20,6 +20,8 @@ class MakeAdminCommandTest extends TestCase
             'name' => 'Super Admin',
             'role' => 'admin',
         ]);
+
+        $this->assertNotNull(User::where('email', 'admin@test.com')->first()->email_verified_at);
     }
 
     public function test_can_promote_existing_user_to_admin(): void

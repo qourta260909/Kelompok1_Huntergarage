@@ -23,10 +23,27 @@ class DashboardTest extends TestCase
             ->assertDontSee('Pelanggan aktif')
             ->assertDontSee('Pesanan Baru')
             ->assertDontSee('Pendapatan Baru')
-            ->assertSee('Belum ada data pesanan.');
+            ->assertSee('Belum Ada Pesanan Terbaru');
 
         $response->assertViewHas('totalPendapatan', 0)
             ->assertViewHas('totalPesanan', 0);
+    }
+
+    public function test_non_admin_user_cannot_access_admin_routes(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        foreach ([
+            route('dashboard'),
+            route('dashboard.pesanan'),
+            route('dashboard.layanan'),
+            route('dashboard.produk'),
+            route('dashboard.riwayat'),
+        ] as $adminUrl) {
+            $this->actingAs($user)
+                ->get($adminUrl)
+                ->assertRedirect(route('home'));
+        }
     }
 
     public function test_admin_dashboard_shows_statistics_from_database(): void

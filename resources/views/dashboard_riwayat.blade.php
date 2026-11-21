@@ -325,8 +325,21 @@
         const emptyServerRow = document.getElementById('emptyServerRow');
         const paginationControls = document.getElementById('paginationControls');
         const ITEMS_PER_PAGE = 5;
-        let activeCategory = 'layanan';
+        const hasLayananRows = historyRows.some((row) => (row.dataset.kategori || 'layanan') === 'layanan');
+        const hasProdukRows = historyRows.some((row) => (row.dataset.kategori || 'layanan') === 'produk');
+        let activeCategory = (!hasLayananRows && hasProdukRows) ? 'produk' : 'layanan';
         let currentPage = 1;
+
+        if (activeCategory === 'produk') {
+            historyTabButtons.forEach((tabButton) => {
+                const isActive = tabButton.dataset.historyTab === 'produk';
+                tabButton.classList.toggle('active', isActive);
+                tabButton.setAttribute('aria-pressed', String(isActive));
+            });
+            if (historyCategoryHeading) {
+                historyCategoryHeading.textContent = 'Produk';
+            }
+        }
 
         function triggerTabAnimation() {
             [historyTableBody, historyCategoryHeading].forEach((el) => {

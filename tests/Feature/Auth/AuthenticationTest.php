@@ -19,10 +19,23 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'user']);
 
         $response = $this->post('/login', [
             'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('home', absolute: false));
+    }
+
+    public function test_admins_are_redirected_to_dashboard_after_login(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->post('/login', [
+            'email' => $admin->email,
             'password' => 'password',
         ]);
 

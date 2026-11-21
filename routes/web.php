@@ -1,19 +1,33 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LayananController;
-use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PesananController;
+use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
-use App\Models\User;
-use App\Models\Layanan;
-use App\Models\Produk;
-use App\Models\Pesanan;
-use Illuminate\Support\Facades\DB;
+use App\Http\Middleware\PreventBackHistory;
+use Illuminate\Support\Facades\Route;
 
+// Halaman publik / pelanggan
+Route::middleware(PreventBackHistory::class)->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/layanan', [HomeController::class, 'layanan'])->name('user.layanan');
+    Route::get('/produk', [HomeController::class, 'produk'])->name('user.produk');
+});
 
-Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->group(function () {
+// Halaman pelanggan terautentikasi
+Route::middleware(['auth', 'verified', PreventBackHistory::class])->group(function () {
+    Route::post('/user-pesanan', [PesananController::class, 'storeUserOrder'])->name('user.pesanan.store');
+    Route::get('/pesanan-saya', [PesananController::class, 'userOrders'])->name('user.pesanan');
+    Route::get('/pesanan-saya/{pesanan}/bukti-pdf', [PesananController::class, 'downloadBuktiBooking'])->name('user.pesanan.pdf');
+});
+
+// Halaman khusus Admin (dilindungi middleware role admin)
+Route::middleware(['auth', 'verified', 'admin', PreventBackHistory::class])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::redirect('/dashboard-pemesanan', '/dashboard-pesanan');
+    Route::redirect('/dashboard-profile', '/dashboard')->name('dashboard.profile');
 
     Route::get('/dashboard-pesanan', [PesananController::class, 'index'])->name('dashboard.pesanan');
     Route::post('/dashboard-pesanan', [PesananController::class, 'store'])->name('dashboard.pesanan.store');
@@ -31,87 +45,10 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::
     Route::put('/dashboard-produk/{produk}', [ProdukController::class, 'update'])->name('dashboard.produk.update');
     Route::delete('/dashboard-produk/{produk}', [ProdukController::class, 'destroy'])->name('dashboard.produk.destroy');
 
-    Route::redirect('/dashboard-profile', '/dashboard')->name('dashboard.profile');
-
     Route::get('/dashboard-riwayat', [PesananController::class, 'riwayat'])->name('dashboard.riwayat');
-
-    Route::post('/user-pesanan', [PesananController::class, 'storeUserOrder'])->name('user.pesanan.store');
-    Route::get('/pesanan-saya', function () {
-        $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
-        $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
-        $pesananUser = Pesanan::where('user_id', auth()->id())->orderBy('id', 'desc')->get();
-        $activePage = 'pesanan';
-
-        return view('welcome', compact('layananAktif', 'produkAktif', 'pesananUser', 'activePage'));
-    })->name('user.pesanan');
 });
 
-Route::get('/', function (\Illuminate\Http\Request $request) {
-    if (auth()->check() && auth()->user()->role === 'admin') {
-        \Illuminate\Support\Facades\Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-    }
-
-    $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
-    $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
-    $pesananUser = auth()->check()
-        ? Pesanan::where('user_id', auth()->id())->orderBy('id', 'desc')->get()
-        : collect();
-
-    return view('welcome', compact('layananAktif', 'produkAktif', 'pesananUser'));
-})
-    ->middleware(\App\Http\Middleware\PreventBackHistory::class)
-    ->name('home');
-
-Route::get('/layanan', function () {
-    $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
-    $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
-
-    return view('layanan', compact('layananAktif', 'produkAktif'));
-})
-    ->middleware(\App\Http\Middleware\PreventBackHistory::class)
-    ->name('user.layanan');
-
-Route::get('/produk', function () {
-    $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
-    $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
-
-    return view('produk', compact('layananAktif', 'produkAktif'));
-})
-    ->middleware(\App\Http\Middleware\PreventBackHistory::class)
-    ->name('user.produk');
-
-Route::get('/dashboard', function () {
-    if (auth()->user()->role === 'admin') {
-        $pesananAktifQuery = DB::table('tb_pesanan')
-            ->whereIn('tb_pesanan.status', ['baru', 'proses']);
-
-        $totalPendapatan = (int) DB::table('tb_pesanan')
-            ->where('status', 'selesai')
-            ->sum('total_harga');
-
-        $totalPesanan = DB::table('tb_pesanan')->count();
-
-        $pesananTerbaru = (clone $pesananAktifQuery)
-            ->leftJoin('users', 'users.id', '=', 'tb_pesanan.user_id')
-            ->select(
-                'tb_pesanan.*',
-                DB::raw('COALESCE(tb_pesanan.nama_pelanggan, users.name) as nama_pelanggan')
-            )
-            ->orderBy('tb_pesanan.id', 'asc')
-            ->get();
-
-        return view('dashboard', compact(
-            'totalPendapatan',
-            'totalPesanan',
-            'pesananTerbaru'
-        ));
-    }
-    
-    return redirect()->route('home')->withErrors(['akses' => 'Halaman Dasbor hanya dapat diakses menggunakan akun Admin.']);
-})->middleware(['auth', 'verified', \App\Http\Middleware\PreventBackHistory::class])->name('dashboard');
-
+// Profil akun
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

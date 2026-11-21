@@ -36,17 +36,16 @@
             <button type="button" class="btn-modal-cancel" onclick="closeLogoutModal()">
                 Batal
             </button>
-            <button type="button" class="btn-modal-confirm" onclick="executeLogout()">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Ya, Keluar
-            </button>
+            <form id="logoutModalHiddenForm" method="POST" action="{{ route('logout') }}" style="margin: 0; display: inline-flex;">
+                @csrf
+                <button type="submit" class="btn-modal-confirm">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Ya, Keluar
+                </button>
+            </form>
         </div>
-
-        <form id="logoutModalHiddenForm" method="POST" action="{{ route('logout') }}" style="display: none;">
-            @csrf
-        </form>
     </div>
 </div>
 

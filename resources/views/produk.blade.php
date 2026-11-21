@@ -8,6 +8,318 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/user.css')
+    <style>
+        .produk-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+        .produk-card {
+            padding: 16px 18px;
+            border-radius: 14px;
+            gap: 6px;
+        }
+        .produk-card-name {
+            font-size: 15.5px;
+            margin-top: 2px;
+        }
+        .produk-card-desc {
+            font-size: 12px;
+        }
+        .produk-card-footer {
+            margin-top: 10px;
+            padding-top: 10px;
+            gap: 8px;
+        }
+        .produk-price-val {
+            font-size: 14.5px;
+        }
+        .produk-order-btn {
+            height: 36px;
+            padding: 0 13px;
+            font-size: 12px;
+            border-radius: 9px;
+        }
+        @media (max-width: 1120px) {
+            .produk-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 820px) {
+            .produk-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 520px) {
+            .produk-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .produk-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(9, 9, 11, 0.62);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 999;
+        }
+        .produk-modal-overlay.active {
+            display: flex;
+        }
+        .produk-modal-card {
+            width: 100%;
+            max-width: 500px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 26px 28px;
+            box-shadow: 0 28px 60px -12px rgba(0, 0, 0, 0.32);
+            border: 1px solid #e4e4e7;
+            animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalPopIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .produk-modal-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .produk-modal-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #111111;
+            line-height: 1.25;
+        }
+        .produk-modal-subtitle {
+            font-size: 12.5px;
+            color: #71717a;
+            margin-top: 2px;
+        }
+        .produk-modal-close {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 1px solid #e4e4e7;
+            background-color: #fafafa;
+            color: #18181b;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+        .produk-modal-close:hover {
+            background-color: #f4f4f5;
+            border-color: #d4d4d8;
+        }
+        .produk-modal-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background-color: #18181b;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .produk-summary-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .produk-summary-tag {
+            font-size: 10.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #a1a1aa;
+        }
+        .produk-summary-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .produk-summary-price {
+            font-size: 15px;
+            font-weight: 700;
+            color: #facc15;
+            background: rgba(250, 204, 21, 0.12);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            padding: 6px 12px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+        .pickup-block {
+            margin-bottom: 18px;
+        }
+        .pickup-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .pickup-block-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #18181b;
+        }
+        .pickup-block-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: #52525b;
+            background-color: #f4f4f5;
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+        .pickup-date-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .pickup-date-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 9px 8px;
+            border-radius: 12px;
+            border: 1.5px solid #e4e4e7;
+            background-color: #ffffff;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.16s ease;
+        }
+        .pickup-date-card:hover {
+            border-color: #a1a1aa;
+            background-color: #fafafa;
+        }
+        .pickup-date-card .day-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #18181b;
+        }
+        .pickup-date-card .day-sub {
+            font-size: 11px;
+            font-weight: 500;
+            color: #71717a;
+        }
+        .pickup-date-card.active {
+            background-color: #111111;
+            border-color: #111111;
+            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.25);
+        }
+        .pickup-date-card.active .day-title {
+            color: #ffffff;
+        }
+        .pickup-date-card.active .day-sub {
+            color: #d4d4d8;
+        }
+        .pickup-date-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .pickup-date-input {
+            width: 100%;
+            height: 42px;
+            padding: 0 14px;
+            border-radius: 11px;
+            border: 1.5px solid #e4e4e7;
+            background-color: #fafafa;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: #18181b;
+            outline: none;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        .pickup-date-input:focus {
+            border-color: #111111;
+            background-color: #ffffff;
+        }
+        .pickup-time-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .pickup-time-btn {
+            height: 40px;
+            border-radius: 11px;
+            border: 1.5px solid #e4e4e7;
+            background-color: #ffffff;
+            color: #18181b;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.16s ease;
+        }
+        .pickup-time-btn:hover {
+            border-color: #a1a1aa;
+            background-color: #fafafa;
+        }
+        .pickup-time-btn.active {
+            background-color: #111111;
+            border-color: #111111;
+            color: #ffffff;
+            box-shadow: 0 6px 14px -4px rgba(0, 0, 0, 0.25);
+        }
+        .pickup-summary-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 15px;
+            border-radius: 14px;
+            background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
+            margin-top: 18px;
+            margin-bottom: 20px;
+        }
+        .pickup-summary-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background-color: #111111;
+            color: #facc15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pickup-summary-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        .pickup-summary-caption {
+            font-size: 11px;
+            font-weight: 600;
+            color: #71717a;
+        }
+        .pickup-summary-value {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #111111;
+        }
+    </style>
 </head>
 <body>
     <header class="topbar">
@@ -50,7 +362,7 @@
                                 </svg>
                                 <span>Pesanan Saya</span>
                             </a>
-                            <a href="{{ route('user.pesanan') }}" class="dropdown-item" role="menuitem">
+                            <a href="{{ route('user.pesanan', ['tab' => 'jadwal']) }}" class="dropdown-item" role="menuitem">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                     <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -123,15 +435,18 @@
                 <div class="produk-grid" id="produkGrid">
                     @foreach ($produkAktif as $produk)
                         @php
-                            $kodeProduk = $produk->kode_produk ?: ('HG-' . str_pad((string) $produk->id, 2, '0', STR_PAD_LEFT));
                             $stokProduk = (int) ($produk->stok ?? 0);
                             $stokHabis = $stokProduk <= 0;
                         @endphp
-                        <article class="produk-card" data-search="{{ strtolower($produk->nama_produk . ' ' . $kodeProduk . ' ' . ($produk->deskripsi ?? '')) }}">
-                            <div class="produk-card-head">
-                                <span class="produk-code">{{ $kodeProduk }}</span>
+                        <article class="produk-card" data-search="{{ strtolower($produk->nama_produk . ' ' . ($produk->deskripsi ?? '')) }}">
+                            @if ($produk->gambar_url)
+                                <div style="width:100%; height:118px; border-radius:10px; background-color:#f4f4f5; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:4px;">
+                                    <img src="{{ $produk->gambar_url }}" alt="{{ $produk->nama_produk }}" style="width:100%; height:100%; object-fit:contain;">
+                                </div>
+                            @endif
+                            <div class="produk-card-head" style="justify-content:flex-end;">
                                 <span class="produk-stock-pill {{ $stokHabis ? 'stock-empty' : ($stokProduk < 5 ? 'stock-low' : 'stock-ok') }}">
-                                    {{ $stokHabis ? 'Stok habis' : 'Stok: ' . $stokProduk }}
+                                    {{ $stokHabis ? 'Stok habis' : 'Stok: ' . $stokProduk . ' Pcs' }}
                                 </span>
                             </div>
 
@@ -173,7 +488,10 @@
         <div class="produk-modal-overlay" id="produkOrderModal" aria-hidden="true">
             <div class="produk-modal-card" role="dialog" aria-modal="true" aria-labelledby="produkModalTitle">
                 <div class="produk-modal-head">
-                    <h2 id="produkModalTitle" class="produk-modal-title">Pesan Produk</h2>
+                    <div>
+                        <h2 id="produkModalTitle" class="produk-modal-title">Jadwal Pengambilan Produk</h2>
+                        <p class="produk-modal-subtitle">Pilih tanggal dan jam kedatangan Anda di bengkel</p>
+                    </div>
                     <button type="button" class="produk-modal-close" onclick="closeProdukOrderModal()" aria-label="Tutup">&times;</button>
                 </div>
 
@@ -182,25 +500,96 @@
                     <input type="hidden" name="kategori" value="produk">
                     <input type="hidden" name="produk_id" id="modalProdukId" value="">
                     <input type="hidden" name="jadwal_service" id="modalJadwalService" value="">
+                    <input type="hidden" id="modalJamAmbil" value="10:00">
 
                     <div class="produk-modal-summary">
-                        <strong id="modalProdukNama">-</strong>
-                        <span id="modalProdukHarga">-</span>
+                        <div class="produk-summary-left">
+                            <span class="produk-summary-tag">Produk Dipilih</span>
+                            <strong class="produk-summary-name" id="modalProdukNama">-</strong>
+                        </div>
+                        <span class="produk-summary-price" id="modalProdukHarga">-</span>
                     </div>
 
-                    <div class="booking-field" style="margin-bottom:14px;">
-                        <label for="modalTanggalAmbil" class="booking-label">Tanggal Pengambilan</label>
-                        <input type="date" id="modalTanggalAmbil" class="booking-input" required>
+                    <!-- Tanggal Pengambilan -->
+                    <div class="pickup-block">
+                        <div class="pickup-block-header">
+                            <label for="modalTanggalAmbil" class="pickup-block-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                Tanggal Pengambilan
+                            </label>
+                            <span class="pickup-block-badge">Buka Setiap Hari</span>
+                        </div>
+
+                        <div class="pickup-date-cards" role="group" aria-label="Pilihan cepat tanggal pengambilan">
+                            <button type="button" class="pickup-date-card active" data-date-offset="0">
+                                <span class="day-title">Hari Ini</span>
+                                <span class="day-sub" id="quickDateSub0">-</span>
+                            </button>
+                            <button type="button" class="pickup-date-card" data-date-offset="1">
+                                <span class="day-title">Besok</span>
+                                <span class="day-sub" id="quickDateSub1">-</span>
+                            </button>
+                            <button type="button" class="pickup-date-card" data-date-offset="2">
+                                <span class="day-title">Lusa</span>
+                                <span class="day-sub" id="quickDateSub2">-</span>
+                            </button>
+                        </div>
+
+                        <div class="pickup-date-input-wrap">
+                            <input type="date" id="modalTanggalAmbil" class="pickup-date-input" required>
+                        </div>
                     </div>
 
-                    <div class="booking-field" style="margin-bottom:20px;">
-                        <label for="modalJamAmbil" class="booking-label">Jam Pengambilan (08:00 - 22:00)</label>
-                        <input type="time" id="modalJamAmbil" class="booking-input" min="08:00" max="22:00" value="10:00" required>
+                    <!-- Jam Pengambilan -->
+                    <div class="pickup-block">
+                        <div class="pickup-block-header">
+                            <span class="pickup-block-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                Jam Pengambilan
+                            </span>
+                            <span class="pickup-block-badge">08.00 – 22.00 WITA</span>
+                        </div>
+
+                        <div class="pickup-time-grid" role="group" aria-label="Pilihan jam pengambilan">
+                            <button type="button" class="pickup-time-btn" data-time="08:00">08.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="09:00">09.00</button>
+                            <button type="button" class="pickup-time-btn active" data-time="10:00">10.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="11:00">11.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="13:00">13.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="14:00">14.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="15:00">15.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="16:00">16.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="17:00">17.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="19:00">19.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="20:00">20.00</button>
+                            <button type="button" class="pickup-time-btn" data-time="21:00">21.00</button>
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan Jadwal Pengambilan -->
+                    <div class="pickup-summary-banner" aria-live="polite">
+                        <div class="pickup-summary-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6 9 17l-5-5"/>
+                            </svg>
+                        </div>
+                        <div class="pickup-summary-text">
+                            <span class="pickup-summary-caption">Jadwal Pengambilan di Bengkel</span>
+                            <strong class="pickup-summary-value" id="pickupPreviewText">-</strong>
+                        </div>
                     </div>
 
                     <div class="produk-modal-actions">
                         <button type="button" class="booking-prev-btn" onclick="closeProdukOrderModal()">Batal</button>
-                        <button type="submit" class="produk-order-btn">Kirim Pesanan</button>
+                        <button type="submit" class="produk-order-btn">Konfirmasi Pesanan</button>
                     </div>
                 </form>
             </div>
@@ -210,6 +599,66 @@
     <x-user-footer :layanan-aktif="$layananAktif ?? collect()" :produk-aktif="$produkAktif ?? collect()" />
 
     <script>
+        function getOffsetDateString(offsetDays) {
+            const d = new Date();
+            d.setDate(d.getDate() + Number(offsetDays || 0));
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function populateQuickDateSubtitles() {
+            [0, 1, 2].forEach(function (offset) {
+                const el = document.getElementById('quickDateSub' + offset);
+                if (!el) return;
+                const d = new Date();
+                d.setDate(d.getDate() + offset);
+                el.textContent = d.toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                });
+            });
+        }
+
+        function updatePickupPreview() {
+            const dateInput = document.getElementById('modalTanggalAmbil');
+            const timeInput = document.getElementById('modalJamAmbil');
+            const previewEl = document.getElementById('pickupPreviewText');
+            if (!previewEl) return;
+
+            const tglVal = dateInput ? dateInput.value : '';
+            const jamVal = timeInput ? timeInput.value : '10:00';
+
+            let tanggalFormatted = 'Pilih tanggal';
+            if (tglVal) {
+                const [y, m, d] = tglVal.split('-').map(Number);
+                const dateObj = new Date(y, (m || 1) - 1, d || 1);
+                if (!isNaN(dateObj.getTime())) {
+                    tanggalFormatted = dateObj.toLocaleDateString('id-ID', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                    });
+                }
+            }
+
+            const jamFormatted = jamVal ? `Pukul ${jamVal.replace(':', '.')} WITA` : 'Pilih jam';
+            previewEl.textContent = `${tanggalFormatted} • ${jamFormatted}`;
+
+            // Sync quick date cards
+            document.querySelectorAll('[data-date-offset]').forEach(function (btn) {
+                const targetDate = getOffsetDateString(btn.dataset.dateOffset);
+                btn.classList.toggle('active', tglVal === targetDate);
+            });
+
+            // Sync time slot buttons
+            document.querySelectorAll('.pickup-time-btn').forEach(function (btn) {
+                btn.classList.toggle('active', btn.dataset.time === jamVal);
+            });
+        }
+
         function openProdukOrderModal(id, nama, harga) {
             const modal = document.getElementById('produkOrderModal');
             if (!modal) return;
@@ -217,9 +666,18 @@
             document.getElementById('modalProdukNama').textContent = nama;
             document.getElementById('modalProdukHarga').textContent = harga;
             const dateInput = document.getElementById('modalTanggalAmbil');
-            if (dateInput && !dateInput.value) {
-                dateInput.value = new Date().toISOString().split('T')[0];
+            const todayStr = getOffsetDateString(0);
+            if (dateInput) {
+                dateInput.min = todayStr;
+                if (!dateInput.value || dateInput.value < todayStr) {
+                    dateInput.value = todayStr;
+                }
             }
+            const timeInput = document.getElementById('modalJamAmbil');
+            if (timeInput && !timeInput.value) {
+                timeInput.value = '10:00';
+            }
+            updatePickupPreview();
             modal.classList.add('active');
             modal.setAttribute('aria-hidden', 'false');
         }
@@ -277,12 +735,43 @@
                 });
             }
 
+            populateQuickDateSubtitles();
+            const dateInput = document.getElementById('modalTanggalAmbil');
+            const timeInput = document.getElementById('modalJamAmbil');
+
+            document.querySelectorAll('[data-date-offset]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (dateInput) {
+                        dateInput.value = getOffsetDateString(this.dataset.dateOffset);
+                        updatePickupPreview();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.pickup-time-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (timeInput) {
+                        timeInput.value = this.dataset.time;
+                        updatePickupPreview();
+                    }
+                });
+            });
+
+            if (dateInput) {
+                dateInput.addEventListener('change', updatePickupPreview);
+            }
+
             const orderForm = document.getElementById('produkOrderForm');
             if (orderForm) {
-                orderForm.addEventListener('submit', function () {
-                    const tgl = document.getElementById('modalTanggalAmbil')?.value;
-                    const jam = document.getElementById('modalJamAmbil')?.value;
-                    document.getElementById('modalJadwalService').value = (tgl && jam) ? `${tgl} ${jam}:00` : '';
+                orderForm.addEventListener('submit', function (e) {
+                    const tgl = dateInput?.value;
+                    const jam = timeInput?.value;
+                    if (!tgl || !jam || jam < '08:00' || jam > '22:00') {
+                        e.preventDefault();
+                        alert('Silakan pilih jam pengambilan antara pukul 08.00 hingga 22.00 WITA.');
+                        return;
+                    }
+                    document.getElementById('modalJadwalService').value = `${tgl} ${jam}:00`;
                 });
             }
         });

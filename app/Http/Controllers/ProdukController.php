@@ -4,74 +4,74 @@ namespace App\Http\Controllers;
 
 use App\Models\Produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
     public function index()
     {
-        if (!auth()->check() || auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-
         $daftarProduk = Produk::orderBy('id', 'asc')->get();
+        $totalProduk = $daftarProduk->count();
 
-        return view('dashboard_produk', compact('daftarProduk'));
+        return view('dashboard_produk', compact('daftarProduk', 'totalProduk'));
     }
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-
-        if ($request->has('harga_jual')) {
-            $request->merge([
-                'harga_jual' => preg_replace('/[^\d]/', '', (string) $request->input('harga_jual')),
-            ]);
-        }
+        $this->normalizeRequestInputs($request);
 
         $validated = $request->validate([
+            'kode_produk' => ['nullable', 'string', 'max:50'],
             'nama_produk' => ['required', 'string', 'max:255'],
+            'gambar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'deskripsi' => ['nullable', 'string', 'max:255'],
+            'kategori' => ['nullable', 'string', 'max:255'],
             'stok' => ['required', 'integer', 'min:0'],
             'status' => ['nullable', 'in:aktif,nonaktif'],
             'harga_jual' => ['required', 'numeric', 'min:0'],
         ]);
 
+        $deskripsi = $validated['deskripsi'] ?? $validated['kategori'] ?? null;
+        $validated['deskripsi'] = $deskripsi;
+        $validated['kategori'] = $validated['kategori'] ?? $deskripsi;
         $validated['status'] = $validated['status'] ?? 'aktif';
-        $validated['kategori'] = $validated['deskripsi'] ?? null;
-        $produk = Produk::create($validated);
 
-        $produk->update([
-            'kode_produk' => 'HG-' . str_pad((string) $produk->id, 2, '0', STR_PAD_LEFT),
-        ]);
+        if ($request->hasFile('gambar')) {
+            $validated['gambar'] = $request->file('gambar')->store('produk', 'public');
+        }
+
+        $produk = Produk::create($validated);
 
         return redirect()->route('dashboard.produk')->with('success', 'Data produk berhasil ditambahkan.');
     }
 
     public function update(Request $request, Produk $produk)
     {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
-        }
-
-        if ($request->has('harga_jual')) {
-            $request->merge([
-                'harga_jual' => preg_replace('/[^\d]/', '', (string) $request->input('harga_jual')),
-            ]);
-        }
+        $this->normalizeRequestInputs($request);
 
         $validated = $request->validate([
             'nama_produk' => ['required', 'string', 'max:255'],
+            'gambar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'deskripsi' => ['nullable', 'string', 'max:255'],
+            'kategori' => ['nullable', 'string', 'max:255'],
             'stok' => ['required', 'integer', 'min:0'],
             'status' => ['nullable', 'in:aktif,nonaktif'],
             'harga_jual' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $validated['kode_produk'] = 'HG-' . str_pad((string) $produk->id, 2, '0', STR_PAD_LEFT);
+        $deskripsi = $validated['deskripsi'] ?? $validated['kategori'] ?? $produk->deskripsi;
+        $validated['deskripsi'] = $deskripsi;
+        $validated['kategori'] = $validated['kategori'] ?? $deskripsi ?? $produk->kategori;
         $validated['status'] = $validated['status'] ?? ($produk->status ?: 'aktif');
-        $validated['kategori'] = $validated['deskripsi'] ?? $produk->kategori;
+
+        if ($request->hasFile('gambar')) {
+            if ($produk->gambar && !str_starts_with($produk->gambar, 'images/') && Storage::disk('public')->exists($produk->gambar)) {
+                Storage::disk('public')->delete($produk->gambar);
+            }
+            $validated['gambar'] = $request->file('gambar')->store('produk', 'public');
+        } else {
+            unset($validated['gambar']);
+        }
 
         $produk->update($validated);
 
@@ -80,12 +80,33 @@ class ProdukController extends Controller
 
     public function destroy(Produk $produk)
     {
-        if (auth()->user()->role !== 'admin') {
-            return redirect('/');
+        if ($produk->gambar && !str_starts_with($produk->gambar, 'images/') && Storage::disk('public')->exists($produk->gambar)) {
+            Storage::disk('public')->delete($produk->gambar);
         }
 
         $produk->delete();
 
         return redirect()->route('dashboard.produk')->with('success', 'Data produk berhasil dihapus.');
+    }
+
+    private function normalizeRequestInputs(Request $request): void
+    {
+        if (!$request->has('stok') && $request->has('jumlah_stok')) {
+            $request->merge([
+                'stok' => $request->input('jumlah_stok'),
+            ]);
+        }
+
+        if (!$request->has('harga_jual') && $request->has('harga')) {
+            $request->merge([
+                'harga_jual' => $request->input('harga'),
+            ]);
+        }
+
+        if ($request->has('harga_jual')) {
+            $request->merge([
+                'harga_jual' => preg_replace('/[^\d]/', '', (string) $request->input('harga_jual')),
+            ]);
+        }
     }
 }

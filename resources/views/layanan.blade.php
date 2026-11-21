@@ -53,7 +53,7 @@
                                 </svg>
                                 <span>Pesanan Saya</span>
                             </a>
-                            <a href="{{ route('user.pesanan') }}" class="dropdown-item" role="menuitem">
+                            <a href="{{ route('user.pesanan', ['tab' => 'jadwal']) }}" class="dropdown-item" role="menuitem">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                     <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -101,7 +101,7 @@
                                 </svg>
                             </div>
                             <h1 class="empty-catalog-title">Belum Ada Layanan Tersedia</h1>
-                            <p class="empty-catalog-desc">Saat ini belum ada layanan aktif yang ditambahkan oleh Admin di dasbor. Silakan cek kembali nanti atau kembali ke beranda.</p>
+                            <p class="empty-catalog-desc">Layanan akan muncul otomatis disini jika tersedia.</p>
                             <a href="{{ route('home') }}" class="booking-next-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; margin-top:18px;">Kembali ke Beranda</a>
                         </div>
                     </section>
@@ -294,20 +294,34 @@
                                 </div>
 
                                 <div class="booking-field">
-                                    <label for="jam_servis" class="booking-label">Jam servis</label>
-                                    <div class="booking-input-icon-wrap">
-                                        <input
-                                            type="text"
-                                            id="jam_servis"
-                                            name="jam_servis"
-                                            class="booking-input has-trailing-icon"
-                                            placeholder="Masukkan Waktu"
-                                            onfocus="(this.type='time')"
-                                            onblur="if(!this.value)this.type='text'"
-                                        >
-                                        <svg class="input-trailing-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                            <circle cx="12" cy="12" r="9"></circle>
-                                            <polyline points="12 7 12 12 14.5 14.5"></polyline>
+                                    <label for="jam_servis" class="booking-label">Jam servis <span style="font-weight:500; color:#71717a; font-size:11.5px;">(08.00 – 22.00 WITA)</span></label>
+                                    <div class="booking-select-wrap">
+                                        <select id="jam_servis" name="jam_servis" class="booking-input booking-select">
+                                            <option value="" disabled selected>Pilih jam kedatangan</option>
+                                            <optgroup label="Pagi">
+                                                <option value="08:00">08.00 WITA (Pagi)</option>
+                                                <option value="09:00">09.00 WITA (Pagi)</option>
+                                                <option value="10:00">10.00 WITA (Pagi)</option>
+                                                <option value="11:00">11.00 WITA (Menjelang Siang)</option>
+                                            </optgroup>
+                                            <optgroup label="Siang &amp; Sore">
+                                                <option value="12:00">12.00 WITA (Siang)</option>
+                                                <option value="13:00">13.00 WITA (Siang)</option>
+                                                <option value="14:00">14.00 WITA (Siang)</option>
+                                                <option value="15:00">15.00 WITA (Sore)</option>
+                                                <option value="16:00">16.00 WITA (Sore)</option>
+                                                <option value="17:00">17.00 WITA (Sore)</option>
+                                            </optgroup>
+                                            <optgroup label="Malam">
+                                                <option value="18:00">18.00 WITA (Malam)</option>
+                                                <option value="19:00">19.00 WITA (Malam)</option>
+                                                <option value="20:00">20.00 WITA (Malam)</option>
+                                                <option value="21:00">21.00 WITA (Malam)</option>
+                                                <option value="22:00">22.00 WITA (Batas Akhir)</option>
+                                            </optgroup>
+                                        </select>
+                                        <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
                                         </svg>
                                     </div>
                                 </div>
@@ -316,26 +330,13 @@
                                     <label for="tanggal_servis" class="booking-label">Tanggal servis</label>
                                     <div class="booking-input-icon-wrap">
                                         <input
-                                            type="text"
+                                            type="date"
                                             id="tanggal_servis"
                                             name="tanggal_servis"
-                                            class="booking-input has-trailing-icon"
-                                            placeholder="Masukkan Tanggal"
-                                            onfocus="(this.type='date')"
-                                            onblur="if(!this.value)this.type='text'"
+                                            class="booking-input"
+                                            min="{{ now()->toDateString() }}"
+                                            value="{{ now()->toDateString() }}"
                                         >
-                                        <svg class="input-trailing-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                                            <line x1="3" y1="9" x2="21" y2="9"></line>
-                                            <circle cx="8" cy="13" r="0.8" fill="currentColor"></circle>
-                                            <circle cx="12" cy="13" r="0.8" fill="currentColor"></circle>
-                                            <circle cx="16" cy="13" r="0.8" fill="currentColor"></circle>
-                                            <circle cx="8" cy="17" r="0.8" fill="currentColor"></circle>
-                                            <circle cx="12" cy="17" r="0.8" fill="currentColor"></circle>
-                                            <circle cx="16" cy="17" r="0.8" fill="currentColor"></circle>
-                                        </svg>
                                     </div>
                                 </div>
                             </div>
@@ -460,6 +461,12 @@
                                         <input type="hidden" name="kategori" value="layanan">
                                         <input type="hidden" name="layanan_id" id="submitLayananId" value="">
                                         <input type="hidden" name="jadwal_service" id="submitJadwalService" value="">
+                                        <input type="hidden" name="merek" id="submitMerek" value="">
+                                        <input type="hidden" name="model" id="submitModel" value="">
+                                        <input type="hidden" name="tahun" id="submitTahun" value="">
+                                        <input type="hidden" name="plat_nomor" id="submitPlatNomor" value="">
+                                        <input type="hidden" name="nama_lengkap" id="submitNamaLengkap" value="">
+                                        <input type="hidden" name="no_telepon" id="submitNoTelepon" value="">
                                         <button type="submit" class="booking-next-btn" id="btnConfirmBooking">Konfirmasi Pemesanan</button>
                                     </form>
                                 @else
@@ -517,10 +524,22 @@
 
             const submitLayananId = document.getElementById('submitLayananId');
             const submitJadwalService = document.getElementById('submitJadwalService');
+            const submitMerek = document.getElementById('submitMerek');
+            const submitModel = document.getElementById('submitModel');
+            const submitTahun = document.getElementById('submitTahun');
+            const submitPlatNomor = document.getElementById('submitPlatNomor');
+            const submitNamaLengkap = document.getElementById('submitNamaLengkap');
+            const submitNoTelepon = document.getElementById('submitNoTelepon');
             if (submitLayananId) submitLayananId.value = layananId;
             if (submitJadwalService) {
                 submitJadwalService.value = (tanggal && jam) ? `${tanggal} ${jam}:00` : '';
             }
+            if (submitMerek) submitMerek.value = merek;
+            if (submitModel) submitModel.value = model;
+            if (submitTahun) submitTahun.value = tahun;
+            if (submitPlatNomor) submitPlatNomor.value = plat;
+            if (submitNamaLengkap) submitNamaLengkap.value = nama;
+            if (submitNoTelepon) submitNoTelepon.value = telepon;
         }
 
         const submitLayananOrderForm = document.getElementById('submitLayananOrderForm');

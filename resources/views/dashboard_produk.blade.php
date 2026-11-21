@@ -151,6 +151,127 @@
             padding: 5px 18px;
             border-radius: 9999px;
         }
+        .produk-cell-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .produk-thumb-box {
+            width: 64px;
+            height: 46px;
+            border-radius: 6px;
+            background-color: #d4d4d8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid #e4e4e7;
+        }
+        .produk-thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .produk-thumb-placeholder {
+            color: #71717a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .produk-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .produk-name-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: #09090b;
+            line-height: 1.25;
+        }
+        .produk-code-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: #71717a;
+            line-height: 1.2;
+        }
+        .deskripsi-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: #09090b;
+        }
+        .stok-cell-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            line-height: 1.25;
+        }
+        .stok-qty-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: #09090b;
+        }
+        .stok-status-aman {
+            font-size: 13px;
+            font-weight: 800;
+            color: #16a34a;
+        }
+        .stok-status-menipis {
+            font-size: 13px;
+            font-weight: 800;
+            color: #f59e0b;
+        }
+        .stok-status-habis {
+            font-size: 13px;
+            font-weight: 800;
+            color: #881337;
+        }
+        .harga-text {
+            font-size: 14.5px;
+            font-weight: 800;
+            color: #09090b;
+        }
+        .table-pagination-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .pagination-summary {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #52525b;
+        }
+        .foto-upload-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .foto-preview-box {
+            width: 72px;
+            height: 54px;
+            border-radius: 10px;
+            background-color: #f4f4f5;
+            border: 1px dashed #a1a1aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .foto-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .foto-input-help {
+            font-size: 11.5px;
+            color: #71717a;
+            margin-top: 4px;
+        }
         .action-btns {
             display: inline-flex;
             align-items: center;
@@ -413,10 +534,9 @@
                         <thead>
                             <tr>
                                 <th>Produk</th>
-                                <th>Kode</th>
-                                <th>Stok</th>
-                                <th class="th-status">Status</th>
-                                <th>Harga</th>
+                                <th>Deskripsi</th>
+                                <th>Jumlah stok</th>
+                                <th>Harga jual</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -424,21 +544,49 @@
                             @forelse ($daftarProduk ?? [] as $produk)
                                 @php
                                     $statusRow = $produk->status ?? 'aktif';
-                                    $kodeTampil = 'HG-' . str_pad((string) $produk->id, 2, '0', STR_PAD_LEFT);
+                                    $deskripsiTampil = $produk->deskripsi ?: ($produk->kategori ?: '-');
                                     $stokProduk = (int) ($produk->stok ?? 0);
+                                    $gambarUrl = $produk->gambar_url;
                                 @endphp
                                 <tr class="produk-row" data-status="{{ $statusRow }}">
-                                    <td>{{ $produk->nama_produk }}</td>
-                                    <td>{{ $kodeTampil }}</td>
-                                    <td>{{ $stokProduk }}</td>
-                                    <td class="td-status">
-                                        @if ($stokProduk < 5)
-                                            <span class="badge-status-menipis">Stok menipis</span>
-                                        @else
-                                            <span class="badge-status-aktif">Stok tersedia</span>
-                                        @endif
+                                    <td>
+                                        <div class="produk-cell-wrap">
+                                            <div class="produk-thumb-box">
+                                                @if ($gambarUrl)
+                                                    <img src="{{ $gambarUrl }}" alt="{{ $produk->nama_produk }}">
+                                                @else
+                                                    <span class="produk-thumb-placeholder" aria-hidden="true">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                                                            <polyline points="21 15 16 10 5 21"/>
+                                                        </svg>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="produk-meta">
+                                                <span class="produk-name-text">{{ $produk->nama_produk }}</span>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td>{{ number_format($produk->harga_jual, 0, ',', '.') }}</td>
+                                    <td>
+                                        <span class="deskripsi-text">{{ $deskripsiTampil }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="stok-cell-wrap">
+                                            <span class="stok-qty-text">{{ $stokProduk }} Pcs</span>
+                                            @if ($stokProduk <= 0)
+                                                <span class="stok-status-habis">Habis</span>
+                                            @elseif ($stokProduk < 5)
+                                                <span class="stok-status-menipis">Menipis</span>
+                                            @else
+                                                <span class="stok-status-aman">Aman</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="harga-text">{{ number_format($produk->harga_jual, 0, ',', '.') }}</span>
+                                    </td>
                                     <td>
                                         <div class="action-btns">
                                             <button
@@ -447,6 +595,8 @@
                                                 onclick="openEditModal({{ json_encode([
                                                     'id' => $produk->id,
                                                     'nama_produk' => $produk->nama_produk,
+                                                    'deskripsi' => $deskripsiTampil === '-' ? '' : $deskripsiTampil,
+                                                    'gambar_url' => $gambarUrl,
                                                     'stok' => $stokProduk,
                                                     'status' => $statusRow,
                                                     'harga_jual' => (float) $produk->harga_jual,
@@ -457,7 +607,7 @@
                                                     <path d="M12 20h9"/>
                                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                                                 </svg>
-                                                Ubah
+                                                Edit
                                             </button>
 
                                             <form method="POST" action="{{ route('dashboard.produk.destroy', $produk->id) }}" onsubmit="return confirm('Yakin ingin menghapus produk {{ $produk->nama_produk }}?');" style="display:inline;">
@@ -475,7 +625,7 @@
                                 </tr>
                             @empty
                                 <tr id="emptyServerRow">
-                                    <td colspan="6" class="empty-state-cell">
+                                    <td colspan="5" class="empty-state-cell">
                                         <div class="empty-state-box">
                                             <div class="empty-state-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -491,7 +641,7 @@
                                 </tr>
                             @endforelse
                             <tr id="emptyFilterRow" style="display:none;">
-                                <td colspan="6" class="empty-state-cell">
+                                <td colspan="5" class="empty-state-cell">
                                     <div class="empty-state-box">
                                         <div class="empty-state-icon">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -508,6 +658,7 @@
                     </table>
                 </div>
                 <div class="table-pagination-footer">
+                    <div class="pagination-summary" id="paginationSummary">Menampilkan 0 dari 0 Produk</div>
                     <div class="pagination-controls" id="paginationControls"></div>
                 </div>
             </div>
@@ -519,18 +670,41 @@
     <div id="crudProdukModal" class="crud-modal-overlay" aria-hidden="true">
         <div class="crud-modal-card">
             <h3 id="crudModalTitle" class="crud-modal-title">Tambah Produk</h3>
-            <form id="crudProdukForm" method="POST" action="{{ route('dashboard.produk.store') }}">
+            <form id="crudProdukForm" method="POST" action="{{ route('dashboard.produk.store') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" id="crudFormMethod" value="POST">
 
                 <div class="form-group">
+                    <label for="inputGambar">Foto Produk</label>
+                    <div class="foto-upload-box">
+                        <div class="foto-preview-box" id="fotoPreviewBox">
+                            <img id="fotoPreviewImg" src="" alt="Preview Foto" style="display:none;">
+                            <svg id="fotoPreviewIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </div>
+                        <div style="flex:1;">
+                            <input type="file" id="inputGambar" name="gambar" class="form-control" accept="image/png,image/jpeg,image/jpg,image/webp">
+                            <div class="foto-input-help">Format JPG, PNG, atau WEBP (maks. 2MB)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="inputNamaProduk">Nama Produk</label>
-                    <input type="text" id="inputNamaProduk" name="nama_produk" class="form-control" placeholder="Contoh: Oli Mesin, Kampas Rem" required>
+                    <input type="text" id="inputNamaProduk" name="nama_produk" class="form-control" placeholder="Contoh: Aki GS Astra" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputDeskripsi">Deskripsi / Kategori</label>
+                    <input type="text" id="inputDeskripsi" name="deskripsi" class="form-control" placeholder="Contoh: Aki, Pengereman, Pembakaran" required>
                 </div>
 
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label for="inputStok">Stok</label>
+                        <label for="inputStok">Jumlah Stok (Pcs)</label>
                         <input type="number" id="inputStok" name="stok" class="form-control" min="0" value="10" required>
                     </div>
 
@@ -544,8 +718,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="inputHargaJual">Harga (Rp)</label>
-                    <input type="text" inputmode="numeric" id="inputHargaJual" name="harga_jual" class="form-control" placeholder="Contoh: 75.000" autocomplete="off" required>
+                    <label for="inputHargaJual">Harga Jual (Rp)</label>
+                    <input type="text" inputmode="numeric" id="inputHargaJual" name="harga_jual" class="form-control" placeholder="Contoh: 295.000" autocomplete="off" required>
                 </div>
 
                 <div class="crud-modal-actions">
@@ -564,7 +738,8 @@
         const emptyFilterRow = document.getElementById('emptyFilterRow');
         const emptyServerRow = document.getElementById('emptyServerRow');
         const paginationControls = document.getElementById('paginationControls');
-        const ITEMS_PER_PAGE = 5;
+        const paginationSummary = document.getElementById('paginationSummary');
+        const ITEMS_PER_PAGE = 6;
         let activeStatus = 'aktif';
         let currentPage = 1;
 
@@ -579,7 +754,7 @@
                     tr.className = 'filler-row';
                     let cells = '';
                     for (let c = 0; c < colCount; c++) {
-                        cells += `<td class="${c === 3 ? 'td-status' : ''}"><span class="slot-dash"></span></td>`;
+                        cells += `<td><span class="slot-dash"></span></td>`;
                     }
                     tr.innerHTML = cells;
                     produkTableBody.appendChild(tr);
@@ -587,20 +762,28 @@
             }
         }
 
-        function renderPagination(totalItems, totalPages) {
+        function renderPagination(totalItems, totalPages, startItem, endItem) {
+            if (paginationSummary) {
+                if (totalItems === 0) {
+                    paginationSummary.textContent = 'Menampilkan 0 dari 0 Produk';
+                } else {
+                    paginationSummary.textContent = `Menampilkan ${startItem}-${endItem} dari ${totalItems} Produk`;
+                }
+            }
+
             if (!paginationControls) return;
 
             if (totalItems === 0) {
                 paginationControls.innerHTML = `
-                    <button type="button" class="page-btn" disabled>&lsaquo; Sebelumnya</button>
+                    <button type="button" class="page-btn" disabled>&lt; Sebelumnya</button>
                     <button type="button" class="page-btn active">1</button>
-                    <button type="button" class="page-btn" disabled>Berikutnya &rsaquo;</button>
+                    <button type="button" class="page-btn" disabled>Selanjutnya &gt;</button>
                 `;
                 return;
             }
 
             let buttonsHtml = `
-                <button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&lsaquo; Sebelumnya</button>
+                <button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&lt; Sebelumnya</button>
             `;
 
             for (let i = 1; i <= totalPages; i++) {
@@ -610,7 +793,7 @@
             }
 
             buttonsHtml += `
-                <button type="button" class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">Berikutnya &rsaquo;</button>
+                <button type="button" class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">Selanjutnya &gt;</button>
             `;
 
             paginationControls.innerHTML = buttonsHtml;
@@ -630,8 +813,8 @@
             if (resetPage) currentPage = 1;
 
             if (emptyServerRow) {
-                syncFillerRows(0, 6);
-                renderPagination(0, 1);
+                syncFillerRows(0, 5);
+                renderPagination(0, 1, 0, 0);
                 return;
             }
 
@@ -659,8 +842,11 @@
                 emptyFilterRow.style.display = totalItems === 0 ? '' : 'none';
             }
 
-            syncFillerRows(pageRows.length, 6);
-            renderPagination(totalItems, totalPages);
+            const startItem = totalItems === 0 ? 0 : startIdx + 1;
+            const endItem = totalItems === 0 ? 0 : startIdx + pageRows.length;
+
+            syncFillerRows(pageRows.length, 5);
+            renderPagination(totalItems, totalPages, startItem, endItem);
         }
 
         statusTabButtons.forEach((button) => {
@@ -690,9 +876,40 @@
         const crudModalTitle = document.getElementById('crudModalTitle');
         const crudFormMethod = document.getElementById('crudFormMethod');
         const inputNamaProduk = document.getElementById('inputNamaProduk');
+        const inputDeskripsi = document.getElementById('inputDeskripsi');
+        const inputGambar = document.getElementById('inputGambar');
+        const fotoPreviewImg = document.getElementById('fotoPreviewImg');
+        const fotoPreviewIcon = document.getElementById('fotoPreviewIcon');
         const inputStok = document.getElementById('inputStok');
         const inputStatus = document.getElementById('inputStatus');
         const inputHargaJual = document.getElementById('inputHargaJual');
+
+        function setFotoPreview(url) {
+            if (url) {
+                fotoPreviewImg.src = url;
+                fotoPreviewImg.style.display = 'block';
+                fotoPreviewIcon.style.display = 'none';
+            } else {
+                fotoPreviewImg.src = '';
+                fotoPreviewImg.style.display = 'none';
+                fotoPreviewIcon.style.display = 'block';
+            }
+        }
+
+        if (inputGambar) {
+            inputGambar.addEventListener('change', function () {
+                const file = this.files && this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        setFotoPreview(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    setFotoPreview(null);
+                }
+            });
+        }
 
         function formatThousandDots(value) {
             const digits = String(value ?? '').replace(/\D/g, '');
@@ -719,6 +936,9 @@
             crudForm.action = "{{ route('dashboard.produk.store') }}";
             crudFormMethod.value = 'POST';
             inputNamaProduk.value = '';
+            inputDeskripsi.value = '';
+            if (inputGambar) inputGambar.value = '';
+            setFotoPreview(null);
             inputStok.value = 10;
             inputStatus.value = activeStatus;
             inputHargaJual.value = '';
@@ -726,10 +946,13 @@
         }
 
         function openEditModal(data) {
-            crudModalTitle.textContent = 'Ubah Produk';
+            crudModalTitle.textContent = 'Edit Produk';
             crudForm.action = data.update_url;
             crudFormMethod.value = 'PUT';
             inputNamaProduk.value = data.nama_produk || '';
+            inputDeskripsi.value = data.deskripsi || '';
+            if (inputGambar) inputGambar.value = '';
+            setFotoPreview(data.gambar_url || null);
             inputStok.value = data.stok ?? 0;
             inputStatus.value = data.status || 'aktif';
             inputHargaJual.value = formatThousandDots(Math.round(Number(data.harga_jual || 0)));
