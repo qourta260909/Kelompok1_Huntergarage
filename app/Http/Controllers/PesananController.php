@@ -68,7 +68,9 @@ class PesananController extends Controller
             'waktu' => $jamBooking,
             'nama' => (string) ($pesanan->nama_pelanggan ?: $user->name),
             'telepon' => (string) ($pesanan->no_telepon ?: '-'),
-            'metode_pembayaran' => 'Qris',
+            'metode_pembayaran' => ($pesanan->kategori ?? 'layanan') === 'produk'
+                ? 'Transfer Bank BCA'
+                : 'Bayar di Tempat / Transfer Bank BCA (Setelah Selesai)',
             'total' => 'Rp' . number_format((float) $pesanan->total_harga, 0, ',', '.'),
             'dicetak_pada' => now()->locale('id')->translatedFormat('d M Y, H:i') . ' WITA',
         ]);
@@ -86,7 +88,7 @@ class PesananController extends Controller
         $userId = $request->user()->id;
         $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
         $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
-        $pesananUser = Pesanan::with(['jadwalService', 'layanan', 'produk', 'details.produk'])
+        $pesananUser = Pesanan::with(['jadwalService', 'layanan', 'produk', 'details.produk', 'pembayaran'])
             ->where('user_id', $userId)
             ->orderBy('id', 'desc')
             ->get();
@@ -316,7 +318,7 @@ class PesananController extends Controller
 
     public function index()
     {
-        $daftarPesanan = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk'])
+        $daftarPesanan = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk', 'pembayaran'])
             ->where('status', 'baru')
             ->orderBy('id', 'asc')
             ->get()
@@ -330,7 +332,7 @@ class PesananController extends Controller
 
     public function riwayat()
     {
-        $daftarRiwayat = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk'])
+        $daftarRiwayat = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk', 'pembayaran'])
             ->whereIn('status', ['proses', 'selesai', 'dibatalkan'])
             ->orderBy('id', 'asc')
             ->get()
@@ -653,7 +655,7 @@ class PesananController extends Controller
                     'pesanan_id' => $pesanan->id,
                     'nomor_invoice' => 'INV-PESANAN-' . $pesanan->id,
                     'jumlah' => $pesanan->total_harga,
-                    'metode_pembayaran' => $pesanan->kategori === 'produk' ? 'transfer_bca' : 'tunai',
+                    'metode_pembayaran' => 'transfer_bca',
                     'bukti_transfer' => $pesanan->bukti_pembayaran,
                     'status' => 'lunas',
                     'dibayar_pada' => $now,

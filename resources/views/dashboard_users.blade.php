@@ -167,15 +167,19 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            flex-wrap: nowrap;
         }
         .btn-pill-edit {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
+            height: 32px;
+            white-space: nowrap;
             gap: 5px;
             background-color: #ffffff;
             color: #000000;
             border: 1.5px solid #000000;
-            padding: 5px 13px;
+            padding: 0 13px;
             border-radius: 9999px;
             font-size: 12px;
             font-weight: 700;
@@ -188,11 +192,14 @@
         .btn-pill-delete {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
+            height: 32px;
+            white-space: nowrap;
             gap: 5px;
             background-color: #ffffff;
             color: #ef4444;
             border: 1.5px solid #ef4444;
-            padding: 5px 13px;
+            padding: 0 13px;
             border-radius: 9999px;
             font-size: 12px;
             font-weight: 700;

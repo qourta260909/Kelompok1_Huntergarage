@@ -36,15 +36,20 @@ class Pesanan extends Model
 
     public function getBuktiPembayaranUrlAttribute(): ?string
     {
-        if (!$this->bukti_pembayaran) {
+        $path = $this->bukti_pembayaran;
+        if (!$path && $this->relationLoaded('pembayaran')) {
+            $path = $this->pembayaran?->bukti_transfer;
+        }
+
+        if (!$path) {
             return null;
         }
 
-        if (str_starts_with($this->bukti_pembayaran, 'http://') || str_starts_with($this->bukti_pembayaran, 'https://')) {
-            return $this->bukti_pembayaran;
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
         }
 
-        return asset('storage/' . ltrim($this->bukti_pembayaran, '/'));
+        return asset('storage/' . ltrim($path, '/'));
     }
 
     public function user(): BelongsTo

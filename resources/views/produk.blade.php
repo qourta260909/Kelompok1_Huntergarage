@@ -335,6 +335,54 @@
             background-color: #a1a1aa;
             cursor: not-allowed;
         }
+        .catalog-card-actions {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .catalog-add-outline-btn {
+            width: 100%;
+            height: 36px;
+            border: 1.5px solid #111111;
+            border-radius: 9px;
+            background-color: #ffffff;
+            color: #111111;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background-color 0.16s ease, transform 0.16s ease;
+        }
+        .catalog-add-outline-btn:hover {
+            background-color: #f4f4f5;
+            transform: translateY(-1px);
+        }
+        .catalog-buy-btn {
+            width: 100%;
+            height: 36px;
+            border: none;
+            border-radius: 9px;
+            background-color: #111111;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background-color 0.16s ease, transform 0.16s ease;
+        }
+        .catalog-buy-btn:hover {
+            background-color: #27272a;
+            transform: translateY(-1px);
+        }
 
         /* Modal Keranjang Produk (Sesuai Desain) */
         .produk-modal-overlay {
@@ -528,6 +576,13 @@
             flex-direction: column;
             gap: 6px;
         }
+        .cart-address-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .cart-address-label {
             font-size: 13px;
             font-weight: 700;
@@ -535,6 +590,36 @@
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+        .cart-fill-address-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #ffffff;
+            color: #111827;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            padding: 5px 11px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+        .cart-fill-address-btn:hover {
+            background-color: #f3f4f6;
+            border-color: #111111;
+        }
+        .cart-address-feedback {
+            font-size: 11.5px;
+            color: #6b7280;
+            display: none;
+        }
+        .cart-address-feedback.is-error {
+            color: #b91c1c;
+        }
+        .cart-address-feedback.is-success {
+            color: #15803d;
         }
         .cart-address-input {
             width: 100%;
@@ -1186,16 +1271,31 @@
                                     </div>
                                     <strong class="catalog-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</strong>
                                     @auth
-                                        <button
-                                            type="button"
-                                            class="catalog-add-btn"
-                                            {{ $stokHabis ? 'disabled' : '' }}
-                                            onclick="addToCart({{ $produk->id }}, @js($produk->nama_produk), @js($deskripsiProduk), {{ (float) $produk->harga_jual }}, {{ $stokProduk }}, @js($produk->gambar_url))"
-                                        >
-                                            {{ $stokHabis ? 'Stok Habis' : '+ Keranjang' }}
-                                        </button>
+                                        @if ($stokHabis)
+                                            <button type="button" class="catalog-add-btn" disabled>Stok Habis</button>
+                                        @else
+                                            <div class="catalog-card-actions">
+                                                <button
+                                                    type="button"
+                                                    class="catalog-add-outline-btn"
+                                                    onclick="addToCart({{ $produk->id }}, @js($produk->nama_produk), @js($deskripsiProduk), {{ (float) $produk->harga_jual }}, {{ $stokProduk }}, @js($produk->gambar_url))"
+                                                >
+                                                    + Keranjang
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="catalog-buy-btn"
+                                                    onclick="buyNowProduk({{ $produk->id }}, @js($produk->nama_produk), @js($deskripsiProduk), {{ (float) $produk->harga_jual }}, {{ $stokProduk }}, @js($produk->gambar_url))"
+                                                >
+                                                    Beli Langsung
+                                                </button>
+                                            </div>
+                                        @endif
                                     @else
-                                        <a href="{{ route('login') }}" class="catalog-add-btn" style="text-decoration:none;">+ Keranjang</a>
+                                        <div class="catalog-card-actions">
+                                            <a href="{{ route('login') }}" class="catalog-add-outline-btn">+ Keranjang</a>
+                                            <a href="{{ route('login') }}" class="catalog-buy-btn">Beli Langsung</a>
+                                        </div>
                                     @endauth
                                 </div>
                             </article>
@@ -1238,16 +1338,31 @@
                                     </div>
                                     <strong class="catalog-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</strong>
                                     @auth
-                                        <button
-                                            type="button"
-                                            class="catalog-add-btn"
-                                            {{ $stokHabis ? 'disabled' : '' }}
-                                            onclick="addToCart({{ $produk->id }}, @js($produk->nama_produk), @js($deskripsiProduk), {{ (float) $produk->harga_jual }}, {{ $stokProduk }}, @js($produk->gambar_url))"
-                                        >
-                                            {{ $stokHabis ? 'Stok Habis' : '+ Keranjang' }}
-                                        </button>
+                                        @if ($stokHabis)
+                                            <button type="button" class="catalog-add-btn" disabled>Stok Habis</button>
+                                        @else
+                                            <div class="catalog-card-actions">
+                                                <button
+                                                    type="button"
+                                                    class="catalog-add-outline-btn"
+                                                    onclick="addToCart({{ $produk->id }}, @js($produk->nama_produk), @js($deskripsiProduk), {{ (float) $produk->harga_jual }}, {{ $stokProduk }}, @js($produk->gambar_url))"
+                                                >
+                                                    + Keranjang
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="catalog-buy-btn"
+                                                    onclick="buyNowProduk({{ $produk->id }}, @js($produk->nama_produk), @js($deskripsiProduk), {{ (float) $produk->harga_jual }}, {{ $stokProduk }}, @js($produk->gambar_url))"
+                                                >
+                                                    Beli Langsung
+                                                </button>
+                                            </div>
+                                        @endif
                                     @else
-                                        <a href="{{ route('login') }}" class="catalog-add-btn" style="text-decoration:none;">+ Keranjang</a>
+                                        <div class="catalog-card-actions">
+                                            <a href="{{ route('login') }}" class="catalog-add-outline-btn">+ Keranjang</a>
+                                            <a href="{{ route('login') }}" class="catalog-buy-btn">Beli Langsung</a>
+                                        </div>
                                     @endauth
                                 </div>
                             </article>
@@ -1297,13 +1412,30 @@
 
                     <!-- Input Alamat Pengiriman Pembeli -->
                     <div class="cart-address-box">
-                        <label for="inputAlamatPembeli" class="cart-address-label">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            Alamat Pengiriman
-                        </label>
+                        <div class="cart-address-header">
+                            <label for="inputAlamatPembeli" class="cart-address-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                Alamat Pengiriman
+                            </label>
+                            @auth
+                                <button
+                                    type="button"
+                                    id="btnIsiAlamatSaya"
+                                    class="cart-fill-address-btn"
+                                    data-user-alamat="{{ auth()->user()->alamat ?? '' }}"
+                                    onclick="isiDenganAlamatSaya()"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    Isi dengan alamat saya
+                                </button>
+                            @endauth
+                        </div>
                         <textarea
                             id="inputAlamatPembeli"
                             name="alamat"
@@ -1311,6 +1443,7 @@
                             placeholder="Masukkan alamat lengkap pengiriman (Nama jalan, No. rumah, Kecamatan, Kota)..."
                             required
                         >{{ old('alamat', auth()->user()->alamat ?? '') }}</textarea>
+                        <div id="alamatSayaFeedback" class="cart-address-feedback"></div>
                     </div>
 
                     <!-- Metode Pembayaran: Transfer Bank BCA -->
@@ -1378,8 +1511,8 @@
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                     </div>
-                    <h2 id="gojekPopTitle" class="gojek-pop-title">Pembayaran Berhasil Dicatat!</h2>
-                    <p class="gojek-pop-sub">Pesanan Anda sudah masuk dan menunggu konfirmasi bengkel.</p>
+                    <h2 id="gojekPopTitle" class="gojek-pop-title">Pembayaran Berhasil Dikirim!</h2>
+                    <p class="gojek-pop-sub">Bukti pembayaran Anda sedang menunggu verifikasi admin bengkel.</p>
                     <span class="gojek-pop-code" id="gojekPopKode">PSN-0000</span>
                 </div>
 
@@ -1390,7 +1523,7 @@
                     </div>
                     <div class="gojek-pop-step active">
                         <div class="gojek-pop-dot">2</div>
-                        <span class="gojek-pop-step-lbl">Diproses Bengkel</span>
+                        <span class="gojek-pop-step-lbl">Verifikasi Admin</span>
                     </div>
                     <div class="gojek-pop-step">
                         <div class="gojek-pop-dot">3</div>
@@ -1414,7 +1547,7 @@
                 </div>
 
                 <div class="gojek-pop-actions">
-                    <a href="{{ route('user.pesanan') }}" class="gojek-pop-btn-primary" id="gojekPopLihatPesanan">Lihat Pesanan Saya</a>
+                    <a href="{{ route('user.pesanan') }}" class="gojek-pop-btn-primary" id="gojekPopLihatPesanan">Lihat Detail Pesanan</a>
                     <button type="button" class="gojek-pop-btn-close" onclick="closeGojekPaymentPopup()">Tutup</button>
                 </div>
             </div>
@@ -1429,6 +1562,8 @@
         // =====================================================================
         const KEY_KERANJANG = 'hg_produk_cart_{{ auth()->id() ?? "guest" }}';
         let keranjang = [];
+        let checkoutMode = 'cart';
+        let directCheckoutItem = null;
         let timerToast = null;
 
         // Ubah angka jadi format Rupiah (Contoh: 50000 -> "Rp 50.000")
@@ -1503,9 +1638,36 @@
             tampilkanNotifikasiToast(nama + ' ditambahkan ke Keranjang');
         }
 
+        // Dipanggil saat tombol "Beli Langsung" pada kartu produk diklik
+        function buyNowProduk(id, nama, deskripsi, harga, stokMaks, gambarUrl) {
+            if (stokMaks <= 0) {
+                alert('Stok produk ini sedang habis.');
+                return;
+            }
+            checkoutMode = 'direct';
+            directCheckoutItem = {
+                id: Number(id),
+                nama: nama,
+                deskripsi: deskripsi || '',
+                harga: Number(harga),
+                stok: Number(stokMaks),
+                gambar_url: gambarUrl || null,
+                qty: 1
+            };
+
+            const modal = document.getElementById('produkOrderModal');
+            if (!modal) return;
+            const toast = document.getElementById('cartToast');
+            if (toast) toast.classList.remove('show');
+
+            tampilkanIsiModalKeranjang();
+            modal.classList.add('active');
+        }
+
         // Dipanggil saat tombol (+) atau (-) di dalam modal keranjang diklik
         function updateCartItemQty(id, perubahan) {
-            const item = keranjang.find(function (i) {
+            const listAktif = checkoutMode === 'direct' && directCheckoutItem ? [directCheckoutItem] : keranjang;
+            const item = listAktif.find(function (i) {
                 return i.id === Number(id);
             });
             if (!item) return;
@@ -1513,6 +1675,10 @@
             const jumlahBaru = item.qty + perubahan;
 
             if (jumlahBaru <= 0) {
+                if (checkoutMode === 'direct') {
+                    closeProdukOrderModal();
+                    return;
+                }
                 // Kalau dikurangi sampai 0, hapus produk dari keranjang
                 removeCartItem(id);
                 return;
@@ -1524,12 +1690,19 @@
             }
 
             item.qty = jumlahBaru;
-            simpanKeranjang();
+            if (checkoutMode === 'cart') {
+                simpanKeranjang();
+            }
             tampilkanIsiModalKeranjang();
         }
 
         // Hapus 1 produk dari modal keranjang (ikon tempat sampah)
         function removeCartItem(id) {
+            if (checkoutMode === 'direct') {
+                directCheckoutItem = null;
+                closeProdukOrderModal();
+                return;
+            }
             keranjang = keranjang.filter(function (item) {
                 return item.id !== Number(id);
             });
@@ -1553,6 +1726,8 @@
             const modal = document.getElementById('produkOrderModal');
             if (!modal) return;
 
+            checkoutMode = 'cart';
+
             // Sembunyikan toast jika sedang muncul
             const toast = document.getElementById('cartToast');
             if (toast) toast.classList.remove('show');
@@ -1566,6 +1741,10 @@
             const modal = document.getElementById('produkOrderModal');
             if (!modal) return;
             modal.classList.remove('active');
+            if (checkoutMode === 'direct') {
+                directCheckoutItem = null;
+                checkoutMode = 'cart';
+            }
         }
 
         // Munculkan notifikasi kecil di bawah layar selama 3.5 detik
@@ -1583,19 +1762,27 @@
             }, 3500);
         }
 
-        // Gambar daftar barang ke dalam HTML modal keranjang
+        // Gambar daftar barang ke dalam HTML modal keranjang / checkout langsung
         function tampilkanIsiModalKeranjang() {
             const wadahList = document.getElementById('cartItemsList');
             const pesanKosong = document.getElementById('cartEmptyState');
             const formKeranjang = document.getElementById('produkOrderForm');
             const btnHapusSemua = document.getElementById('btnClearAllCart');
+            const modalTitleEl = document.getElementById('produkModalTitle');
             const teksTotalHarga = document.getElementById('cartTotalPriceText');
             const inputHiddenItems = document.getElementById('modalCartItemsInput');
 
             if (!wadahList || !pesanKosong || !formKeranjang) return;
 
-            // Jika keranjang kosong, tampilkan pesan kosong & sembunyikan form
-            if (keranjang.length === 0) {
+            const isDirect = checkoutMode === 'direct' && directCheckoutItem !== null;
+            const itemsUntukCheckout = isDirect ? [directCheckoutItem] : keranjang;
+
+            if (modalTitleEl) {
+                modalTitleEl.textContent = isDirect ? 'Beli Langsung' : 'Keranjang';
+            }
+
+            // Jika kosong, tampilkan pesan kosong & sembunyikan form
+            if (itemsUntukCheckout.length === 0) {
                 pesanKosong.style.display = 'block';
                 formKeranjang.style.display = 'none';
                 if (btnHapusSemua) btnHapusSemua.style.display = 'none';
@@ -1603,15 +1790,15 @@
                 return;
             }
 
-            // Jika ada isinya, tampilkan form & tombol Hapus Semua
+            // Jika ada isinya, tampilkan form & tombol Hapus Semua (hanya untuk mode keranjang)
             pesanKosong.style.display = 'none';
             formKeranjang.style.display = 'block';
-            if (btnHapusSemua) btnHapusSemua.style.display = '';
+            if (btnHapusSemua) btnHapusSemua.style.display = isDirect ? 'none' : '';
 
             let totalHarga = 0;
             let htmlDaftarBarang = '';
 
-            keranjang.forEach(function (item) {
+            itemsUntukCheckout.forEach(function (item) {
                 totalHarga += item.harga * item.qty;
 
                 // Gambar produk (atau ikon kotak jika produk tidak punya gambar)
@@ -1658,7 +1845,7 @@
 
             // Isi input hidden dengan data JSON [{id, qty}] untuk dikirim ke Controller
             if (inputHiddenItems) {
-                const dataUntukBackend = keranjang.map(function (item) {
+                const dataUntukBackend = itemsUntukCheckout.map(function (item) {
                     return { id: item.id, qty: item.qty };
                 });
                 inputHiddenItems.value = JSON.stringify(dataUntukBackend);
@@ -1680,7 +1867,9 @@
             if (alamatEl) alamatEl.textContent = data.alamat || '-';
             if (waktuEl) waktuEl.textContent = data.waktu_transaksi || '-';
             if (totalEl) totalEl.textContent = formatRupiah(data.total_harga || 0);
-            if (linkEl && data.redirect_pesanan_url) linkEl.href = data.redirect_pesanan_url;
+            if (linkEl && (data.redirect_detail_url || data.redirect_pesanan_url)) {
+                linkEl.href = data.redirect_detail_url || data.redirect_pesanan_url;
+            }
 
             if (itemsEl) {
                 const rows = (data.items || []).map(function (item) {
@@ -1766,7 +1955,8 @@
                 orderForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
 
-                    if (keranjang.length === 0) {
+                    const isDirectCheckout = checkoutMode === 'direct' && directCheckoutItem !== null;
+                    if (!isDirectCheckout && keranjang.length === 0) {
                         alert('Keranjang belanja masih kosong.');
                         return;
                     }
@@ -1799,9 +1989,15 @@
                             return;
                         }
 
-                        // Bersihkan keranjang & reset input bukti transfer setelah berhasil
-                        keranjang = [];
-                        simpanKeranjang();
+                        // Bersihkan keranjang/item langsung & reset input bukti transfer setelah berhasil
+                        if (isDirectCheckout) {
+                            directCheckoutItem = null;
+                            checkoutMode = 'cart';
+                        } else {
+                            keranjang = [];
+                            simpanKeranjang();
+                        }
+                        sessionStorage.setItem('hg_produk_completed', '1');
                         const buktiInput = document.getElementById('inputBuktiPembayaran');
                         const buktiPreview = document.getElementById('buktiPreviewImg');
                         const buktiIcon = document.getElementById('buktiPreviewIcon');
@@ -1853,7 +2049,55 @@
                     }
                 });
             }
+
+            const navEntriesProduk = window.performance && performance.getEntriesByType
+                ? performance.getEntriesByType('navigation')
+                : [];
+            const isProdukBack = navEntriesProduk.length > 0 && navEntriesProduk[0].type === 'back_forward';
+            if (sessionStorage.getItem('hg_produk_completed') === '1' && isProdukBack) {
+                sessionStorage.removeItem('hg_produk_completed');
+                closeProdukOrderModal();
+                closeGojekPaymentPopup();
+                keranjang = [];
+                simpanKeranjang();
+            }
         });
+
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted && sessionStorage.getItem('hg_produk_completed') === '1') {
+                sessionStorage.removeItem('hg_produk_completed');
+                closeProdukOrderModal();
+                closeGojekPaymentPopup();
+                keranjang = [];
+                simpanKeranjang();
+            }
+        });
+
+        function isiDenganAlamatSaya() {
+            const btn = document.getElementById('btnIsiAlamatSaya');
+            const inputAlamat = document.getElementById('inputAlamatPembeli');
+            const feedback = document.getElementById('alamatSayaFeedback');
+            if (!btn || !inputAlamat) return;
+
+            const alamatAkun = (btn.getAttribute('data-user-alamat') || '').trim();
+            if (!alamatAkun) {
+                if (feedback) {
+                    feedback.textContent = 'Alamat di akun Anda belum tersimpan. Silakan isi manual.';
+                    feedback.className = 'cart-address-feedback is-error';
+                    feedback.style.display = 'block';
+                }
+                inputAlamat.focus();
+                return;
+            }
+
+            inputAlamat.value = alamatAkun;
+            inputAlamat.focus();
+            if (feedback) {
+                feedback.textContent = 'Alamat berhasil diisi dari data akun Anda.';
+                feedback.className = 'cart-address-feedback is-success';
+                feedback.style.display = 'block';
+            }
+        }
     </script>
 </body>
 </html>

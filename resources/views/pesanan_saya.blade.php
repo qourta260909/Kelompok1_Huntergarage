@@ -1472,7 +1472,7 @@
                                 <div class="gojek-kv-row"><span class="gojek-kv-key">Alamat</span><span class="gojek-kv-val">{{ $pesananAktif->alamat }}</span></div>
                             @endif
                             <div class="gojek-kv-row"><span class="gojek-kv-key">Waktu Transaksi</span><span class="gojek-kv-val">{{ $tanggalWaktuTransaksi }}</span></div>
-                            <div class="gojek-kv-row"><span class="gojek-kv-key">Metode Pembayaran</span><span class="gojek-kv-val">{{ $isLayananView ? 'Qris' : 'Qris / Tunai' }}</span></div>
+                            <div class="gojek-kv-row"><span class="gojek-kv-key">Metode Pembayaran</span><span class="gojek-kv-val">{{ $isLayananView ? 'Bayar di Tempat / Transfer Bank BCA (Setelah Servis Selesai)' : 'Transfer Bank BCA' }}</span></div>
                         </div>
                     </div>
 
@@ -1482,14 +1482,53 @@
                     </div>
 
                     <div class="gojek-actions-bar">
-                        <a href="{{ route('user.pesanan', $isLayananView ? ['tab' => 'jadwal'] : []) }}" class="gojek-btn-primary">
-                            {{ $isLayananView ? 'Lihat Booking Saya' : 'Lihat Pesanan Saya' }}
-                        </a>
+                        @if ($isLayananView)
+                            <a href="{{ route('user.pesanan', ['tab' => 'jadwal']) }}" class="gojek-btn-primary">
+                                Lihat Booking Saya
+                            </a>
+                        @else
+                            <button type="button" class="gojek-btn-primary" style="border:none; cursor:pointer; font-family:inherit;" onclick="openUserBuktiModal()">
+                                Lihat Bukti Pembayaran Saya
+                            </button>
+                            <a href="{{ route('user.pesanan') }}" class="gojek-btn-outline">Kembali</a>
+                        @endif
                         <a href="{{ route('home') }}" class="gojek-btn-outline">Beranda</a>
                     </div>
                 </section>
             </main>
         </div>
+
+        @if (!$isLayananView)
+            <!-- Modal Foto Bukti Pembayaran User -->
+            <div id="userBuktiModal" style="position:fixed; inset:0; background:rgba(9,9,11,0.62); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; padding:18px; z-index:9999;" onclick="if(event.target === this) closeUserBuktiModal();">
+                <div role="dialog" aria-modal="true" aria-labelledby="userBuktiTitle" style="width:100%; max-width:500px; background:#ffffff; border-radius:20px; border:1px solid #e4e4e7; box-shadow:0 24px 54px rgba(0,0,0,0.28); overflow:hidden;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 22px; border-bottom:1px solid #e4e4e7; background:#fafafa;">
+                        <h3 id="userBuktiTitle" style="margin:0; font-size:16px; font-weight:800; color:#09090b;">Bukti Pembayaran Saya</h3>
+                        <button type="button" onclick="closeUserBuktiModal()" aria-label="Tutup" style="width:32px; height:32px; border-radius:8px; border:1px solid #d4d4d8; background:#ffffff; color:#18181b; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div style="padding:20px 22px; text-align:center;">
+                        @if ($pesananAktif->bukti_pembayaran_url)
+                            <a href="{{ $pesananAktif->bukti_pembayaran_url }}" target="_blank" rel="noopener" style="display:inline-block; border:1px solid #e4e4e7; border-radius:12px; overflow:hidden; background:#fafafa;">
+                                <img src="{{ $pesananAktif->bukti_pembayaran_url }}" alt="Bukti Pembayaran {{ $kodeTransaksi }}" style="max-width:100%; max-height:360px; display:block; object-fit:contain;">
+                            </a>
+                            <p style="margin:10px 0 0; font-size:12px; color:#71717a;">Klik gambar untuk membuka ukuran penuh di tab baru.</p>
+                        @else
+                            <div style="padding:18px; border-radius:12px; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; font-size:13px; font-weight:600;">
+                                Belum ada foto bukti pembayaran yang diunggah untuk pesanan ini.
+                            </div>
+                        @endif
+                    </div>
+                    <div style="padding:0 22px 20px; display:flex; justify-content:flex-end;">
+                        <button type="button" onclick="closeUserBuktiModal()" class="gojek-btn-primary" style="flex:0 0 auto; min-width:120px; border:none; cursor:pointer; font-family:inherit;">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        @endif
     @else
         {{-- ================= TAMPILAN SIDEBAR PESANAN SAYA / BOOKING SERVIS ================= --}}
         <div class="user-panel-layout">
@@ -1681,6 +1720,22 @@
     @endif
 
     <script>
+        function openUserBuktiModal() {
+            const modal = document.getElementById('userBuktiModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeUserBuktiModal() {
+            const modal = document.getElementById('userBuktiModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
         function copyBookingCode() {
             const codeEl = document.getElementById('bookingCodeValue');
             if (!codeEl) return;

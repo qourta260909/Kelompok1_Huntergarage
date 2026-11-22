@@ -451,6 +451,26 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <hr class="confirm-inner-divider">
+
+                            <div class="confirm-section">
+                                <div class="confirm-section-head">
+                                    <h3 class="confirm-section-title">Metode Pembayaran</h3>
+                                </div>
+                                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:12px 16px;">
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        <span style="display:inline-flex; align-items:center; justify-content:center; padding:5px 11px; border-radius:7px; background:#00529c; color:#ffffff; font-size:12px; font-weight:800; letter-spacing:0.04em;">BCA</span>
+                                        <div style="display:flex; flex-direction:column; gap:2px;">
+                                            <strong style="font-size:13.5px; color:#111827;">Bayar di Tempat / Transfer Bank BCA (Setelah Servis Selesai)</strong>
+                                            <span style="font-size:12.5px; font-weight:600; color:#1e40af;">Pembayaran dilakukan setelah servis selesai via tunai di bengkel atau transfer No. Rek: <strong>7896207902</strong> a/n Ahmad Qourta Zaidan</span>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="navigator.clipboard.writeText('7896207902'); alert('Nomor Rekening BCA berhasil disalin!');" style="background:#ffffff; border:1px solid #93c5fd; color:#1d4ed8; font-family:inherit; font-size:12px; font-weight:700; padding:6px 12px; border-radius:8px; cursor:pointer;">
+                                        Salin No. Rek
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <hr class="booking-divider step4-divider">
@@ -678,10 +698,41 @@
                     }
                 });
             }
+            function resetBookingFromStart() {
+                ['merek', 'model', 'tahun', 'plat_nomor', 'no_telepon'].forEach(function (id) {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                const jamEl = document.getElementById('jam_servis');
+                if (jamEl) jamEl.selectedIndex = 0;
+                const tglEl = document.getElementById('tanggal_servis');
+                if (tglEl && tglEl.min) tglEl.value = tglEl.min;
+                document.querySelectorAll('input[name="layanan_id"]').forEach(function (r) {
+                    r.checked = false;
+                });
+                goToStep(1);
+            }
+
+            const submitLayananForm = document.getElementById('submitLayananOrderForm');
+            if (submitLayananForm) {
+                submitLayananForm.addEventListener('submit', function () {
+                    sessionStorage.setItem('hg_booking_completed', '1');
+                });
+            }
+
+            const navEntries = window.performance && performance.getEntriesByType
+                ? performance.getEntriesByType('navigation')
+                : [];
+            const isBackForward = navEntries.length > 0 && navEntries[0].type === 'back_forward';
+            if (sessionStorage.getItem('hg_booking_completed') === '1' || isBackForward) {
+                sessionStorage.removeItem('hg_booking_completed');
+                resetBookingFromStart();
+            }
         });
 
         window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
+            if (event.persisted || sessionStorage.getItem('hg_booking_completed') === '1') {
+                sessionStorage.removeItem('hg_booking_completed');
                 window.location.reload();
             }
         });

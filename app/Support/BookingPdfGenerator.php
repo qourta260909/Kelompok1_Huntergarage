@@ -21,7 +21,7 @@ class BookingPdfGenerator
         $waktu = self::clean($data['waktu'] ?? '-');
         $nama = self::clean($data['nama'] ?? '-');
         $telepon = self::clean($data['telepon'] ?? '-');
-        $metodePembayaran = self::clean($data['metode_pembayaran'] ?? 'Qris');
+        $metodePembayaran = self::clean($data['metode_pembayaran'] ?? 'Transfer Bank BCA');
         $total = self::clean($data['total'] ?? 'Rp0');
         $dicetakPada = self::clean($data['dicetak_pada'] ?? date('d/m/Y H:i'));
 

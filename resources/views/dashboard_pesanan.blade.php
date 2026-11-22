@@ -75,8 +75,9 @@
         .order-card thead th:last-child,
         .order-card tbody td:last-child {
             padding-right: 32px;
-            text-align: right;
+            text-align: center;
             white-space: nowrap;
+            width: 1%;
         }
         .badge-menunggu {
             display: inline-block;
@@ -91,19 +92,29 @@
         .action-btns {
             display: inline-flex;
             align-items: center;
-            justify-content: flex-end;
-            gap: 12px;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+        .action-btns form {
+            display: inline-flex;
+            margin: 0;
         }
         .btn-tolak {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            white-space: nowrap;
             background-color: #ffffff;
-            color: #71717a;
+            color: #475569;
             border: 1.5px solid #cbd5e1;
-            padding: 8px 22px;
-            border-radius: 10px;
-            font-size: 13px;
+            padding: 0 14px;
+            border-radius: 9999px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.18s ease;
         }
         .btn-tolak:hover {
             background-color: #fef2f2;
@@ -111,30 +122,40 @@
             border-color: #fca5a5;
         }
         .btn-terima {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            white-space: nowrap;
             background-color: #16a34a;
             color: #ffffff;
             border: 1.5px solid #16a34a;
-            padding: 8px 22px;
-            border-radius: 10px;
-            font-size: 13px;
+            padding: 0 14px;
+            border-radius: 9999px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.18s ease;
         }
         .btn-terima:hover {
             background-color: #15803d;
             border-color: #15803d;
         }
         .btn-detail-admin {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            white-space: nowrap;
             background-color: #f4f4f5;
             color: #18181b;
             border: 1.5px solid #d4d4d8;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-size: 13px;
+            padding: 0 14px;
+            border-radius: 9999px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.18s ease;
         }
         .btn-detail-admin:hover {
             background-color: #e4e4e7;
@@ -178,15 +199,33 @@
             margin: 0;
         }
         .admin-detail-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
             border: 1px solid #d4d4d8;
             background-color: #ffffff;
             color: #18181b;
-            font-size: 18px;
-            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
             cursor: pointer;
+            transition: background-color 0.16s ease, border-color 0.16s ease;
+        }
+        .admin-detail-close:hover {
+            background-color: #f4f4f5;
+            border-color: #a1a1aa;
+        }
+        .admin-detail-footer {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e4e4e7;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .admin-detail-body {
             padding: 20px 24px 24px;
@@ -409,11 +448,22 @@
                             </tr>
                         </thead>
                         <tbody id="orderTableBody">
+                            @php
+                                $kodeLayananCounter = 0;
+                                $kodeProdukCounter = 0;
+                            @endphp
                             @forelse ($daftarPesanan ?? [] as $pesanan)
                                 @php
                                     $kategoriRow = $pesanan->kategori ?? 'layanan';
                                     $prefixKode = $kategoriRow === 'produk' ? 'PSN-' : 'BKG-';
-                                    $kodeBooking = $prefixKode . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+                                    if ($kategoriRow === 'produk') {
+                                        $kodeProdukCounter++;
+                                        $nomorUrut = $kodeProdukCounter;
+                                    } else {
+                                        $kodeLayananCounter++;
+                                        $nomorUrut = $kodeLayananCounter;
+                                    }
+                                    $kodeBooking = $prefixKode . str_pad((string) $nomorUrut, 4, '0', STR_PAD_LEFT);
                                     $waktuService = $pesanan->jadwal_service ?? $pesanan->created_at;
                                     $carbonWaktu = $waktuService ? \Carbon\Carbon::parse($waktuService)->locale('id') : null;
                                     $tanggalJamFormat = $carbonWaktu
@@ -454,7 +504,7 @@
                                         'alamat' => $pesanan->alamat ?: '-',
                                         'kendaraan' => $infoKendaraan ?: '-',
                                         'jadwal' => $tanggalJamFormat,
-                                        'metode' => $kategoriRow === 'produk' ? 'Transfer Bank BCA' : 'QRIS / Tunai',
+                                        'metode' => $kategoriRow === 'produk' ? 'Transfer Bank BCA' : 'Bayar di Tempat / Transfer Bank BCA (Setelah Selesai)',
                                         'total' => 'Rp ' . number_format((float) $pesanan->total_harga, 0, ',', '.'),
                                         'status' => 'Menunggu Konfirmasi',
                                         'bukti_url' => $pesanan->bukti_pembayaran_url,
@@ -715,7 +765,12 @@
         <div class="admin-detail-modal" role="dialog" aria-modal="true" aria-labelledby="adminDetailModalTitle">
             <div class="admin-detail-head">
                 <h3 class="admin-detail-title" id="adminDetailModalTitle">Detail Pesanan</h3>
-                <button type="button" class="admin-detail-close" onclick="closeAdminOrderDetail()">&times;</button>
+                <button type="button" class="admin-detail-close" onclick="closeAdminOrderDetail()" aria-label="Tutup">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
             </div>
             <div class="admin-detail-body">
                 <div class="admin-info-grid">
@@ -750,8 +805,9 @@
                     <div id="admBuktiContent"></div>
                 </div>
 
-                <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
-                    <a href="#" id="admBtnDownloadPdf" class="btn-detail-admin" style="background:#000000; color:#ffffff; border-color:#000000; text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:9px 16px;">
+                <div class="admin-detail-footer">
+                    <button type="button" class="btn-detail-admin" onclick="closeAdminOrderDetail()">Tutup</button>
+                    <a href="#" id="admBtnDownloadPdf" class="btn-detail-admin" style="background:#000000; color:#ffffff; border-color:#000000; text-decoration:none; gap:6px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7 10 12 15 17 10"/>
