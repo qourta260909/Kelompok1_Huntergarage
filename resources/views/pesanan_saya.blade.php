@@ -1286,7 +1286,7 @@
 
             if ($statusPesanan === 'selesai') {
                 $statusCircleClass = 'done';
-                $statusHeadline = $isLayananView ? 'Servis kendaraan selesai' : 'Pesanan sudah diambil';
+                $statusHeadline = $isLayananView ? 'Servis kendaraan selesai' : 'Pesanan sudah diantar';
                 $statusSubtext = $isLayananView
                     ? 'Terima kasih telah mempercayakan servis di Hunter Garage.'
                     : 'Terima kasih telah berbelanja suku cadang di Hunter Garage.';
@@ -1295,7 +1295,7 @@
                 $statusHeadline = $isLayananView ? 'Jadwal servis dikonfirmasi' : 'Pesanan sedang disiapkan';
                 $statusSubtext = $isLayananView
                     ? 'Silakan datang ke bengkel sesuai jadwal kunjungan Anda.'
-                    : 'Pesanan Anda sedang disiapkan untuk diambil di bengkel.';
+                    : 'Pesanan Anda sedang disiapkan untuk diantar ke alamat Anda.';
             } elseif ($statusPesanan === 'dibatalkan') {
                 $statusCircleClass = 'rejected';
                 $statusHeadline = $isLayananView ? 'Booking servis ditolak' : 'Pesanan ditolak';
@@ -1365,7 +1365,7 @@
                             </div>
                             <div class="gojek-step {{ $step3State }}">
                                 <div class="gojek-step-dot">{{ $step3State === 'done' ? '✓' : '3' }}</div>
-                                <span class="gojek-step-label">{{ $isLayananView ? 'Servis Selesai' : 'Sudah Diambil' }}</span>
+                                <span class="gojek-step-label">{{ $isLayananView ? 'Servis Selesai' : 'Sudah Diantar' }}</span>
                             </div>
                         </div>
                     @endif
@@ -1381,7 +1381,7 @@
                                 <p class="gojek-merchant-addr">Jl. Taruna Praja Banjarbaru</p>
                             </div>
                         </div>
-                        <span class="gojek-type-tag">{{ $isLayananView ? 'Booking Servis' : 'Ambil di Bengkel' }}</span>
+                        <span class="gojek-type-tag">{{ $isLayananView ? 'Booking Servis' : 'Diantar ke Alamat' }}</span>
                     </div>
 
                     <div class="gojek-receipt-divider"></div>
@@ -1485,11 +1485,6 @@
                         <a href="{{ route('user.pesanan', $isLayananView ? ['tab' => 'jadwal'] : []) }}" class="gojek-btn-primary">
                             {{ $isLayananView ? 'Lihat Booking Saya' : 'Lihat Pesanan Saya' }}
                         </a>
-                        @if ($isLayananView)
-                            <a href="{{ route('user.pesanan.pdf', $pesananAktif->id) }}" class="gojek-btn-outline">
-                                Unduh Bukti PDF
-                            </a>
-                        @endif
                         <a href="{{ route('home') }}" class="gojek-btn-outline">Beranda</a>
                     </div>
                 </section>
@@ -1565,7 +1560,7 @@
                                 if ($st === 'selesai') {
                                     $filterGroup = 'selesai';
                                     $pillCls = 'done';
-                                    $pillLbl = $katItem === 'produk' ? 'Sudah Diambil' : 'Sudah Selesai';
+                                    $pillLbl = $katItem === 'produk' ? 'Sudah Diantar' : 'Sudah Selesai';
                                 } elseif ($st === 'dibatalkan') {
                                     $filterGroup = 'ditolak';
                                     $pillCls = 'rejected';
@@ -1624,9 +1619,6 @@
                                         <strong class="user-order-item-price">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</strong>
                                     </div>
                                     <div class="user-order-item-actions">
-                                        @if ($katItem === 'layanan')
-                                            <a href="{{ route('user.pesanan.pdf', $item->id) }}" class="btn-order-pdf">Unduh Bukti PDF</a>
-                                        @endif
                                         <a href="{{ route('user.pesanan', ['detail' => $item->id]) }}" class="btn-order-detail">Lihat Detail</a>
                                     </div>
                                 </div>
@@ -1790,7 +1782,7 @@
                         emptyDesc.textContent = currentStatus === 'ditolak'
                             ? 'Pesanan produk yang ditolak atau dibatalkan akan tampil di sini.'
                             : (currentStatus === 'selesai'
-                                ? 'Pesanan suku cadang yang sudah diambil akan tampil di sini.'
+                                ? 'Pesanan suku cadang yang sudah diantar akan tampil di sini.'
                                 : 'Pesanan suku cadang dan produk bengkel kamu akan muncul di sini.');
                     }
                 }

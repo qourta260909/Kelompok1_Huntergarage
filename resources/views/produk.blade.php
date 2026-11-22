@@ -612,6 +612,56 @@
         .cart-copy-rek-btn:hover {
             background-color: #dbeafe;
         }
+        .cart-proof-box {
+            margin: 14px 28px 0;
+            padding: 14px 16px;
+            background-color: #fafafa;
+            border: 1px dashed #d4d4d8;
+            border-radius: 12px;
+        }
+        .cart-proof-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .cart-proof-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cart-proof-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            border: 1px solid #e4e4e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            color: #71717a;
+        }
+        .cart-proof-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .cart-proof-input {
+            width: 100%;
+            font-family: inherit;
+            font-size: 12.5px;
+            color: #18181b;
+        }
+        .cart-proof-help {
+            font-size: 11.5px;
+            color: #71717a;
+            margin-top: 4px;
+        }
         .cart-footer-bar {
             display: flex;
             align-items: flex-end;
@@ -1235,7 +1285,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('user.pesanan.store') }}" id="produkOrderForm">
+                <form method="POST" action="{{ route('user.pesanan.store') }}" id="produkOrderForm" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="kategori" value="produk">
                     <input type="hidden" name="metode_pembayaran" value="Transfer Bank BCA">
@@ -1275,6 +1325,32 @@
                         <button type="button" class="cart-copy-rek-btn" onclick="navigator.clipboard.writeText('7896207902'); alert('Nomor Rekening BCA berhasil disalin!');">
                             Salin No. Rek
                         </button>
+                    </div>
+
+                    <!-- Upload Bukti Pembayaran / Transfer -->
+                    <div class="cart-proof-box">
+                        <label for="inputBuktiPembayaran" class="cart-proof-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            Bukti Pembayaran / Transfer (Wajib)
+                        </label>
+                        <div class="cart-proof-row">
+                            <div class="cart-proof-thumb">
+                                <img id="buktiPreviewImg" src="" alt="Preview Bukti Transfer" style="display:none;">
+                                <svg id="buktiPreviewIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                            </div>
+                            <div style="flex:1;">
+                                <input type="file" id="inputBuktiPembayaran" name="bukti_pembayaran" class="cart-proof-input" accept="image/*" required>
+                                <div class="cart-proof-help">Unggah foto/screenshot bukti transfer BCA (JPG, PNG, WEBP, maks. 10MB). Dicek admin sebelum diproses.</div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Footer Keranjang: Total Pembayaran & Tombol Batalkan / Bayar -->
@@ -1318,14 +1394,14 @@
                     </div>
                     <div class="gojek-pop-step">
                         <div class="gojek-pop-dot">3</div>
-                        <span class="gojek-pop-step-lbl">Siap Diambil</span>
+                        <span class="gojek-pop-step-lbl">Siap Diantar</span>
                     </div>
                 </div>
 
                 <div class="gojek-pop-body">
                     <div class="gojek-pop-items" id="gojekPopItems"></div>
                     <div class="gojek-pop-meta">
-                        <div class="gojek-pop-meta-row"><span>Bengkel</span><strong>Hunter Garage • Ambil di Bengkel</strong></div>
+                        <div class="gojek-pop-meta-row"><span>Bengkel</span><strong>Hunter Garage • Diantar ke Alamat</strong></div>
                         <div class="gojek-pop-meta-row"><span>Alamat Pembeli</span><strong id="gojekPopAlamat">-</strong></div>
                         <div class="gojek-pop-meta-row"><span>Waktu Transaksi</span><strong id="gojekPopWaktu">-</strong></div>
                         <div class="gojek-pop-meta-row"><span>Metode Pembayaran</span><strong>Transfer Bank BCA</strong></div>
@@ -1656,6 +1732,33 @@
                 });
             }
 
+            // Preview foto bukti pembayaran di modal keranjang
+            const inputBuktiPembayaran = document.getElementById('inputBuktiPembayaran');
+            const buktiPreviewImg = document.getElementById('buktiPreviewImg');
+            const buktiPreviewIcon = document.getElementById('buktiPreviewIcon');
+            if (inputBuktiPembayaran) {
+                inputBuktiPembayaran.addEventListener('change', function () {
+                    const file = this.files && this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (ev) {
+                            if (buktiPreviewImg) {
+                                buktiPreviewImg.src = ev.target.result;
+                                buktiPreviewImg.style.display = 'block';
+                            }
+                            if (buktiPreviewIcon) buktiPreviewIcon.style.display = 'none';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        if (buktiPreviewImg) {
+                            buktiPreviewImg.src = '';
+                            buktiPreviewImg.style.display = 'none';
+                        }
+                        if (buktiPreviewIcon) buktiPreviewIcon.style.display = 'block';
+                    }
+                });
+            }
+
             // 3. Saat tombol "Bayar" di modal keranjang disubmit -> kirim via AJAX & tampilkan Pop-Up ala Gojek
             const orderForm = document.getElementById('produkOrderForm');
             const btnCheckoutSubmit = document.getElementById('btnCheckoutSubmit');
@@ -1696,9 +1799,15 @@
                             return;
                         }
 
-                        // Bersihkan keranjang setelah berhasil
+                        // Bersihkan keranjang & reset input bukti transfer setelah berhasil
                         keranjang = [];
                         simpanKeranjang();
+                        const buktiInput = document.getElementById('inputBuktiPembayaran');
+                        const buktiPreview = document.getElementById('buktiPreviewImg');
+                        const buktiIcon = document.getElementById('buktiPreviewIcon');
+                        if (buktiInput) buktiInput.value = '';
+                        if (buktiPreview) { buktiPreview.src = ''; buktiPreview.style.display = 'none'; }
+                        if (buktiIcon) buktiIcon.style.display = 'block';
                         closeProdukOrderModal();
                         showGojekPaymentPopup(result);
                     } catch (err) {

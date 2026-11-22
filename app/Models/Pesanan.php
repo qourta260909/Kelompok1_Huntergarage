@@ -22,12 +22,30 @@ class Pesanan extends Model
         'nama_pelanggan',
         'no_telepon',
         'alamat',
+        'bukti_pembayaran',
         'kategori',
         'nama_layanan',
         'jadwal_service',
         'total_harga',
         'status',
     ];
+
+    protected $appends = [
+        'bukti_pembayaran_url',
+    ];
+
+    public function getBuktiPembayaranUrlAttribute(): ?string
+    {
+        if (!$this->bukti_pembayaran) {
+            return null;
+        }
+
+        if (str_starts_with($this->bukti_pembayaran, 'http://') || str_starts_with($this->bukti_pembayaran, 'https://')) {
+            return $this->bukti_pembayaran;
+        }
+
+        return asset('storage/' . ltrim($this->bukti_pembayaran, '/'));
+    }
 
     public function user(): BelongsTo
     {

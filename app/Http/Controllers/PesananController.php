@@ -18,8 +18,8 @@ class PesananController extends Controller
     public function downloadBuktiBooking(Request $request, Pesanan $pesanan)
     {
         $user = $request->user();
-        if (!$user || ($pesanan->user_id !== $user->id && $user->role !== 'admin')) {
-            abort(403, 'Anda tidak memiliki akses ke bukti booking ini.');
+        if (!$user || $user->role !== 'admin') {
+            abort(403, 'Hanya Admin yang dapat mengunduh bukti PDF.');
         }
 
         $pesanan->loadMissing(['jadwalService', 'layanan', 'produk']);
@@ -137,13 +137,19 @@ class PesananController extends Controller
             'nama_lengkap' => ['nullable', 'string', 'max:255'],
             'no_telepon' => ['nullable', 'string', 'max:30'],
             'alamat' => ['nullable', 'required_if:kategori,produk', 'string', 'max:500'],
+            'bukti_pembayaran' => ['nullable', 'required_if:kategori,produk', 'file', 'mimes:jpg,jpeg,png,webp,jfif,avif', 'max:10240'],
             'merek' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
             'tahun' => ['nullable', 'integer', 'min:1990', 'max:2030'],
             'plat_nomor' => ['nullable', 'string', 'max:30'],
         ]);
 
-        [$pesanan, $namaItem] = DB::transaction(function () use ($validated, $user) {
+        $buktiPembayaranPath = null;
+        if ($request->hasFile('bukti_pembayaran')) {
+            $buktiPembayaranPath = $request->file('bukti_pembayaran')->store('bukti-pembayaran', 'public');
+        }
+
+        [$pesanan, $namaItem] = DB::transaction(function () use ($validated, $user, $buktiPembayaranPath) {
             $layananId = null;
             $produkId = null;
             $jadwalServiceId = null;
@@ -260,6 +266,7 @@ class PesananController extends Controller
                 'nama_pelanggan' => $namaPelanggan,
                 'no_telepon' => $noTelepon,
                 'alamat' => $alamat,
+                'bukti_pembayaran' => $buktiPembayaranPath,
                 'kategori' => $validated['kategori'],
                 'nama_layanan' => $namaItem,
                 'jadwal_service' => $validated['jadwal_service'],
@@ -455,7 +462,7 @@ class PesananController extends Controller
         session(['last_order_tab' => $kategoriTab]);
 
         if ($validated['aksi'] === 'selesai') {
-            $labelSelesai = $kategoriTab === 'produk' ? 'Sudah Diambil' : 'Sudah Selesai';
+            $labelSelesai = $kategoriTab === 'produk' ? 'Sudah Diantar' : 'Sudah Selesai';
 
             return redirect()
                 ->route('dashboard.riwayat', ['tab' => $kategoriTab])
@@ -592,7 +599,7 @@ class PesananController extends Controller
             $now = now();
             $existing = DB::table('tb_riwayatpesanan')->where('pesanan_id', $pesanan->id)->first();
             $catatan = match ($pesanan->status) {
-                'selesai' => $pesanan->kategori === 'produk' ? 'Produk sudah diambil' : 'Layanan sudah selesai',
+                'selesai' => $pesanan->kategori === 'produk' ? 'Produk sudah diantar' : 'Layanan sudah selesai',
                 'proses' => 'Pesanan sedang diproses',
                 default => 'Pesanan ditolak',
             };
@@ -636,6 +643,7 @@ class PesananController extends Controller
                     ->where('pesanan_id', $pesanan->id)
                     ->update([
                         'jumlah' => $pesanan->total_harga,
+                        'bukti_transfer' => $pesanan->bukti_pembayaran ?? $existing->bukti_transfer,
                         'status' => 'lunas',
                         'dibayar_pada' => $existing->dibayar_pada ?? $now,
                         'updated_at' => $now,
@@ -645,7 +653,8 @@ class PesananController extends Controller
                     'pesanan_id' => $pesanan->id,
                     'nomor_invoice' => 'INV-PESANAN-' . $pesanan->id,
                     'jumlah' => $pesanan->total_harga,
-                    'metode_pembayaran' => 'tunai',
+                    'metode_pembayaran' => $pesanan->kategori === 'produk' ? 'transfer_bca' : 'tunai',
+                    'bukti_transfer' => $pesanan->bukti_pembayaran,
                     'status' => 'lunas',
                     'dibayar_pada' => $now,
                     'created_at' => $now,

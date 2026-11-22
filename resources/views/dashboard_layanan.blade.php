@@ -419,10 +419,20 @@
                             </tr>
                         </thead>
                         <tbody id="layananTableBody">
+                            @php
+                                $kodeAktifCounter = 0;
+                                $kodeNonaktifCounter = 0;
+                            @endphp
                             @forelse ($daftarLayanan ?? [] as $layanan)
                                 @php
                                     $statusRow = $layanan->status ?? 'aktif';
-                                    $kodeTampil = (string) $layanan->id;
+                                    if ($statusRow === 'aktif') {
+                                        $kodeAktifCounter++;
+                                        $kodeTampil = (string) $kodeAktifCounter;
+                                    } else {
+                                        $kodeNonaktifCounter++;
+                                        $kodeTampil = (string) $kodeNonaktifCounter;
+                                    }
                                     $estimasiTampil = $layanan->estimasi_durasi ?: ($layanan->deskripsi ?: '-');
                                 @endphp
                                 <tr class="layanan-row" data-status="{{ $statusRow }}">

@@ -21,7 +21,6 @@ Route::middleware(PreventBackHistory::class)->group(function () {
 Route::middleware(['auth', 'verified', PreventBackHistory::class])->group(function () {
     Route::post('/user-pesanan', [PesananController::class, 'storeUserOrder'])->name('user.pesanan.store');
     Route::get('/pesanan-saya', [PesananController::class, 'userOrders'])->name('user.pesanan');
-    Route::get('/pesanan-saya/{pesanan}/bukti-pdf', [PesananController::class, 'downloadBuktiBooking'])->name('user.pesanan.pdf');
 });
 
 // Halaman khusus Admin (dilindungi middleware role admin)
@@ -31,6 +30,7 @@ Route::middleware(['auth', 'verified', 'admin', PreventBackHistory::class])->gro
     Route::redirect('/dashboard-profile', '/dashboard')->name('dashboard.profile');
 
     Route::get('/dashboard-pesanan', [PesananController::class, 'index'])->name('dashboard.pesanan');
+    Route::get('/dashboard-pesanan/{pesanan}/bukti-pdf', [PesananController::class, 'downloadBuktiBooking'])->name('dashboard.pesanan.pdf');
     Route::post('/dashboard-pesanan', [PesananController::class, 'store'])->name('dashboard.pesanan.store');
     Route::patch('/dashboard-pesanan/{pesanan}/status', [PesananController::class, 'updateStatus'])->name('dashboard.pesanan.status');
     Route::put('/dashboard-pesanan/{pesanan}', [PesananController::class, 'update'])->name('dashboard.pesanan.update');

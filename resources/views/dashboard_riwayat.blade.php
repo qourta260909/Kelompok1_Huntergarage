@@ -416,7 +416,7 @@
                                         $statusLabel = 'Proses';
                                     } else {
                                         $badgeClass = 'badge-success';
-                                        $statusLabel = $kategoriRow === 'produk' ? 'Sudah Diambil' : 'Sudah Selesai';
+                                        $statusLabel = $kategoriRow === 'produk' ? 'Sudah Diantar' : 'Sudah Selesai';
                                     }
 
                                     $jadwalSvc = $riwayat->jadwalService;
@@ -457,6 +457,8 @@
                                         'metode' => $kategoriRow === 'produk' ? 'Transfer Bank BCA' : 'QRIS / Tunai',
                                         'total' => 'Rp ' . number_format((float) $riwayat->total_harga, 0, ',', '.'),
                                         'status' => $statusLabel,
+                                        'bukti_url' => $riwayat->bukti_pembayaran_url,
+                                        'pdf_url' => route('dashboard.pesanan.pdf', $riwayat->id),
                                         'items' => $itemsPayload,
                                     ];
                                 @endphp
@@ -490,7 +492,7 @@
                                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                                             <polyline points="20 6 9 17 4 12"></polyline>
                                                         </svg>
-                                                        {{ $kategoriRow === 'produk' ? 'Sudah Diambil' : 'Sudah Selesai' }}
+                                                        {{ $kategoriRow === 'produk' ? 'Sudah Diantar' : 'Sudah Selesai' }}
                                                     </button>
                                                 </form>
                                             @endif
@@ -756,6 +758,22 @@
                         <tbody id="admDetailItemsBody"></tbody>
                     </table>
                 </div>
+
+                <div id="admBuktiSection" style="display:none; margin-top:16px;">
+                    <div style="font-size:13px; font-weight:800; color:#09090b; margin-bottom:8px;">Bukti Pembayaran / Transfer</div>
+                    <div id="admBuktiContent"></div>
+                </div>
+
+                <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+                    <a href="#" id="admBtnDownloadPdf" class="btn-detail-admin" style="background:#000000; color:#ffffff; border-color:#000000; text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:9px 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Unduh Bukti PDF
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -780,6 +798,31 @@
             document.getElementById('admRowAlamat').style.display = isProduk ? '' : 'none';
             document.getElementById('admRowKendaraan').style.display = isProduk ? 'none' : '';
 
+            const buktiSection = document.getElementById('admBuktiSection');
+            const buktiContent = document.getElementById('admBuktiContent');
+            if (buktiSection && buktiContent) {
+                if (isProduk) {
+                    buktiSection.style.display = '';
+                    if (data.bukti_url) {
+                        buktiContent.innerHTML = `
+                            <a href="${data.bukti_url}" target="_blank" rel="noopener" style="display:inline-block; border:1px solid #e4e4e7; border-radius:12px; overflow:hidden; background:#fafafa;">
+                                <img src="${data.bukti_url}" alt="Bukti Transfer" style="max-width:100%; max-height:260px; display:block; object-fit:contain;">
+                            </a>
+                            <div style="font-size:11.5px; color:#71717a; margin-top:6px;">Klik gambar untuk membuka ukuran penuh di tab baru.</div>
+                        `;
+                    } else {
+                        buktiContent.innerHTML = `
+                            <div style="padding:12px 14px; border-radius:10px; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; font-size:12.5px; font-weight:600;">
+                                Belum ada bukti transfer yang diunggah.
+                            </div>
+                        `;
+                    }
+                } else {
+                    buktiSection.style.display = 'none';
+                    buktiContent.innerHTML = '';
+                }
+            }
+
             const tbody = document.getElementById('admDetailItemsBody');
             tbody.innerHTML = (data.items || []).map(function (it) {
                 return `
@@ -791,6 +834,12 @@
                     </tr>
                 `;
             }).join('');
+
+            const pdfBtn = document.getElementById('admBtnDownloadPdf');
+            if (pdfBtn) {
+                pdfBtn.href = data.pdf_url || '#';
+                pdfBtn.style.display = data.pdf_url ? 'inline-flex' : 'none';
+            }
 
             modal.classList.add('active');
         }
