@@ -9,12 +9,21 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $daftarUsers = User::orderBy('id', 'asc')->get();
-        $totalUsers = $daftarUsers->count();
+        $roleFilter = $request->query('role', 'all');
+        if (!in_array($roleFilter, ['all', 'admin', 'user'], true)) {
+            $roleFilter = 'all';
+        }
 
-        return view('dashboard_users', compact('daftarUsers', 'totalUsers'));
+        $daftarUsers = User::when(
+            $roleFilter !== 'all',
+            fn ($query) => $query->where('role', $roleFilter)
+        )->orderBy('id', 'asc')->get();
+
+        $totalUsers = User::count();
+
+        return view('dashboard_users', compact('daftarUsers', 'totalUsers', 'roleFilter'));
     }
 
     public function store(Request $request)

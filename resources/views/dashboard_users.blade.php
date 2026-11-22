@@ -442,9 +442,9 @@
                         <input type="text" id="searchInput" class="search-input" placeholder="Cari nama atau email...">
                     </div>
                     <select id="roleFilterSelect" class="role-filter-select" aria-label="Filter Role">
-                        <option value="all">Role: Semua</option>
-                        <option value="admin">Role: Admin</option>
-                        <option value="user">Role: User</option>
+                        <option value="all" {{ ($roleFilter ?? 'all') === 'all' ? 'selected' : '' }}>Role: Semua</option>
+                        <option value="admin" {{ ($roleFilter ?? 'all') === 'admin' ? 'selected' : '' }}>Role: Admin</option>
+                        <option value="user" {{ ($roleFilter ?? 'all') === 'user' ? 'selected' : '' }}>Role: User</option>
                     </select>
                 </div>
                 <button type="button" class="btn-add-primary" onclick="openCreateModal()">+ Tambah Pengguna</button>
@@ -714,7 +714,7 @@
 
             const matchedRows = userRows.filter((row) => {
                 const rowRole = row.dataset.role || 'user';
-                const matchRole = roleFilter === 'all' || rowRole === roleRole && rowRole === roleFilter;
+                const matchRole = roleFilter === 'all' || rowRole === roleFilter;
                 const matchText = row.textContent.toLowerCase().includes(query);
                 return matchRole && matchText;
             });
@@ -743,7 +743,16 @@
         }
 
         if (searchInput) searchInput.addEventListener('input', () => filterUsers(true));
-        if (roleFilterSelect) roleFilterSelect.addEventListener('change', () => filterUsers(true));
+        if (roleFilterSelect) {
+            roleFilterSelect.addEventListener('change', function () {
+                const selectedRole = this.value;
+                const url = new URL(@json(route('dashboard.users')), window.location.origin);
+                if (selectedRole && selectedRole !== 'all') {
+                    url.searchParams.set('role', selectedRole);
+                }
+                window.location.href = url.toString();
+            });
+        }
         filterUsers(true);
 
         // Modal Logic
