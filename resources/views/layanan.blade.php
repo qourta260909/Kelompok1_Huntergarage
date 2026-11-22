@@ -505,6 +505,8 @@
         </div>
     </main>
 
+    <x-user-footer :layanan-aktif="$layananAktif ?? collect()" :produk-aktif="$produkAktif ?? collect()" />
+
     <script>
         function validateStepFields(step) {
             if (step === 1) {
