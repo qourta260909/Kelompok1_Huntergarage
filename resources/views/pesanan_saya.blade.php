@@ -1277,7 +1277,7 @@
         @php
             $pesananAktif = $pesananDetail;
             $isLayananView = ($pesananAktif->kategori ?? 'layanan') === 'layanan';
-            $kodeTransaksi = ($isLayananView ? 'BKG-' : 'PSN-') . str_pad((string) $pesananAktif->id, 4, '0', STR_PAD_LEFT);
+            $kodeTransaksi = $pesananAktif->kode_booking;
             $statusPesanan = $pesananAktif->status ?? 'baru';
 
             $waktuPesanan = $pesananAktif->jadwal_service ?? $pesananAktif->created_at;
@@ -1594,8 +1594,7 @@
                         @foreach ($daftarPesananUser as $item)
                             @php
                                 $katItem = $item->kategori ?? 'layanan';
-                                $prefixItem = $katItem === 'layanan' ? 'BKG-' : 'PSN-';
-                                $kodeItem = $prefixItem . str_pad((string) $item->id, 4, '0', STR_PAD_LEFT);
+                                $kodeItem = $item->kode_booking;
                                 $waktuItem = $item->jadwal_service ?? $item->created_at;
                                 $tglFormat = $waktuItem ? \Carbon\Carbon::parse($waktuItem)->locale('id')->translatedFormat('d F Y, H:i') . ' WITA' : '-';
 

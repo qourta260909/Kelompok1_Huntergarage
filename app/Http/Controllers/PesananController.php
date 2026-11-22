@@ -24,9 +24,7 @@ class PesananController extends Controller
 
         $pesanan->loadMissing(['jadwalService', 'layanan', 'produk']);
 
-        $isLayanan = ($pesanan->kategori ?? 'layanan') === 'layanan';
-        $prefix = $isLayanan ? 'BKG-' : 'PSN-';
-        $kodeBooking = $prefix . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+        $kodeBooking = $pesanan->kode_booking;
 
         $jadwalRow = $pesanan->jadwalService;
         $rawTipe = trim((string) ($jadwalRow->tipe_kendaraan ?? ''));
@@ -293,8 +291,7 @@ class PesananController extends Controller
             return [$pesanan, $namaItem];
         });
 
-        $prefixKode = $pesanan->kategori === 'produk' ? 'PSN-' : 'BKG-';
-        $kodeBooking = $prefixKode . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+        $kodeBooking = $pesanan->kode_booking;
 
         if ($request->expectsJson()) {
             $pesanan->load('details');
@@ -471,7 +468,7 @@ class PesananController extends Controller
             $this->syncJadwalService($lockedPesanan);
         });
 
-        $kodePesanan = 'BKG-' . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+        $kodePesanan = $pesanan->kode_booking;
         session(['last_order_tab' => $kategoriTab]);
 
         if ($validated['aksi'] === 'selesai') {

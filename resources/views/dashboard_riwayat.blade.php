@@ -436,8 +436,7 @@
                             @forelse ($daftarRiwayat ?? [] as $riwayat)
                                 @php
                                     $kategoriRow = $riwayat->kategori ?? 'layanan';
-                                    $prefixKode = $kategoriRow === 'produk' ? 'PSN-' : 'BKG-';
-                                    $kodeBooking = $prefixKode . str_pad((string) $riwayat->id, 4, '0', STR_PAD_LEFT);
+                                    $kodeBooking = $riwayat->kode_booking;
                                     $waktuService = $riwayat->jadwal_service ?? $riwayat->created_at;
                                     $carbonWaktu = $waktuService ? \Carbon\Carbon::parse($waktuService)->locale('id') : null;
                                     $tanggalJamFormat = $carbonWaktu

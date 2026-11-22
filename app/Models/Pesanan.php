@@ -34,7 +34,19 @@ class Pesanan extends Model
 
     protected $appends = [
         'bukti_pembayaran_url',
+        'kode_booking',
     ];
+
+    public function getKodeBookingAttribute(): string
+    {
+        $kategori = $this->kategori ?? 'layanan';
+        $prefix = $kategori === 'produk' ? 'PSN-' : 'BKG-';
+        $nomor = static::where('kategori', $kategori)
+            ->where('id', '<=', $this->id)
+            ->count();
+
+        return $prefix . str_pad((string) max(1, $nomor), 4, '0', STR_PAD_LEFT);
+    }
 
     public function getBuktiPembayaranUrlAttribute(): ?string
     {

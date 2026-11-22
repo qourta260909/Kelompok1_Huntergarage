@@ -235,8 +235,7 @@
                             @forelse ($pesananTerbaru as $pesanan)
                                 @php
                                     $kategoriRow = $pesanan->kategori ?? 'layanan';
-                                    $prefixKode = $kategoriRow === 'produk' ? 'PSN-' : 'BKG-';
-                                    $kodeBooking = $prefixKode . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
+                                    $kodeBooking = $pesanan->kode_booking;
                                     $waktuService = $pesanan->jadwal_service ?? $pesanan->created_at;
                                     $carbonWaktu = $waktuService ? \Carbon\Carbon::parse($waktuService)->locale('id') : null;
                                     $tanggalJamFormat = $carbonWaktu
