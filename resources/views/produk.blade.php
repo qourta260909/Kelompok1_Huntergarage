@@ -1526,7 +1526,7 @@
                         <div class="cart-shipping-grid">
                             <label class="cart-shipping-option">
                                 <span class="cart-shipping-left">
-                                    <input type="radio" name="layanan_pengiriman" value="reguler" data-ongkir="15000" checked onchange="renderModalKeranjang()">
+                                    <input type="radio" name="layanan_pengiriman" value="reguler" data-ongkir="15000" checked onchange="tampilkanIsiModalKeranjang()">
                                     <span>
                                         <span class="cart-shipping-name">Reguler</span>
                                         <span class="cart-shipping-eta">Estimasi 2–3 hari</span>
@@ -1536,7 +1536,7 @@
                             </label>
                             <label class="cart-shipping-option">
                                 <span class="cart-shipping-left">
-                                    <input type="radio" name="layanan_pengiriman" value="express" data-ongkir="30000" onchange="renderModalKeranjang()">
+                                    <input type="radio" name="layanan_pengiriman" value="express" data-ongkir="30000" onchange="tampilkanIsiModalKeranjang()">
                                     <span>
                                         <span class="cart-shipping-name">Express</span>
                                         <span class="cart-shipping-eta">Estimasi 1 hari</span>
