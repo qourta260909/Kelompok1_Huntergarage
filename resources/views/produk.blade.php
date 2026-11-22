@@ -293,7 +293,8 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-top: 8px;
+            margin-top: auto;
+            padding-top: 10px;
             font-size: 13px;
             font-weight: 700;
             color: #27272a;

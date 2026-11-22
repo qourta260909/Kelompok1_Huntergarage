@@ -179,12 +179,17 @@
                                     <div class="booking-select-wrap">
                                         <select id="model" name="model" class="booking-input booking-select" required>
                                             <option value="" disabled selected>Pilih model kendaraan</option>
-                                            <option value="Vario 160">Vario 160</option>
-                                            <option value="Beat">Beat</option>
+                                            <option value="Vario 160">VARIO 160</option>
+                                            <option value="Beat">BEAT</option>
                                             <option value="NMAX">NMAX</option>
-                                            <option value="Aerox">Aerox</option>
+                                            <option value="Aerox">AEROX</option>
                                             <option value="PCX 160">PCX 160</option>
                                             <option value="CBR 150R">CBR 150R</option>
+                                            <option value="CBR 250RR">CBR 250RR</option>
+                                            <option value="Vario 125">VARIO 125</option>
+                                            <option value="Scoopy">SCOOPY</option>
+                                            <option value="ADV 160">ADV 160</option>
+                                            <option value="FIZR">FIZR</option>
                                         </select>
                                         <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                             <polyline points="6 9 12 15 18 9"></polyline>
