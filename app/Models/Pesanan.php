@@ -15,6 +15,7 @@ class Pesanan extends Model
     protected $table = 'tb_pesanan';
 
     protected $fillable = [
+        'kode_booking',
         'user_id',
         'layanan_id',
         'produk_id',
@@ -34,11 +35,50 @@ class Pesanan extends Model
 
     protected $appends = [
         'bukti_pembayaran_url',
-        'kode_booking',
     ];
 
-    public function getKodeBookingAttribute(): string
+    protected static function booted(): void
     {
+        static::creating(function (Pesanan $pesanan) {
+            if (empty($pesanan->attributes['kode_booking'])) {
+                $kategori = ($pesanan->kategori ?? 'layanan') === 'produk' ? 'produk' : 'layanan';
+                $pesanan->attributes['kode_booking'] = static::generateNextKodeBooking($kategori);
+            }
+        });
+    }
+
+    public static function generateNextKodeBooking(string $kategori): string
+    {
+        $isProduk = $kategori === 'produk';
+        $prefix = $isProduk ? 'PSN-' : 'BKG-';
+
+        $maxNumber = 0;
+        $existingCodes = static::where('kategori', $isProduk ? 'produk' : 'layanan')
+            ->whereNotNull('kode_booking')
+            ->pluck('kode_booking');
+
+        foreach ($existingCodes as $code) {
+            if (preg_match('/(\d+)$/', (string) $code, $matches)) {
+                $num = (int) $matches[1];
+                if ($num > $maxNumber) {
+                    $maxNumber = $num;
+                }
+            }
+        }
+
+        if ($maxNumber === 0) {
+            $maxNumber = static::where('kategori', $isProduk ? 'produk' : 'layanan')->count();
+        }
+
+        return $prefix . str_pad((string) ($maxNumber + 1), 4, '0', STR_PAD_LEFT);
+    }
+
+    public function getKodeBookingAttribute(?string $value): string
+    {
+        if (!empty($value)) {
+            return $value;
+        }
+
         $kategori = $this->kategori ?? 'layanan';
         $prefix = $kategori === 'produk' ? 'PSN-' : 'BKG-';
         $nomor = static::where('kategori', $kategori)
