@@ -1472,7 +1472,7 @@
                                 <div class="gojek-kv-row"><span class="gojek-kv-key">Alamat</span><span class="gojek-kv-val">{{ $pesananAktif->alamat }}</span></div>
                             @endif
                             @if (!$isLayananView && ($pesananAktif->ongkir ?? 0) > 0)
-                                <div class="gojek-kv-row"><span class="gojek-kv-key">Pengiriman</span><span class="gojek-kv-val">{{ ($pesananAktif->layanan_pengiriman ?? 'reguler') === 'express' ? 'Express (1 hari)' : 'Reguler (2–3 hari)' }}</span></div>
+                                <div class="gojek-kv-row"><span class="gojek-kv-key">Pengiriman</span><span class="gojek-kv-val">{{ ($pesananAktif->layanan_pengiriman ?? 'reguler') === 'express' ? 'Kilat (1 hari)' : 'Reguler (2–3 hari)' }}</span></div>
                                 <div class="gojek-kv-row"><span class="gojek-kv-key">Ongkos Kirim</span><span class="gojek-kv-val">Rp {{ number_format((float) $pesananAktif->ongkir, 0, ',', '.') }}</span></div>
                             @endif
                             <div class="gojek-kv-row"><span class="gojek-kv-key">Waktu Transaksi</span><span class="gojek-kv-val">{{ $tanggalWaktuTransaksi }}</span></div>

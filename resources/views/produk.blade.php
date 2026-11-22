@@ -1551,7 +1551,7 @@
                                 <span class="cart-shipping-left">
                                     <input type="radio" name="layanan_pengiriman" value="express" data-ongkir="30000" onchange="tampilkanIsiModalKeranjang()">
                                     <span>
-                                        <span class="cart-shipping-name">Express</span>
+                                        <span class="cart-shipping-name">Kilat</span>
                                         <span class="cart-shipping-eta">Estimasi 1 hari</span>
                                     </span>
                                 </span>
@@ -1586,7 +1586,7 @@
                         </label>
                         <div class="cart-proof-row">
                             <div class="cart-proof-thumb">
-                                <img id="buktiPreviewImg" src="" alt="Preview Bukti Transfer" style="display:none;">
+                                <img id="buktiPreviewImg" src="" alt="Pratinjau Bukti Transfer" style="display:none;">
                                 <svg id="buktiPreviewIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                                     <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -1595,7 +1595,7 @@
                             </div>
                             <div style="flex:1;">
                                 <input type="file" id="inputBuktiPembayaran" name="bukti_pembayaran" class="cart-proof-input" accept="image/*" required>
-                                <div class="cart-proof-help">Unggah foto/screenshot bukti transfer BCA (JPG, PNG, WEBP, maks. 10MB). Dicek admin sebelum diproses.</div>
+                                <div class="cart-proof-help">Unggah foto/tangkapan layar bukti transfer BCA (JPG, PNG, WEBP, maks. 10MB). Dicek admin sebelum diproses.</div>
                             </div>
                         </div>
                     </div>
@@ -1604,7 +1604,7 @@
                     <div class="cart-footer-bar">
                         <div class="cart-footer-total">
                             <div class="cart-summary-breakdown">
-                                <span>Subtotal Produk: <strong id="cartSubtotalPriceText">Rp 0</strong></span>
+                                <span>Harga Produk: <strong id="cartSubtotalPriceText">Rp 0</strong></span>
                                 <span>Ongkir (<span id="cartShippingLabelText">Reguler</span>): <strong id="cartOngkirPriceText">Rp 15.000</strong></span>
                             </div>
                             <span class="cart-footer-label">Total Pembayaran</span>
@@ -1963,7 +1963,7 @@
             wadahList.innerHTML = htmlDaftarBarang;
             const selectedShipping = document.querySelector('input[name="layanan_pengiriman"]:checked');
             const ongkir = selectedShipping ? Number(selectedShipping.dataset.ongkir || 15000) : 15000;
-            const shippingLabel = selectedShipping && selectedShipping.value === 'express' ? 'Express' : 'Reguler';
+            const shippingLabel = selectedShipping && selectedShipping.value === 'express' ? 'Kilat' : 'Reguler';
 
             const teksSubtotalHarga = document.getElementById('cartSubtotalPriceText');
             const teksOngkirHarga = document.getElementById('cartOngkirPriceText');
@@ -1998,7 +1998,7 @@
             if (kodeEl) kodeEl.textContent = data.kode_pesanan || '-';
             if (alamatEl) alamatEl.textContent = data.alamat || '-';
             if (pengirimanEl) {
-                const kurir = data.layanan_pengiriman === 'express' ? 'Express (1 hari)' : 'Reguler (2–3 hari)';
+                const kurir = data.layanan_pengiriman === 'express' ? 'Kilat (1 hari)' : 'Reguler (2–3 hari)';
                 pengirimanEl.textContent = kurir;
             }
             if (ongkirEl) ongkirEl.textContent = formatRupiah(data.ongkir || 0);

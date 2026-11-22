@@ -491,7 +491,7 @@
                                         'telepon' => $pesanan->no_telepon ?: '-',
                                         'alamat' => $pesanan->alamat ?: '-',
                                         'pengiriman' => $kategoriRow === 'produk'
-                                            ? (($pesanan->layanan_pengiriman ?? 'reguler') === 'express' ? 'Express (1 hari)' : 'Reguler (2–3 hari)')
+                                            ? (($pesanan->layanan_pengiriman ?? 'reguler') === 'express' ? 'Kilat (1 hari)' : 'Reguler (2–3 hari)')
                                             : '-',
                                         'ongkir' => $kategoriRow === 'produk'
                                             ? 'Rp ' . number_format((float) ($pesanan->ongkir ?? 0), 0, ',', '.')
@@ -781,15 +781,15 @@
                     <div class="admin-info-row"><span class="admin-info-key">Total Harga</span><span class="admin-info-val" id="admDetailTotal">-</span></div>
                 </div>
 
-                <div style="font-size:13px; font-weight:800; color:#09090b; margin-bottom:6px;">Rincian Item Pesanan</div>
+                <div style="font-size:13px; font-weight:800; color:#09090b; margin-bottom:6px;">Rincian Pesanan</div>
                 <div class="admin-items-box">
                     <table class="admin-items-table">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th style="width:65px; text-align:center;">Qty</th>
+                                <th>Produk / Layanan</th>
+                                <th style="width:72px; text-align:center;">Jumlah</th>
                                 <th>Harga</th>
-                                <th>Subtotal</th>
+                                <th>Jumlah Harga</th>
                             </tr>
                         </thead>
                         <tbody id="admDetailItemsBody"></tbody>

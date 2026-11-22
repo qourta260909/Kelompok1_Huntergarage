@@ -460,10 +460,10 @@
                         </svg>
                         <input type="text" id="searchInput" class="search-input" placeholder="Cari nama atau email...">
                     </div>
-                    <select id="roleFilterSelect" class="role-filter-select" aria-label="Filter Role">
-                        <option value="all" {{ ($roleFilter ?? 'all') === 'all' ? 'selected' : '' }}>Role: Semua</option>
-                        <option value="admin" {{ ($roleFilter ?? 'all') === 'admin' ? 'selected' : '' }}>Role: Admin</option>
-                        <option value="user" {{ ($roleFilter ?? 'all') === 'user' ? 'selected' : '' }}>Role: User</option>
+                    <select id="roleFilterSelect" class="role-filter-select" aria-label="Filter Peran">
+                        <option value="all" {{ ($roleFilter ?? 'all') === 'all' ? 'selected' : '' }}>Peran: Semua</option>
+                        <option value="admin" {{ ($roleFilter ?? 'all') === 'admin' ? 'selected' : '' }}>Peran: Admin</option>
+                        <option value="user" {{ ($roleFilter ?? 'all') === 'user' ? 'selected' : '' }}>Peran: Pelanggan</option>
                     </select>
                 </div>
                 <button type="button" class="btn-add-primary" onclick="openCreateModal()">+ Tambah Pengguna</button>
@@ -481,10 +481,10 @@
                             <tr>
                                 <th>Nama</th>
                                 <th>Email</th>
-                                <th>Password</th>
+                                <th>Kata Sandi</th>
                                 <th>No. Telepon</th>
                                 <th>Alamat</th>
-                                <th>Role</th>
+                                <th>Peran</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -504,7 +504,7 @@
                                         @if (($usr->role ?? 'user') === 'admin')
                                             <span class="badge-role-admin">admin</span>
                                         @else
-                                            <span class="badge-role-user">user</span>
+                                            <span class="badge-role-user">pelanggan</span>
                                         @endif
                                     </td>
                                     <td>
@@ -596,16 +596,16 @@
 
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label for="inputPassword">Password</label>
+                        <label for="inputPassword">Kata Sandi</label>
                         <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Min. 6 karakter">
                         <div class="form-help-text" id="passwordHelpText">Wajib diisi untuk akun baru.</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="inputRole">Role</label>
+                        <label for="inputRole">Peran</label>
                         <select id="inputRole" name="role" class="form-control" required>
-                            <option value="user">user (Pelanggan)</option>
-                            <option value="admin">admin (Admin)</option>
+                            <option value="user">Pelanggan</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                 </div>
