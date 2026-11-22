@@ -426,7 +426,7 @@
                                 <th>Pelanggan</th>
                                 <th id="historyCategoryHeading">Layanan</th>
                                 <th id="historyExtraInfoHeading">Kendaraan</th>
-                                <th>Tanggal, jam</th>
+                                <th>Tanggal &amp; Jam</th>
                                 <th>Total</th>
                                 <th>Status</th>
                                 <th>Aksi</th>

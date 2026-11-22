@@ -107,18 +107,50 @@
             color: #71717a;
             margin-top: 3px;
         }
-        .catalog-card thead th:first-child,
-        .catalog-card tbody td:first-child {
+        .catalog-card table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .catalog-card thead th:nth-child(1),
+        .catalog-card tbody td:nth-child(1) {
+            width: 24%;
+            text-align: left;
             padding-left: 28px;
+        }
+        .catalog-card thead th:nth-child(2),
+        .catalog-card tbody td:nth-child(2) {
+            width: 24%;
+            text-align: left;
+        }
+        .catalog-card thead th:nth-child(3),
+        .catalog-card tbody td:nth-child(3) {
+            width: 10%;
+            text-align: center;
+        }
+        .catalog-card thead th:nth-child(4),
+        .catalog-card tbody td:nth-child(4),
+        .catalog-card thead th.th-status,
+        .catalog-card tbody td.td-status {
+            width: 12%;
+            text-align: center;
+        }
+        .catalog-card thead th:nth-child(5),
+        .catalog-card tbody td:nth-child(5) {
+            width: 14%;
+            text-align: left;
         }
         .catalog-card thead th:last-child,
         .catalog-card tbody td:last-child {
+            width: 16%;
             padding-right: 28px;
             text-align: center !important;
+            white-space: nowrap;
         }
-        .catalog-card thead th.th-status,
-        .catalog-card tbody td.td-status {
-            text-align: center;
+        .catalog-card tbody td.empty-state-cell {
+            width: 100% !important;
+            padding-left: 24px;
+            padding-right: 24px;
+            white-space: normal;
         }
         .badge-status-aktif {
             display: inline-block;

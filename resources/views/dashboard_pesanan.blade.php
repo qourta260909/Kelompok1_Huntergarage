@@ -441,7 +441,7 @@
                                 <th>Pelanggan</th>
                                 <th id="orderCategoryHeading">Layanan</th>
                                 <th id="orderExtraInfoHeading">Kendaraan</th>
-                                <th>Tanggal, jam</th>
+                                <th>Tanggal &amp; Jam</th>
                                 <th>Total</th>
                                 <th>Status</th>
                                 <th>Aksi</th>

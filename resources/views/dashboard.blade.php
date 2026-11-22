@@ -226,7 +226,7 @@
                                 <th>Layanan / Produk</th>
                                 <th>Kendaraan</th>
                                 <th>Alamat</th>
-                                <th>Tanggal, jam</th>
+                                <th>Tanggal &amp; Jam</th>
                                 <th>Total</th>
                                 <th>Status</th>
                             </tr>
