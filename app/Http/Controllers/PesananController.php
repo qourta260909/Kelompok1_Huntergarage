@@ -139,6 +139,7 @@ class PesananController extends Controller
             'nama_lengkap' => ['nullable', 'string', 'max:255'],
             'no_telepon' => ['nullable', 'string', 'max:30'],
             'alamat' => ['nullable', 'required_if:kategori,produk', 'string', 'max:500'],
+            'layanan_pengiriman' => ['nullable', 'required_if:kategori,produk', 'in:reguler,express'],
             'bukti_pembayaran' => ['nullable', 'required_if:kategori,produk', 'file', 'mimes:jpg,jpeg,png,webp,jfif,avif', 'max:10240'],
             'merek' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
@@ -157,6 +158,8 @@ class PesananController extends Controller
             $jadwalServiceId = null;
             $namaItem = '';
             $totalHarga = 0;
+            $layananPengiriman = null;
+            $ongkir = 0;
             $orderDetailsToCreate = [];
 
             if ($validated['kategori'] === 'layanan') {
@@ -254,6 +257,9 @@ class PesananController extends Controller
                 }
 
                 $namaItem = implode(', ', $namaItemsSummary);
+                $layananPengiriman = $validated['layanan_pengiriman'] ?? 'reguler';
+                $ongkir = $layananPengiriman === 'express' ? 30000 : 15000;
+                $totalHarga += $ongkir;
             }
 
             $namaPelanggan = trim((string) ($validated['nama_lengkap'] ?? '')) ?: $user->name;
@@ -268,6 +274,8 @@ class PesananController extends Controller
                 'nama_pelanggan' => $namaPelanggan,
                 'no_telepon' => $noTelepon,
                 'alamat' => $alamat,
+                'layanan_pengiriman' => $layananPengiriman,
+                'ongkir' => $ongkir,
                 'bukti_pembayaran' => $buktiPembayaranPath,
                 'kategori' => $validated['kategori'],
                 'nama_layanan' => $namaItem,
@@ -297,6 +305,9 @@ class PesananController extends Controller
                 'kode_pesanan' => $kodeBooking,
                 'nama_pelanggan' => $pesanan->nama_pelanggan,
                 'alamat' => $pesanan->alamat,
+                'layanan_pengiriman' => $pesanan->layanan_pengiriman,
+                'ongkir' => (float) ($pesanan->ongkir ?? 0),
+                'subtotal_produk' => max(0, (float) $pesanan->total_harga - (float) ($pesanan->ongkir ?? 0)),
                 'total_harga' => (float) $pesanan->total_harga,
                 'waktu_transaksi' => Carbon::parse($pesanan->created_at)->locale('id')->translatedFormat('j F Y, H:i') . ' WITA',
                 'items' => $pesanan->details->map(fn ($d) => [

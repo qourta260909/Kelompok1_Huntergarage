@@ -621,6 +621,72 @@
         .cart-address-feedback.is-success {
             color: #15803d;
         }
+        .cart-shipping-box {
+            margin: 14px 28px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .cart-shipping-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .cart-shipping-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1.5px solid #d1d5db;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        .cart-shipping-option:has(input:checked) {
+            border-color: #111111;
+            background-color: #ffffff;
+        }
+        .cart-shipping-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cart-shipping-left input[type="radio"] {
+            accent-color: #111111;
+            margin: 0;
+        }
+        .cart-shipping-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111827;
+            display: block;
+        }
+        .cart-shipping-eta {
+            font-size: 11.5px;
+            color: #6b7280;
+            display: block;
+        }
+        .cart-shipping-price {
+            font-size: 13px;
+            font-weight: 800;
+            color: #111827;
+            white-space: nowrap;
+        }
+        .cart-summary-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+        .cart-summary-breakdown span {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
         .cart-address-input {
             width: 100%;
             min-height: 68px;
@@ -1446,6 +1512,41 @@
                         <div id="alamatSayaFeedback" class="cart-address-feedback"></div>
                     </div>
 
+                    <!-- Layanan Pengiriman & Ongkir -->
+                    <div class="cart-shipping-box">
+                        <span class="cart-address-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="3" width="15" height="13"></rect>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                            </svg>
+                            Layanan Pengiriman
+                        </span>
+                        <div class="cart-shipping-grid">
+                            <label class="cart-shipping-option">
+                                <span class="cart-shipping-left">
+                                    <input type="radio" name="layanan_pengiriman" value="reguler" data-ongkir="15000" checked onchange="renderModalKeranjang()">
+                                    <span>
+                                        <span class="cart-shipping-name">Reguler</span>
+                                        <span class="cart-shipping-eta">Estimasi 2–3 hari</span>
+                                    </span>
+                                </span>
+                                <span class="cart-shipping-price">Rp 15.000</span>
+                            </label>
+                            <label class="cart-shipping-option">
+                                <span class="cart-shipping-left">
+                                    <input type="radio" name="layanan_pengiriman" value="express" data-ongkir="30000" onchange="renderModalKeranjang()">
+                                    <span>
+                                        <span class="cart-shipping-name">Express</span>
+                                        <span class="cart-shipping-eta">Estimasi 1 hari</span>
+                                    </span>
+                                </span>
+                                <span class="cart-shipping-price">Rp 30.000</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Metode Pembayaran: Transfer Bank BCA -->
                     <div class="cart-payment-box">
                         <div class="cart-payment-left">
@@ -1489,6 +1590,10 @@
                     <!-- Footer Keranjang: Total Pembayaran & Tombol Batalkan / Bayar -->
                     <div class="cart-footer-bar">
                         <div class="cart-footer-total">
+                            <div class="cart-summary-breakdown">
+                                <span>Subtotal Produk: <strong id="cartSubtotalPriceText">Rp 0</strong></span>
+                                <span>Ongkir (<span id="cartShippingLabelText">Reguler</span>): <strong id="cartOngkirPriceText">Rp 15.000</strong></span>
+                            </div>
                             <span class="cart-footer-label">Total Pembayaran</span>
                             <strong class="cart-footer-amount" id="cartTotalPriceText">Rp 0</strong>
                         </div>
@@ -1536,6 +1641,8 @@
                     <div class="gojek-pop-meta">
                         <div class="gojek-pop-meta-row"><span>Bengkel</span><strong>Hunter Garage • Diantar ke Alamat</strong></div>
                         <div class="gojek-pop-meta-row"><span>Alamat Pembeli</span><strong id="gojekPopAlamat">-</strong></div>
+                        <div class="gojek-pop-meta-row"><span>Pengiriman</span><strong id="gojekPopPengiriman">-</strong></div>
+                        <div class="gojek-pop-meta-row"><span>Ongkos Kirim</span><strong id="gojekPopOngkir">Rp 0</strong></div>
                         <div class="gojek-pop-meta-row"><span>Waktu Transaksi</span><strong id="gojekPopWaktu">-</strong></div>
                         <div class="gojek-pop-meta-row"><span>Metode Pembayaran</span><strong>Transfer Bank BCA</strong></div>
                     </div>
@@ -1841,7 +1948,17 @@
             });
 
             wadahList.innerHTML = htmlDaftarBarang;
-            if (teksTotalHarga) teksTotalHarga.textContent = formatRupiah(totalHarga);
+            const selectedShipping = document.querySelector('input[name="layanan_pengiriman"]:checked');
+            const ongkir = selectedShipping ? Number(selectedShipping.dataset.ongkir || 15000) : 15000;
+            const shippingLabel = selectedShipping && selectedShipping.value === 'express' ? 'Express' : 'Reguler';
+
+            const teksSubtotalHarga = document.getElementById('cartSubtotalPriceText');
+            const teksOngkirHarga = document.getElementById('cartOngkirPriceText');
+            const teksShippingLabel = document.getElementById('cartShippingLabelText');
+            if (teksSubtotalHarga) teksSubtotalHarga.textContent = formatRupiah(totalHarga);
+            if (teksOngkirHarga) teksOngkirHarga.textContent = formatRupiah(ongkir);
+            if (teksShippingLabel) teksShippingLabel.textContent = shippingLabel;
+            if (teksTotalHarga) teksTotalHarga.textContent = formatRupiah(totalHarga + ongkir);
 
             // Isi input hidden dengan data JSON [{id, qty}] untuk dikirim ke Controller
             if (inputHiddenItems) {
@@ -1859,12 +1976,19 @@
             const kodeEl = document.getElementById('gojekPopKode');
             const itemsEl = document.getElementById('gojekPopItems');
             const alamatEl = document.getElementById('gojekPopAlamat');
+            const pengirimanEl = document.getElementById('gojekPopPengiriman');
+            const ongkirEl = document.getElementById('gojekPopOngkir');
             const waktuEl = document.getElementById('gojekPopWaktu');
             const totalEl = document.getElementById('gojekPopTotal');
             const linkEl = document.getElementById('gojekPopLihatPesanan');
 
             if (kodeEl) kodeEl.textContent = data.kode_pesanan || '-';
             if (alamatEl) alamatEl.textContent = data.alamat || '-';
+            if (pengirimanEl) {
+                const kurir = data.layanan_pengiriman === 'express' ? 'Express (1 hari)' : 'Reguler (2–3 hari)';
+                pengirimanEl.textContent = kurir;
+            }
+            if (ongkirEl) ongkirEl.textContent = formatRupiah(data.ongkir || 0);
             if (waktuEl) waktuEl.textContent = data.waktu_transaksi || '-';
             if (totalEl) totalEl.textContent = formatRupiah(data.total_harga || 0);
             if (linkEl && (data.redirect_detail_url || data.redirect_pesanan_url)) {

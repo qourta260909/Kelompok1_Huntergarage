@@ -22,6 +22,8 @@ class Pesanan extends Model
         'nama_pelanggan',
         'no_telepon',
         'alamat',
+        'layanan_pengiriman',
+        'ongkir',
         'bukti_pembayaran',
         'kategori',
         'nama_layanan',

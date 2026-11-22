@@ -498,6 +498,12 @@
                                         'pelanggan' => $riwayat->nama_pelanggan_tampil ?? 'Pelanggan',
                                         'telepon' => $riwayat->no_telepon ?: '-',
                                         'alamat' => $riwayat->alamat ?: '-',
+                                        'pengiriman' => $kategoriRow === 'produk'
+                                            ? (($riwayat->layanan_pengiriman ?? 'reguler') === 'express' ? 'Express (1 hari)' : 'Reguler (2–3 hari)')
+                                            : '-',
+                                        'ongkir' => $kategoriRow === 'produk'
+                                            ? 'Rp ' . number_format((float) ($riwayat->ongkir ?? 0), 0, ',', '.')
+                                            : '-',
                                         'kendaraan' => $infoKendaraan ?: '-',
                                         'jadwal' => $tanggalJamFormat,
                                         'metode' => $kategoriRow === 'produk' ? 'Transfer Bank BCA' : 'Bayar di Tempat / Transfer Bank BCA (Setelah Selesai)',
@@ -788,6 +794,8 @@
                     <div class="admin-info-row"><span class="admin-info-key">Nama Pelanggan</span><span class="admin-info-val" id="admDetailPelanggan">-</span></div>
                     <div class="admin-info-row"><span class="admin-info-key">No. Telepon / WA</span><span class="admin-info-val" id="admDetailTelepon">-</span></div>
                     <div class="admin-info-row" id="admRowAlamat"><span class="admin-info-key">Alamat Pengiriman</span><span class="admin-info-val" id="admDetailAlamat">-</span></div>
+                    <div class="admin-info-row" id="admRowPengiriman"><span class="admin-info-key">Pengiriman</span><span class="admin-info-val" id="admDetailPengiriman">-</span></div>
+                    <div class="admin-info-row" id="admRowOngkir"><span class="admin-info-key">Ongkos Kirim</span><span class="admin-info-val" id="admDetailOngkir">-</span></div>
                     <div class="admin-info-row" id="admRowKendaraan"><span class="admin-info-key">Kendaraan</span><span class="admin-info-val" id="admDetailKendaraan">-</span></div>
                     <div class="admin-info-row"><span class="admin-info-key">Jadwal / Waktu</span><span class="admin-info-val" id="admDetailJadwal">-</span></div>
                     <div class="admin-info-row"><span class="admin-info-key">Metode Pembayaran</span><span class="admin-info-val" id="admDetailMetode">-</span></div>
@@ -840,6 +848,10 @@
             document.getElementById('admDetailPelanggan').textContent = data.pelanggan || '-';
             document.getElementById('admDetailTelepon').textContent = data.telepon || '-';
             document.getElementById('admDetailAlamat').textContent = data.alamat || '-';
+            const elPengiriman = document.getElementById('admDetailPengiriman');
+            const elOngkir = document.getElementById('admDetailOngkir');
+            if (elPengiriman) elPengiriman.textContent = data.pengiriman || '-';
+            if (elOngkir) elOngkir.textContent = data.ongkir || '-';
             document.getElementById('admDetailKendaraan').textContent = data.kendaraan || '-';
             document.getElementById('admDetailJadwal').textContent = data.jadwal || '-';
             document.getElementById('admDetailMetode').textContent = data.metode || '-';
@@ -848,6 +860,10 @@
 
             const isProduk = (data.kategori || '').toLowerCase() === 'produk';
             document.getElementById('admRowAlamat').style.display = isProduk ? '' : 'none';
+            const rowPengiriman = document.getElementById('admRowPengiriman');
+            const rowOngkir = document.getElementById('admRowOngkir');
+            if (rowPengiriman) rowPengiriman.style.display = isProduk ? '' : 'none';
+            if (rowOngkir) rowOngkir.style.display = isProduk ? '' : 'none';
             document.getElementById('admRowKendaraan').style.display = isProduk ? 'none' : '';
 
             const buktiSection = document.getElementById('admBuktiSection');
