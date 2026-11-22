@@ -517,7 +517,7 @@
                                     <td>{{ $pesanan->nama_layanan ?? '-' }}</td>
                                     <td>{{ $alamatAtauKendaraan }}</td>
                                     <td>{{ $tanggalJamFormat }}</td>
-                                    <td>Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                    <td style="white-space: nowrap;">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                                     <td>
                                         <span class="badge-menunggu">Menunggu</span>
                                     </td>
