@@ -513,7 +513,7 @@
                                     <td>{{ $riwayat->nama_layanan ?? '-' }}</td>
                                     <td>{{ $alamatAtauKendaraan }}</td>
                                     <td>{{ $tanggalJamFormat }}</td>
-                                    <td class="td-bold">Rp {{ number_format($riwayat->total_harga, 0, ',', '.') }}</td>
+                                    <td class="td-bold" style="white-space: nowrap;">Rp {{ number_format($riwayat->total_harga, 0, ',', '.') }}</td>
                                     <td>
                                         <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
                                     </td>
