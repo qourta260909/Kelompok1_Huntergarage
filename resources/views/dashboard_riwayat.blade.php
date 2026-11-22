@@ -75,7 +75,7 @@
         .order-card thead th:last-child,
         .order-card tbody td:last-child {
             padding-right: 32px;
-            text-align: center;
+            text-align: center !important;
             white-space: nowrap;
             width: 1%;
         }

@@ -115,7 +115,7 @@
         .catalog-card thead th:last-child,
         .catalog-card tbody td:last-child {
             padding-right: 28px;
-            text-align: center;
+            text-align: center !important;
         }
         .catalog-card thead th.th-status,
         .catalog-card tbody td.td-status {

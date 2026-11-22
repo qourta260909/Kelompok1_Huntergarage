@@ -123,7 +123,7 @@
         .catalog-card thead th:last-child,
         .catalog-card tbody td:last-child {
             padding-right: 32px;
-            text-align: center;
+            text-align: center !important;
         }
         .password-hash-text {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
