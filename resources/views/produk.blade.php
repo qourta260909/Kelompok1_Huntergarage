@@ -402,6 +402,10 @@
         .produk-modal-card {
             width: 100%;
             max-width: 780px;
+            max-height: calc(100vh - 40px);
+            max-height: calc(100dvh - 40px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
             background-color: #ffffff;
             border-radius: 14px;
             padding: 24px 0 22px;
@@ -453,7 +457,7 @@
         .cart-items-list {
             display: flex;
             flex-direction: column;
-            max-height: 370px;
+            max-height: 260px;
             overflow-y: auto;
             border-top: 1px solid #d1d5db;
         }
