@@ -36,7 +36,7 @@
             <button type="button" class="btn-modal-cancel" onclick="closeLogoutModal()">
                 Batal
             </button>
-            <form id="logoutModalHiddenForm" method="POST" action="{{ route('logout') }}" style="margin: 0; display: inline-flex;">
+            <form id="logoutModalHiddenForm" method="POST" action="{{ route('logout') }}" style="margin: 0; flex: 1; display: flex;">
                 @csrf
                 <button type="submit" class="btn-modal-confirm">
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">

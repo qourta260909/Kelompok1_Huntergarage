@@ -107,7 +107,7 @@
                     </section>
                 @else
                 <!-- Stepper -->
-                <div class="stepper" aria-label="Tahapan pemesanan layanan">
+                <div class="stepper @guest is-locked @endguest" aria-label="Tahapan pemesanan layanan">
                     <button type="button" class="stepper-item active" data-step-target="1" onclick="goToStep(1)">
                         <span class="stepper-circle">1</span>
                         <span class="stepper-label">Kendaraan</span>
@@ -130,7 +130,24 @@
                 </div>
 
                 <!-- Card Form -->
-                <section class="booking-card" aria-live="polite">
+                <section class="booking-card @guest is-guest-locked @endguest" aria-live="polite">
+                    @guest
+                        <div class="booking-auth-overlay" role="dialog" aria-label="Masuk diperlukan">
+                            <div class="booking-auth-box">
+                                <div class="booking-auth-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </div>
+                                <h2 class="booking-auth-title">Masuk Terlebih Dahulu</h2>
+                                <p class="booking-auth-desc">Silakan login ke akun Hunter Garage Anda untuk mengisi formulir dan melakukan pemesanan layanan servis.</p>
+                                <div class="booking-auth-actions">
+                                    <a href="{{ route('login') }}" class="booking-next-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; width:100%;">Masuk untuk Booking</a>
+                                </div>
+                            </div>
+                        </div>
+                    @endguest
                     <!-- STEP 1: DATA KENDARAAN -->
                     <div class="booking-step-panel active" id="stepPanel1" data-step="1">
                         <div class="booking-card-header">

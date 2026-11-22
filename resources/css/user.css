@@ -1064,12 +1064,100 @@ h1 {
 
 /* Booking Card */
 .booking-card {
+    position: relative;
+    overflow: hidden;
     width: 100%;
     background-color: var(--surface-light);
     border-radius: 18px;
     padding: 40px 48px 36px;
     box-shadow: 0 22px 48px -12px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.stepper.is-locked {
+    opacity: 0.65;
+    pointer-events: none;
+    user-select: none;
+}
+
+.booking-card.is-guest-locked .booking-step-panel {
+    filter: blur(6px);
+    opacity: 0.55;
+    pointer-events: none;
+    user-select: none;
+}
+
+.booking-auth-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.booking-auth-box {
+    width: 100%;
+    max-width: 420px;
+    background-color: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 16px;
+    padding: 28px 26px;
+    text-align: center;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.booking-auth-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: #18181b;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.booking-auth-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.booking-auth-desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #52525b;
+}
+
+.booking-auth-actions {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.booking-auth-register-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3f3f46;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.booking-auth-register-link:hover {
+    color: #000000;
 }
 
 .booking-card-header {

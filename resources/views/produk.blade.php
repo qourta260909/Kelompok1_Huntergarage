@@ -189,9 +189,11 @@
             border: 1px solid #d4d4d8;
             background-color: #ffffff;
             color: #18181b;
+            font-family: inherit;
             font-size: 12px;
             font-weight: 600;
             text-decoration: none;
+            cursor: pointer;
             transition: background-color 0.16s ease, border-color 0.16s ease;
         }
 
@@ -204,6 +206,10 @@
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 22px;
+        }
+
+        .catalog-grid:not(.is-expanded) .catalog-card.is-extra-card {
+            display: none;
         }
 
         .catalog-card {
@@ -1307,18 +1313,22 @@
                 <!-- Section 1: Ban, Aki & Komponen Kendaraan -->
                 <section class="catalog-section" id="semua-komponen" aria-labelledby="sectionKomponenTitle">
                     <div class="catalog-section-header">
-                        <h2 id="sectionKomponenTitle" class="catalog-section-title">Ban, Aki &amp; Komponen Kendaraan</h2>
-                        <a href="#semua-komponen" class="catalog-see-all">Lihat Semua &rarr;</a>
+                        <h2 id="sectionKomponenTitle" class="catalog-section-title">Produk Tersedia</h2>
+                        @if ($produkAktif->count() > 8)
+                            <button type="button" class="catalog-see-all" id="toggleKomponenBtn" onclick="toggleSemuaKomponen()" aria-expanded="false">
+                                Lihat Semua &rarr;
+                            </button>
+                        @endif
                     </div>
 
-                    <div class="catalog-grid">
+                    <div class="catalog-grid" id="komponenCatalogGrid">
                         @foreach ($produkAktif as $produk)
                             @php
                                 $stokProduk = (int) ($produk->stok ?? 0);
                                 $stokHabis = $stokProduk <= 0;
                                 $deskripsiProduk = $produk->deskripsi ?: ($produk->kategori ?: 'Suku Cadang Resmi');
                             @endphp
-                            <article class="catalog-card" data-search="{{ strtolower($produk->nama_produk . ' ' . $deskripsiProduk) }}">
+                            <article class="catalog-card {{ $loop->index >= 8 ? 'is-extra-card' : '' }}" data-search="{{ strtolower($produk->nama_produk . ' ' . $deskripsiProduk) }}">
                                 <div class="catalog-card-thumb">
                                     @if ($produk->gambar_url)
                                         <img src="{{ $produk->gambar_url }}" alt="{{ $produk->nama_produk }}">
@@ -1379,7 +1389,7 @@
                     </div>
 
                     <div class="catalog-grid">
-                        @foreach ($produkAktif as $produk)
+                        @foreach ($produkAktif->take(4) as $produk)
                             @php
                                 $stokProduk = (int) ($produk->stok ?? 0);
                                 $stokHabis = $stokProduk <= 0;
@@ -2160,7 +2170,12 @@
                             const teksProduk = card.dataset.search || '';
                             const cocok = teksProduk.includes(kataKunci);
 
-                            card.style.display = cocok ? '' : 'none';
+                            if (kataKunci === '') {
+                                card.style.display = '';
+                            } else {
+                                card.style.display = cocok ? 'flex' : 'none';
+                            }
+
                             if (cocok) {
                                 ketemuDiSection++;
                                 totalKetemu++;
@@ -2198,6 +2213,16 @@
                 simpanKeranjang();
             }
         });
+
+        function toggleSemuaKomponen() {
+            const grid = document.getElementById('komponenCatalogGrid');
+            const btn = document.getElementById('toggleKomponenBtn');
+            if (!grid || !btn) return;
+
+            const isExpanded = grid.classList.toggle('is-expanded');
+            btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+            btn.innerHTML = isExpanded ? 'Minimize &uarr;' : 'Lihat Semua &rarr;';
+        }
 
         function isiDenganAlamatSaya() {
             const btn = document.getElementById('btnIsiAlamatSaya');
