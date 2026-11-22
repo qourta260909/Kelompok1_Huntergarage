@@ -1166,6 +1166,118 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Modal Notifikasi Login Terlebih Dahulu (Untuk Guest) */
+        .guest-login-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(9, 9, 11, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1200;
+        }
+        .guest-login-overlay.active {
+            display: flex;
+        }
+        .guest-login-card {
+            width: 100%;
+            max-width: 420px;
+            background-color: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e4e4e7;
+            padding: 28px 26px 24px;
+            text-align: center;
+            box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.3);
+            animation: guestModalPop 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes guestModalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .guest-login-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background-color: #18181b;
+            color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+        }
+        .guest-login-title {
+            margin: 0 0 8px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .guest-login-desc {
+            margin: 0 0 22px;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: #52525b;
+        }
+        .guest-login-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .guest-login-cancel {
+            flex: 1;
+            height: 42px;
+            border-radius: 10px;
+            border: 1.5px solid #d4d4d8;
+            background-color: #ffffff;
+            color: #18181b;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.16s ease;
+        }
+        .guest-login-cancel:hover {
+            background-color: #f4f4f5;
+        }
+        .guest-login-submit {
+            flex: 1;
+            height: 42px;
+            border-radius: 10px;
+            border: none;
+            background-color: #111111;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.16s ease;
+        }
+        .guest-login-submit:hover {
+            background-color: #27272a;
+        }
+        .guest-login-register {
+            display: inline-block;
+            margin-top: 14px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #52525b;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .guest-login-register:hover {
+            color: #111111;
+        }
     </style>
 </head>
 <body>
@@ -1284,7 +1396,7 @@
                         <span class="cart-badge-count" id="cartBadgeCount" style="display:none;">0</span>
                     </button>
                 @else
-                    <a href="{{ route('login') }}" class="topbar-cart-btn" style="text-decoration:none;">Keranjang</a>
+                    <button type="button" class="topbar-cart-btn" onclick="openGuestLoginModal('keranjang')">Keranjang</button>
                 @endauth
             </div>
         </div>
@@ -1372,8 +1484,8 @@
                                         @endif
                                     @else
                                         <div class="catalog-card-actions">
-                                            <a href="{{ route('login') }}" class="catalog-add-outline-btn">+ Keranjang</a>
-                                            <a href="{{ route('login') }}" class="catalog-buy-btn">Beli Langsung</a>
+                                            <button type="button" class="catalog-add-outline-btn" onclick="openGuestLoginModal('keranjang')">+ Keranjang</button>
+                                            <button type="button" class="catalog-buy-btn" onclick="openGuestLoginModal('beli')">Beli Langsung</button>
                                         </div>
                                     @endauth
                                 </div>
@@ -1439,8 +1551,8 @@
                                         @endif
                                     @else
                                         <div class="catalog-card-actions">
-                                            <a href="{{ route('login') }}" class="catalog-add-outline-btn">+ Keranjang</a>
-                                            <a href="{{ route('login') }}" class="catalog-buy-btn">Beli Langsung</a>
+                                            <button type="button" class="catalog-add-outline-btn" onclick="openGuestLoginModal('keranjang')">+ Keranjang</button>
+                                            <button type="button" class="catalog-buy-btn" onclick="openGuestLoginModal('beli')">Beli Langsung</button>
                                         </div>
                                     @endauth
                                 </div>
@@ -1456,6 +1568,30 @@
             @endif
         </div>
     </main>
+
+    @guest
+        <div class="guest-login-overlay" id="guestLoginModal" aria-hidden="true" onclick="if (event.target === this) closeGuestLoginModal();">
+            <div class="guest-login-card" role="dialog" aria-modal="true" aria-labelledby="guestLoginTitle">
+                <div class="guest-login-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <h2 id="guestLoginTitle" class="guest-login-title">Login Terlebih Dahulu</h2>
+                <p id="guestLoginDesc" class="guest-login-desc">
+                    Silakan masuk ke akun Hunter Garage Anda terlebih dahulu untuk menambahkan produk ke keranjang atau melakukan pembelian.
+                </p>
+                <div class="guest-login-actions">
+                    <button type="button" class="guest-login-cancel" onclick="closeGuestLoginModal()">Nanti Saja</button>
+                    <a href="{{ route('login') }}" class="guest-login-submit">Masuk Sekarang</a>
+                </div>
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="guest-login-register">Belum punya akun? Daftar sekarang</a>
+                @endif
+            </div>
+        </div>
+    @endguest
 
     @auth
         <!-- Floating Toast Notifikasi Keranjang -->
@@ -2215,6 +2351,34 @@
             }
         });
 
+        function openGuestLoginModal(aksi) {
+            const modal = document.getElementById('guestLoginModal');
+            const desc = document.getElementById('guestLoginDesc');
+            if (!modal) return;
+
+            if (desc) {
+                desc.textContent = aksi === 'beli'
+                    ? 'Silakan login terlebih dahulu ke akun Hunter Garage Anda untuk langsung membeli produk ini.'
+                    : 'Silakan login terlebih dahulu ke akun Hunter Garage Anda untuk menambahkan atau melihat produk di keranjang.';
+            }
+
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeGuestLoginModal() {
+            const modal = document.getElementById('guestLoginModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeGuestLoginModal();
+            }
+        });
+
         function toggleSemuaKomponen() {
             const grid = document.getElementById('komponenCatalogGrid');
             const btn = document.getElementById('toggleKomponenBtn');
@@ -2251,5 +2415,6 @@
             }
         }
     </script>
+    <x-login-success-toast />
 </body>
 </html>

@@ -761,5 +761,6 @@
             }
         });
     </script>
+    <x-login-success-toast />
 </body>
 </html>
