@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('kode_produk')->nullable();
             $table->string('nama_produk');
+            $table->string('gambar')->nullable();
             $table->text('deskripsi')->nullable();
             $table->string('kategori')->nullable();
             $table->integer('stok')->default(0);
