@@ -433,22 +433,11 @@
                             </tr>
                         </thead>
                         <tbody id="historyTableBody">
-                            @php
-                                $kodeLayananCounter = 0;
-                                $kodeProdukCounter = 0;
-                            @endphp
                             @forelse ($daftarRiwayat ?? [] as $riwayat)
                                 @php
                                     $kategoriRow = $riwayat->kategori ?? 'layanan';
                                     $prefixKode = $kategoriRow === 'produk' ? 'PSN-' : 'BKG-';
-                                    if ($kategoriRow === 'produk') {
-                                        $kodeProdukCounter++;
-                                        $nomorUrut = $kodeProdukCounter;
-                                    } else {
-                                        $kodeLayananCounter++;
-                                        $nomorUrut = $kodeLayananCounter;
-                                    }
-                                    $kodeBooking = $prefixKode . str_pad((string) $nomorUrut, 4, '0', STR_PAD_LEFT);
+                                    $kodeBooking = $prefixKode . str_pad((string) $riwayat->id, 4, '0', STR_PAD_LEFT);
                                     $waktuService = $riwayat->jadwal_service ?? $riwayat->created_at;
                                     $carbonWaktu = $waktuService ? \Carbon\Carbon::parse($waktuService)->locale('id') : null;
                                     $tanggalJamFormat = $carbonWaktu

@@ -448,22 +448,11 @@
                             </tr>
                         </thead>
                         <tbody id="orderTableBody">
-                            @php
-                                $kodeLayananCounter = 0;
-                                $kodeProdukCounter = 0;
-                            @endphp
                             @forelse ($daftarPesanan ?? [] as $pesanan)
                                 @php
                                     $kategoriRow = $pesanan->kategori ?? 'layanan';
                                     $prefixKode = $kategoriRow === 'produk' ? 'PSN-' : 'BKG-';
-                                    if ($kategoriRow === 'produk') {
-                                        $kodeProdukCounter++;
-                                        $nomorUrut = $kodeProdukCounter;
-                                    } else {
-                                        $kodeLayananCounter++;
-                                        $nomorUrut = $kodeLayananCounter;
-                                    }
-                                    $kodeBooking = $prefixKode . str_pad((string) $nomorUrut, 4, '0', STR_PAD_LEFT);
+                                    $kodeBooking = $prefixKode . str_pad((string) $pesanan->id, 4, '0', STR_PAD_LEFT);
                                     $waktuService = $pesanan->jadwal_service ?? $pesanan->created_at;
                                     $carbonWaktu = $waktuService ? \Carbon\Carbon::parse($waktuService)->locale('id') : null;
                                     $tanggalJamFormat = $carbonWaktu
