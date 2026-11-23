@@ -177,19 +177,8 @@
                                 <div class="booking-field">
                                     <label for="model" class="booking-label">Model</label>
                                     <div class="booking-select-wrap">
-                                        <select id="model" name="model" class="booking-input booking-select" required>
-                                            <option value="" disabled selected>Pilih model kendaraan</option>
-                                            <option value="Vario 160">VARIO 160</option>
-                                            <option value="Beat">BEAT</option>
-                                            <option value="NMAX">NMAX</option>
-                                            <option value="Aerox">AEROX</option>
-                                            <option value="PCX 160">PCX 160</option>
-                                            <option value="CBR 150R">CBR 150R</option>
-                                            <option value="CBR 250RR">CBR 250RR</option>
-                                            <option value="Vario 125">VARIO 125</option>
-                                            <option value="Scoopy">SCOOPY</option>
-                                            <option value="ADV 160">ADV 160</option>
-                                            <option value="FIZR">FIZR</option>
+                                        <select id="model" name="model" class="booking-input booking-select" required disabled>
+                                            <option value="" disabled selected>Pilih merek terlebih dahulu</option>
                                         </select>
                                         <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                             <polyline points="6 9 12 15 18 9"></polyline>
@@ -530,6 +519,93 @@
     <x-user-footer :layanan-aktif="$layananAktif ?? collect()" :produk-aktif="$produkAktif ?? collect()" />
 
     <script>
+        const MODEL_BY_MEREK = {
+            Honda: [
+                'Vario 125',
+                'Vario 160',
+                'BeAT',
+                'Scoopy',
+                'PCX 160',
+                'ADV 160',
+                'Genio',
+                'Stylo 160',
+                'Supra X 125',
+                'CBR 150R',
+                'CBR 250RR',
+                'CRF 150L',
+            ],
+            Yamaha: [
+                'NMAX',
+                'Aerox 155',
+                'Lexi',
+                'Mio M3',
+                'Fazzio',
+                'Grand Filano',
+                'XMAX',
+                'R15',
+                'R25',
+                'Vixion',
+                'MT-15',
+                'F1ZR',
+            ],
+            Suzuki: [
+                'Nex II',
+                'Address',
+                'Satria F150',
+                'GSX-R150',
+                'GSX-S150',
+                'Burgman Street 125',
+                'V-Strom 250 SX',
+            ],
+            Kawasaki: [
+                'Ninja 250',
+                'Ninja ZX-25R',
+                'KLX 150',
+                'W175',
+                'Versys-X 250',
+                'Z250',
+            ],
+            Vespa: [
+                'Sprint 150',
+                'Primavera 150',
+                'LX 125',
+                'GTS 150',
+                'GTS 300',
+            ],
+        };
+
+        function syncModelByMerek() {
+            const merekEl = document.getElementById('merek');
+            const modelEl = document.getElementById('model');
+            if (!merekEl || !modelEl) return;
+
+            const merekDipilih = merekEl.value;
+            const daftarModel = MODEL_BY_MEREK[merekDipilih] || [];
+
+            modelEl.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            placeholder.textContent = daftarModel.length > 0
+                ? 'Pilih model kendaraan'
+                : 'Pilih merek terlebih dahulu';
+            modelEl.appendChild(placeholder);
+
+            if (daftarModel.length === 0) {
+                modelEl.disabled = true;
+                return;
+            }
+
+            daftarModel.forEach(function (namaModel) {
+                const opt = document.createElement('option');
+                opt.value = namaModel;
+                opt.textContent = namaModel.toUpperCase();
+                modelEl.appendChild(opt);
+            });
+            modelEl.disabled = false;
+        }
+
         function validateStepFields(step) {
             if (step === 1) {
                 const step1Fields = [
@@ -722,11 +798,18 @@
                     }
                 });
             }
+            const merekSelect = document.getElementById('merek');
+            if (merekSelect) {
+                merekSelect.addEventListener('change', syncModelByMerek);
+            }
+            syncModelByMerek();
+
             function resetBookingFromStart() {
                 ['merek', 'model', 'tahun', 'plat_nomor', 'no_telepon'].forEach(function (id) {
                     const el = document.getElementById(id);
                     if (el) el.value = '';
                 });
+                syncModelByMerek();
                 const jamEl = document.getElementById('jam_servis');
                 if (jamEl) jamEl.selectedIndex = 0;
                 const tglEl = document.getElementById('tanggal_servis');
