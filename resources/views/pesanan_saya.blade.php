@@ -1635,7 +1635,7 @@
                     @endif
 
                     @if ($isLayananView && in_array($statusPesanan, ['baru', 'proses'], true))
-                        <div style="margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; background: {{ $statusPesanan === 'baru' ? '#fffbeb' : '#f4f4f5' }}; border: 1px solid {{ $statusPesanan === 'baru' ? '#fde68a' : '#e4e4e7' }}; color: {{ $statusPesanan === 'baru' ? '#92400e' : '#52525b' }}; font-size: 12.5px; font-weight: 600;">
+                        <div style="margin: 0 26px 16px; padding: 12px 16px; border-radius: 12px; background: {{ $statusPesanan === 'baru' ? '#fffbeb' : '#f4f4f5' }}; border: 1px solid {{ $statusPesanan === 'baru' ? '#fde68a' : '#e4e4e7' }}; color: {{ $statusPesanan === 'baru' ? '#92400e' : '#52525b' }}; font-size: 12.5px; font-weight: 600;">
                             @if ($statusPesanan === 'baru')
                                 Info: Pembatalan booking hanya dapat dilakukan sebelum admin mengonfirmasi pesanan.
                             @else
@@ -1644,7 +1644,7 @@
                         </div>
 
                         @if ($statusPesanan === 'proses')
-                            <div style="margin: 12px 0 0; padding: 14px 16px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                            <div style="margin: 0 26px 18px; padding: 14px 18px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
                                 <div style="display: flex; flex-direction: column; gap: 3px; min-width: 220px; flex: 1;">
                                     <strong style="font-size: 13.5px; font-weight: 700; color: #14532d;">Ingin Mengajukan Pembatalan?</strong>
                                     <span style="font-size: 12.5px; font-weight: 500; color: #166534;">Hubungi CS Admin via WhatsApp (+62 831-9251-3564) untuk proses pembatalan booking ini.</span>
