@@ -1427,11 +1427,6 @@
                 <section class="catalog-section" id="semua-komponen" aria-labelledby="sectionKomponenTitle">
                     <div class="catalog-section-header">
                         <h2 id="sectionKomponenTitle" class="catalog-section-title">Produk Tersedia</h2>
-                        @if ($produkAktif->count() > 8)
-                            <button type="button" class="catalog-see-all" id="toggleKomponenBtn" onclick="toggleSemuaKomponen()" aria-expanded="false">
-                                Lihat Semua &rarr;
-                            </button>
-                        @endif
                     </div>
 
                     <div class="catalog-grid" id="komponenCatalogGrid">
@@ -1441,7 +1436,7 @@
                                 $stokHabis = $stokProduk <= 0;
                                 $deskripsiProduk = $produk->deskripsi ?: ($produk->kategori ?: 'Suku Cadang Resmi');
                             @endphp
-                            <article class="catalog-card {{ $loop->index >= 8 ? 'is-extra-card' : '' }}" data-search="{{ strtolower($produk->nama_produk . ' ' . $deskripsiProduk) }}">
+                            <article class="catalog-card" data-search="{{ strtolower($produk->nama_produk . ' ' . $deskripsiProduk) }}">
                                 <div class="catalog-card-thumb">
                                     @if ($produk->gambar_url)
                                         <img src="{{ $produk->gambar_url }}" alt="{{ $produk->nama_produk }}">
@@ -1497,7 +1492,6 @@
                 <section class="catalog-section" id="semua-rekomendasi" aria-labelledby="sectionRekomendasiTitle">
                     <div class="catalog-section-header">
                         <h2 id="sectionRekomendasiTitle" class="catalog-section-title">Rekomendasi Produk</h2>
-                        <a href="#semua-rekomendasi" class="catalog-see-all">Lihat Semua &rarr;</a>
                     </div>
 
                     <div class="catalog-grid">
@@ -2376,16 +2370,6 @@
                 closeGuestLoginModal();
             }
         });
-
-        function toggleSemuaKomponen() {
-            const grid = document.getElementById('komponenCatalogGrid');
-            const btn = document.getElementById('toggleKomponenBtn');
-            if (!grid || !btn) return;
-
-            const isExpanded = grid.classList.toggle('is-expanded');
-            btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-            btn.innerHTML = isExpanded ? 'Minimize &uarr;' : 'Lihat Semua &rarr;';
-        }
 
         function isiDenganAlamatSaya() {
             const btn = document.getElementById('btnIsiAlamatSaya');
