@@ -431,6 +431,27 @@
             background-color: #27272a;
         }
 
+        .btn-order-cancel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 9px;
+            border: 1.2px solid #fecaca;
+            background-color: #ffffff;
+            color: #dc2626;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .btn-order-cancel:hover {
+            background-color: #fef2f2;
+            border-color: #ef4444;
+        }
+
         .btn-order-pdf {
             display: inline-flex;
             align-items: center;
@@ -795,6 +816,26 @@
         .gojek-btn-outline:hover {
             background-color: #f4f4f5;
             border-color: #a1a1aa;
+        }
+        .gojek-btn-cancel {
+            flex: 1;
+            height: 44px;
+            border-radius: 10px;
+            border: 1.4px solid #fecaca;
+            background-color: #ffffff;
+            color: #dc2626;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.16s ease, border-color 0.16s ease;
+        }
+        .gojek-btn-cancel:hover {
+            background-color: #fef2f2;
+            border-color: #ef4444;
         }
         .order-success-page {
             max-width: 1180px;
@@ -1485,11 +1526,46 @@
                         <span class="gojek-total-amount">Rp {{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</span>
                     </div>
 
+                    @if ($isLayananView && in_array($statusPesanan, ['baru', 'proses'], true))
+                        <div style="margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; background: {{ $statusPesanan === 'baru' ? '#fffbeb' : '#f4f4f5' }}; border: 1px solid {{ $statusPesanan === 'baru' ? '#fde68a' : '#e4e4e7' }}; color: {{ $statusPesanan === 'baru' ? '#92400e' : '#52525b' }}; font-size: 12.5px; font-weight: 600;">
+                            @if ($statusPesanan === 'baru')
+                                Info: Pembatalan booking hanya dapat dilakukan sebelum admin mengonfirmasi pesanan.
+                            @else
+                                Info: Booking sudah dikonfirmasi oleh admin sehingga tidak dapat dibatalkan langsung.
+                            @endif
+                        </div>
+
+                        @if ($statusPesanan === 'proses')
+                            <div style="margin: 12px 0 0; padding: 14px 16px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                                <div style="display: flex; flex-direction: column; gap: 3px; min-width: 220px; flex: 1;">
+                                    <strong style="font-size: 13.5px; font-weight: 700; color: #14532d;">Ingin Mengajukan Pembatalan?</strong>
+                                    <span style="font-size: 12.5px; font-weight: 500; color: #166534;">Hubungi CS Admin via WhatsApp (+62 831-9251-3564) untuk proses pembatalan booking ini.</span>
+                                </div>
+                                <a
+                                    href="https://wa.me/6283192513564?text={{ urlencode('Halo Admin Hunter Garage, saya ingin mengajukan pembatalan booking servis dengan kode ' . $kodeTransaksi . '.') }}"
+                                    target="_blank"
+                                    rel="noopener"
+                                    style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 9px; background: #16a34a; color: #ffffff; font-size: 12.5px; font-weight: 700; text-decoration: none; white-space: nowrap;"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                    </svg>
+                                    Chat WhatsApp Admin
+                                </a>
+                            </div>
+                        @endif
+                    @endif
+
                     <div class="gojek-actions-bar">
                         @if ($isLayananView)
                             <a href="{{ route('user.pesanan', ['tab' => 'jadwal']) }}" class="gojek-btn-primary">
                                 Lihat Booking Saya
                             </a>
+                            @if ($statusPesanan === 'baru')
+                                <button type="button" class="gojek-btn-cancel" onclick="openCancelBookingModal('{{ route('user.pesanan.cancel', $pesananAktif->id) }}', '{{ $kodeTransaksi }}')">
+                                    Batalkan Booking
+                                </button>
+                            @endif
                         @else
                             <button type="button" class="gojek-btn-primary" style="border:none; cursor:pointer; font-family:inherit;" onclick="openUserBuktiModal()">
                                 Lihat Bukti Pembayaran Saya
@@ -1580,6 +1656,26 @@
                     <p class="user-panel-subtitle" id="panelMainSubtitle">
                         {{ $activeSidebarTab === 'jadwal' ? 'Lihat jadwal dan status booking servis kendaraan mu' : 'Lihat Status pesanan dan pembelian mu' }}
                     </p>
+                    <p id="bookingCancelPolicyNote" style="margin: 8px 0 0; font-size: 12.5px; font-weight: 600; color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 7px 12px; display: {{ $activeSidebarTab === 'jadwal' ? 'inline-block' : 'none' }};">
+                        Info: Cancel booking hanya dapat dilakukan saat admin belum mengonfirmasi. Setelah dikonfirmasi admin, booking tidak dapat dibatalkan langsung.
+                    </p>
+                    <div id="bookingCsWhatsappCard" style="margin: 10px 0 0; padding: 14px 18px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: {{ $activeSidebarTab === 'jadwal' ? 'flex' : 'none' }}; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                        <div style="display: flex; flex-direction: column; gap: 2px; min-width: 220px; flex: 1;">
+                            <strong style="font-size: 13.5px; font-weight: 700; color: #14532d;">Ajukan Pembatalan Setelah Dikonfirmasi Admin?</strong>
+                            <span style="font-size: 12.5px; font-weight: 500; color: #166534;">Silakan hubungi CS Admin via WhatsApp di <strong>+62 831-9251-3564</strong> untuk pengajuan pembatalan booking.</span>
+                        </div>
+                        <a
+                            href="https://wa.me/6283192513564?text={{ urlencode('Halo Admin Hunter Garage, saya ingin mengajukan pembatalan booking servis.') }}"
+                            target="_blank"
+                            rel="noopener"
+                            style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 9px; background: #16a34a; color: #ffffff; font-size: 12.5px; font-weight: 700; text-decoration: none; white-space: nowrap;"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            </svg>
+                            Chat WhatsApp Admin
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Bar Tab Filter Status -->
@@ -1590,6 +1686,16 @@
                 </div>
 
                 <div class="user-panel-body">
+                    @if (session('success'))
+                        <div style="margin-bottom:16px; padding:12px 16px; border-radius:12px; background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; font-size:13.5px; font-weight:600;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if ($errors->any())
+                        <div style="margin-bottom:16px; padding:12px 16px; border-radius:12px; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; font-size:13.5px; font-weight:600;">
+                            {{ $errors->first() }}
+                        </div>
+                    @endif
                     <div class="user-orders-list" id="userOrdersList">
                         @foreach ($daftarPesananUser as $item)
                             @php
@@ -1661,6 +1767,9 @@
                                         <strong class="user-order-item-price">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</strong>
                                     </div>
                                     <div class="user-order-item-actions">
+                                        @if ($katItem === 'layanan' && $st === 'baru')
+                                            <button type="button" class="btn-order-cancel" onclick="openCancelBookingModal('{{ route('user.pesanan.cancel', $item->id) }}', '{{ $kodeItem }}')">Batalkan</button>
+                                        @endif
                                         <a href="{{ route('user.pesanan', ['detail' => $item->id]) }}" class="btn-order-detail">Lihat Detail</a>
                                     </div>
                                 </div>
@@ -1722,7 +1831,58 @@
         </div>
     @endif
 
+    <!-- Modal Konfirmasi Batalkan Booking Layanan -->
+    <div id="cancelBookingModal" style="position:fixed; inset:0; background:rgba(9,9,11,0.62); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; padding:18px; z-index:9999;" onclick="if(event.target === this) closeCancelBookingModal();">
+        <div role="dialog" aria-modal="true" aria-labelledby="cancelBookingTitle" style="width:100%; max-width:420px; background:#ffffff; border-radius:18px; border:1px solid #e4e4e7; box-shadow:0 24px 54px rgba(0,0,0,0.28); padding:26px 24px 22px; text-align:center;">
+            <div style="width:48px; height:48px; border-radius:12px; background:#fef2f2; color:#dc2626; display:inline-flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+            </div>
+            <h3 id="cancelBookingTitle" style="margin:0 0 8px; font-size:18px; font-weight:800; color:#09090b;">Batalkan Booking Servis?</h3>
+            <p id="cancelBookingDesc" style="margin:0 0 20px; font-size:13.5px; line-height:1.5; color:#52525b;">
+                Apakah Anda yakin ingin membatalkan booking layanan ini?
+            </p>
+            <div style="display:flex; gap:10px;">
+                <button type="button" onclick="closeCancelBookingModal()" style="flex:1; height:42px; border-radius:10px; border:1.5px solid #d4d4d8; background:#ffffff; color:#18181b; font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer;">
+                    Tidak
+                </button>
+                <form id="cancelBookingForm" method="POST" action="" style="flex:1; display:flex; margin:0;">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" style="width:100%; height:42px; border-radius:10px; border:none; background:#dc2626; color:#ffffff; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer;">
+                        Ya, Batalkan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        function openCancelBookingModal(actionUrl, kodeBooking) {
+            const modal = document.getElementById('cancelBookingModal');
+            const form = document.getElementById('cancelBookingForm');
+            const desc = document.getElementById('cancelBookingDesc');
+            if (!modal || !form) return;
+
+            form.action = actionUrl;
+            if (desc) {
+                desc.textContent = `Apakah Anda yakin ingin membatalkan booking servis ${kodeBooking}? Tindakan ini tidak dapat dibatalkan.`;
+            }
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCancelBookingModal() {
+            const modal = document.getElementById('cancelBookingModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
         function openUserBuktiModal() {
             const modal = document.getElementById('userBuktiModal');
             if (modal) {
@@ -1808,6 +1968,14 @@
                 if (!emptyState) return;
                 currentMenu = getActiveMenu();
                 currentStatus = getActiveStatus();
+                const policyNote = document.getElementById('bookingCancelPolicyNote');
+                if (policyNote) {
+                    policyNote.style.display = currentMenu === 'jadwal' ? 'inline-block' : 'none';
+                }
+                const csWhatsappCard = document.getElementById('bookingCsWhatsappCard');
+                if (csWhatsappCard) {
+                    csWhatsappCard.style.display = currentMenu === 'jadwal' ? 'flex' : 'none';
+                }
                 let visibleCount = 0;
 
                 orderCards.forEach(function (card) {

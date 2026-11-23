@@ -324,6 +324,43 @@ class PesananController extends Controller
             ->with('success', "Pesanan {$kodeBooking} ({$namaItem}) berhasil dikirim dan sedang menunggu konfirmasi Admin.");
     }
 
+    public function cancelUserBooking(Request $request, Pesanan $pesanan)
+    {
+        if ((int) $pesanan->user_id !== (int) $request->user()->id) {
+            abort(403);
+        }
+
+        $errorMessage = null;
+
+        DB::transaction(function () use ($pesanan, &$errorMessage) {
+            $lockedPesanan = Pesanan::where('id', $pesanan->id)->lockForUpdate()->firstOrFail();
+
+            if (($lockedPesanan->kategori ?? 'layanan') !== 'layanan') {
+                $errorMessage = 'Hanya booking layanan yang dapat dibatalkan.';
+                return;
+            }
+
+            if ($lockedPesanan->status !== 'baru') {
+                $errorMessage = 'Booking sudah dikonfirmasi oleh admin, sehingga tidak dapat dibatalkan langsung. Silakan hubungi CS kami di +62 831-9251-3564.';
+                return;
+            }
+
+            $lockedPesanan->update([
+                'status' => 'dibatalkan',
+            ]);
+
+            $this->syncJadwalService($lockedPesanan);
+            $this->syncRiwayat($lockedPesanan);
+        });
+
+        if ($errorMessage) {
+            return redirect()->back()->withErrors(['cancel' => $errorMessage]);
+        }
+
+        return redirect()->route('user.pesanan', ['tab' => 'jadwal'])
+            ->with('success', "Booking {$pesanan->kode_booking} berhasil dibatalkan.");
+    }
+
     public function index()
     {
         $daftarPesanan = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk', 'pembayaran'])
