@@ -421,6 +421,24 @@ class PesananController extends Controller
         return view('dashboard_riwayat', compact('daftarRiwayat'));
     }
 
+    public function ulasan()
+    {
+        $daftarUlasan = Pesanan::with(['user', 'layanan', 'produk', 'details.produk'])
+            ->whereNotNull('rating')
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->map(function (Pesanan $pesanan) {
+                $pesanan->nama_pelanggan_tampil = $pesanan->nama_pelanggan ?: ($pesanan->user->name ?? 'Pelanggan');
+                return $pesanan;
+            });
+
+        $totalUlasan = $daftarUlasan->count();
+        $rataRating = $totalUlasan > 0 ? round((float) $daftarUlasan->avg('rating'), 1) : 0;
+        $bintangLima = $daftarUlasan->where('rating', 5)->count();
+
+        return view('dashboard_ulasan', compact('daftarUlasan', 'totalUlasan', 'rataRating', 'bintangLima'));
+    }
+
     public function store(Request $request)
     {
         if ($request->has('total_harga')) {

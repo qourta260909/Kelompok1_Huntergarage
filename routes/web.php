@@ -49,6 +49,7 @@ Route::middleware(['auth', 'verified', 'admin', PreventBackHistory::class])->gro
     Route::delete('/dashboard-produk/{produk}', [ProdukController::class, 'destroy'])->name('dashboard.produk.destroy');
 
     Route::get('/dashboard-riwayat', [PesananController::class, 'riwayat'])->name('dashboard.riwayat');
+    Route::get('/dashboard-ulasan', [PesananController::class, 'ulasan'])->name('dashboard.ulasan');
 
     Route::get('/dashboard-users', [UserController::class, 'index'])->name('dashboard.users');
     Route::post('/dashboard-users', [UserController::class, 'store'])->name('dashboard.users.store');
