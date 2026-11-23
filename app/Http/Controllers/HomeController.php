@@ -24,7 +24,28 @@ class HomeController extends Controller
             ? Pesanan::where('user_id', Auth::id())->orderBy('id', 'desc')->get()
             : collect();
 
-        return view('welcome', compact('layananAktif', 'produkAktif', 'pesananUser'));
+        $totalRating = Pesanan::whereNotNull('rating')->count();
+        $rataRataRating = $totalRating > 0
+            ? round((float) Pesanan::whereNotNull('rating')->avg('rating'), 1)
+            : 0.0;
+        $ratingPuas = Pesanan::whereNotNull('rating')->where('rating', '>=', 4)->count();
+        $persenPelangganPuas = $totalRating > 0
+            ? (int) round(($ratingPuas / $totalRating) * 100)
+            : 0;
+        $kendaraanBulanIni = Pesanan::where('kategori', 'layanan')
+            ->where('status', 'selesai')
+            ->whereYear('updated_at', now()->year)
+            ->whereMonth('updated_at', now()->month)
+            ->count();
+
+        return view('welcome', compact(
+            'layananAktif',
+            'produkAktif',
+            'pesananUser',
+            'rataRataRating',
+            'kendaraanBulanIni',
+            'persenPelangganPuas'
+        ));
     }
 
     public function layanan()

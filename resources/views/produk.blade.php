@@ -2416,5 +2416,6 @@
         }
     </script>
     <x-login-success-toast />
+    <x-rating-reminder-toast />
 </body>
 </html>

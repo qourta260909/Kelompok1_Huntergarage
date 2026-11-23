@@ -31,6 +31,8 @@ class Pesanan extends Model
         'jadwal_service',
         'total_harga',
         'status',
+        'rating',
+        'ulasan',
     ];
 
     protected $appends = [

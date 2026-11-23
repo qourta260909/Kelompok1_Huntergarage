@@ -112,6 +112,38 @@ class PesananController extends Controller
         ));
     }
 
+    public function storeRating(Request $request, Pesanan $pesanan)
+    {
+        $user = $request->user();
+        if (!$user || $pesanan->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses untuk menilai pesanan ini.');
+        }
+
+        if ($pesanan->status !== 'selesai') {
+            return back()->withErrors([
+                'rating' => 'Penilaian hanya dapat diberikan setelah pesanan selesai.',
+            ]);
+        }
+
+        if (!is_null($pesanan->rating)) {
+            return back()->withErrors([
+                'rating' => 'Pesanan ini sudah pernah Anda beri penilaian.',
+            ]);
+        }
+
+        $validated = $request->validate([
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'ulasan' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $pesanan->update([
+            'rating' => (int) $validated['rating'],
+            'ulasan' => trim((string) ($validated['ulasan'] ?? '')) ?: null,
+        ]);
+
+        return back()->with('success', 'Terima kasih! Penilaian bintang ' . $validated['rating'] . '/5 berhasil dikirim.');
+    }
+
     public function storeUserOrder(Request $request)
     {
         $user = $request->user();

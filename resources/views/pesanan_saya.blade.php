@@ -23,8 +23,87 @@
         .user-panel-layout {
             display: grid;
             grid-template-columns: 245px 1fr;
-            min-height: calc(100vh - 79px);
+            min-height: calc(100vh - 73px);
             flex: 1;
+        }
+
+        .btn-order-rating {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            background-color: #facc15;
+            color: #111111;
+            border: 1px solid #eab308;
+            font-size: 12.5px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.15s ease;
+            white-space: nowrap;
+        }
+        .btn-order-rating:hover {
+            background-color: #eab308;
+            transform: translateY(-1px);
+        }
+        .rating-badge-done {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            background-color: #fef9c3;
+            color: #854d0e;
+            border: 1px solid #fde047;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .rating-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 9, 11, 0.55);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1200;
+        }
+        .rating-modal-overlay.active {
+            display: flex;
+        }
+        .rating-modal-card {
+            width: 100%;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24);
+        }
+        .star-picker-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 16px 0 10px;
+        }
+        .star-picker-btn {
+            background: none;
+            border: none;
+            font-size: 34px;
+            line-height: 1;
+            color: #d4d4d8;
+            cursor: pointer;
+            padding: 4px;
+            transition: transform 0.12s ease, color 0.12s ease;
+        }
+        .star-picker-btn:hover,
+        .star-picker-btn.active {
+            color: #facc15;
+            transform: scale(1.12);
         }
 
         .user-sidebar {
@@ -1526,6 +1605,35 @@
                         <span class="gojek-total-amount">Rp {{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</span>
                     </div>
 
+                    @if ($statusPesanan === 'selesai')
+                        <div style="margin: 0 26px 18px; padding: 14px 18px; border-radius: 14px; background: #fefce8; border: 1px solid #fde047; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                            @if (is_null($pesananAktif->rating))
+                                <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 200px;">
+                                    <strong style="font-size: 13.5px; font-weight: 700; color: #713f12;">Bagaimana pengalaman Anda?</strong>
+                                    <span style="font-size: 12.5px; color: #854d0e;">Berikan penilaian bintang 1–5 untuk membantu kami meningkatkan layanan.</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="btn-order-rating"
+                                    onclick="openRatingModal('{{ route('user.pesanan.rating', $pesananAktif->id) }}', '{{ $kodeTransaksi }}', {{ json_encode($pesananAktif->nama_layanan ?? 'Pesanan') }})"
+                                >
+                                    &#9733; Beri Penilaian
+                                </button>
+                            @else
+                                <div style="display: flex; flex-direction: column; gap: 4px; flex: 1;">
+                                    <strong style="font-size: 13.5px; font-weight: 700; color: #713f12;">
+                                        Penilaian Anda:
+                                        <span style="color: #eab308; letter-spacing: 1px;">{{ str_repeat('★', (int) $pesananAktif->rating) }}{{ str_repeat('☆', max(0, 5 - (int) $pesananAktif->rating)) }}</span>
+                                        ({{ $pesananAktif->rating }}/5)
+                                    </strong>
+                                    @if ($pesananAktif->ulasan)
+                                        <span style="font-size: 12.5px; color: #854d0e;">"{{ $pesananAktif->ulasan }}"</span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
                     @if ($isLayananView && in_array($statusPesanan, ['baru', 'proses'], true))
                         <div style="margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; background: {{ $statusPesanan === 'baru' ? '#fffbeb' : '#f4f4f5' }}; border: 1px solid {{ $statusPesanan === 'baru' ? '#fde68a' : '#e4e4e7' }}; color: {{ $statusPesanan === 'baru' ? '#92400e' : '#52525b' }}; font-size: 12.5px; font-weight: 600;">
                             @if ($statusPesanan === 'baru')
@@ -1769,6 +1877,19 @@
                                     <div class="user-order-item-actions">
                                         @if ($katItem === 'layanan' && $st === 'baru')
                                             <button type="button" class="btn-order-cancel" onclick="openCancelBookingModal('{{ route('user.pesanan.cancel', $item->id) }}', '{{ $kodeItem }}')">Batalkan</button>
+                                        @endif
+                                        @if ($st === 'selesai')
+                                            @if (is_null($item->rating))
+                                                <button
+                                                    type="button"
+                                                    class="btn-order-rating"
+                                                    onclick="openRatingModal('{{ route('user.pesanan.rating', $item->id) }}', '{{ $kodeItem }}', {{ json_encode($item->nama_layanan ?? 'Pesanan') }})"
+                                                >
+                                                    &#9733; Beri Penilaian
+                                                </button>
+                                            @else
+                                                <span class="rating-badge-done">&#9733; {{ $item->rating }}/5</span>
+                                            @endif
                                         @endif
                                         <a href="{{ route('user.pesanan', ['detail' => $item->id]) }}" class="btn-order-detail">Lihat Detail</a>
                                     </div>
@@ -2056,7 +2177,95 @@
                 window.location.reload();
             }
         });
+
+        function openRatingModal(actionUrl, kodePesanan, namaPesanan) {
+            const modal = document.getElementById('ratingOrderModal');
+            const form = document.getElementById('ratingOrderForm');
+            const subtitle = document.getElementById('ratingModalSubtitle');
+            const ulasanInput = document.getElementById('ratingUlasanInput');
+            if (!modal || !form) return;
+
+            form.action = actionUrl;
+            if (subtitle) {
+                subtitle.textContent = kodePesanan + ' — ' + (namaPesanan || 'Pesanan');
+            }
+            if (ulasanInput) ulasanInput.value = '';
+            selectRatingStar(5);
+
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeRatingModal() {
+            const modal = document.getElementById('ratingOrderModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        function selectRatingStar(val) {
+            const ratingInput = document.getElementById('ratingValueInput');
+            const labelEl = document.getElementById('ratingStarLabel');
+            if (ratingInput) ratingInput.value = String(val);
+
+            document.querySelectorAll('.star-picker-btn').forEach(function (btn) {
+                const starNum = Number(btn.dataset.star || 0);
+                btn.classList.toggle('active', starNum <= val);
+            });
+
+            const labels = {
+                1: '1/5 — Kurang memuaskan',
+                2: '2/5 — Cukup',
+                3: '3/5 — Baik',
+                4: '4/5 — Sangat baik',
+                5: '5/5 — Luar biasa!'
+            };
+            if (labelEl) labelEl.textContent = labels[val] || '';
+        }
     </script>
+
+    <!-- Modal Penilaian Pelanggan -->
+    <div id="ratingOrderModal" class="rating-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ratingModalTitle">
+        <div class="rating-modal-card">
+            <h3 id="ratingModalTitle" style="margin:0 0 4px; font-size:18px; font-weight:800; color:#111111;">Beri Penilaian</h3>
+            <p id="ratingModalSubtitle" style="margin:0; font-size:13px; color:#52525b;"></p>
+
+            <form id="ratingOrderForm" method="POST" action="">
+                @csrf
+                <input type="hidden" name="rating" id="ratingValueInput" value="5">
+
+                <div class="star-picker-row" role="radiogroup" aria-label="Pilih bintang 1 sampai 5">
+                    <button type="button" class="star-picker-btn active" data-star="1" onclick="selectRatingStar(1)" aria-label="1 bintang">&#9733;</button>
+                    <button type="button" class="star-picker-btn active" data-star="2" onclick="selectRatingStar(2)" aria-label="2 bintang">&#9733;</button>
+                    <button type="button" class="star-picker-btn active" data-star="3" onclick="selectRatingStar(3)" aria-label="3 bintang">&#9733;</button>
+                    <button type="button" class="star-picker-btn active" data-star="4" onclick="selectRatingStar(4)" aria-label="4 bintang">&#9733;</button>
+                    <button type="button" class="star-picker-btn active" data-star="5" onclick="selectRatingStar(5)" aria-label="5 bintang">&#9733;</button>
+                </div>
+                <div id="ratingStarLabel" style="text-align:center; font-size:13px; font-weight:700; color:#854d0e; margin-bottom:14px;">5/5 — Luar biasa!</div>
+
+                <div style="margin-bottom:16px;">
+                    <label for="ratingUlasanInput" style="display:block; font-size:13px; font-weight:700; color:#18181b; margin-bottom:6px;">Ulasan (Opsional)</label>
+                    <textarea
+                        id="ratingUlasanInput"
+                        name="ulasan"
+                        rows="3"
+                        maxlength="500"
+                        placeholder="Ceritakan pengalaman servis atau pembelian Anda..."
+                        style="width:100%; padding:10px 12px; border:1.5px solid #d4d4d8; border-radius:10px; font-family:inherit; font-size:13px; resize:vertical;"
+                    ></textarea>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" onclick="closeRatingModal()" style="padding:9px 18px; border-radius:10px; border:1.5px solid #d4d4d8; background:#ffffff; color:#27272a; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;">Batal</button>
+                    <button type="submit" style="padding:9px 20px; border-radius:10px; border:none; background:#111111; color:#ffffff; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;">Kirim Penilaian</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <x-login-success-toast />
+    <x-rating-reminder-toast />
 </body>
 </html>

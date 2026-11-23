@@ -29,6 +29,8 @@ return new class extends Migration
             $table->dateTime('jadwal_service')->nullable();
             $table->decimal('total_harga', 12, 2)->default(0);
             $table->string('status')->default('baru');
+            $table->unsignedTinyInteger('rating')->nullable();
+            $table->text('ulasan')->nullable();
             $table->timestamps();
         });
     }

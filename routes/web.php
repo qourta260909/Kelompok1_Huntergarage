@@ -21,6 +21,7 @@ Route::middleware(PreventBackHistory::class)->group(function () {
 Route::middleware(['auth', 'verified', PreventBackHistory::class])->group(function () {
     Route::post('/user-pesanan', [PesananController::class, 'storeUserOrder'])->name('user.pesanan.store');
     Route::patch('/user-pesanan/{pesanan}/cancel', [PesananController::class, 'cancelUserBooking'])->name('user.pesanan.cancel');
+    Route::post('/user-pesanan/{pesanan}/rating', [PesananController::class, 'storeRating'])->name('user.pesanan.rating');
     Route::get('/pesanan-saya', [PesananController::class, 'userOrders'])->name('user.pesanan');
 });
 
