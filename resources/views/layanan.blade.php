@@ -11,6 +11,56 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     @vite('resources/css/user.css')
+    <style>
+        .booking-field.is-dependent-faded {
+            opacity: 0.45;
+            transition: opacity 0.2s ease;
+        }
+        .booking-field.is-dependent-faded .booking-input,
+        .booking-field.is-dependent-faded .booking-select {
+            background-color: #f4f4f5;
+            border-color: #d4d4d8;
+            color: #a1a1aa;
+            cursor: not-allowed;
+        }
+        .booking-input.is-readonly-locked {
+            background-color: #f4f4f5;
+            border-color: #d4d4d8;
+            color: #52525b;
+            cursor: not-allowed;
+        }
+        .booking-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .btn-toggle-edit-telepon {
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            color: #111111;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .btn-toggle-edit-telepon:hover {
+            color: #52525b;
+        }
+        .stepper-item.is-step-faded {
+            opacity: 0.42;
+            cursor: not-allowed;
+        }
+        .booking-next-btn.is-btn-faded {
+            opacity: 0.45;
+            background-color: #71717a;
+            cursor: not-allowed;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+    </style>
 </head>
 <body>
     <header class="topbar">
@@ -62,6 +112,13 @@
                                 </svg>
                                 <span>Booking Saya</span>
                             </a>
+                            <button type="button" class="dropdown-item" role="menuitem" onclick="openUserProfileModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>Edit Profil</span>
+                            </button>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -156,26 +213,67 @@
                         </div>
 
                         <div class="booking-form">
+                            @php
+                                $kendaraanDbList = ($daftarKendaraan ?? collect())->map(fn ($k) => [
+                                    'merek' => $k->merek,
+                                    'jenis' => $k->jenis_kendaraan ?: 'Matic',
+                                    'model' => $k->model,
+                                ])->values();
+                                $merekUnikList = $kendaraanDbList->pluck('merek')->unique()->values();
+                                $jenisUnikList = $kendaraanDbList->pluck('jenis')->unique()->values();
+                                if ($jenisUnikList->isEmpty()) {
+                                    $jenisUnikList = collect(['Matic', 'Bebek', 'Sport', 'Trail']);
+                                }
+                            @endphp
                             <div class="booking-grid">
                                 <div class="booking-field">
-                                    <label for="merek" class="booking-label">Merek</label>
+                                    <label for="merek" class="booking-label">Merek Kendaraan</label>
                                     <div class="booking-select-wrap">
                                         <select id="merek" name="merek" class="booking-input booking-select" required>
                                             <option value="" disabled selected>Pilih merek kendaraan</option>
-                                            <option value="Honda">Honda</option>
-                                            <option value="Yamaha">Yamaha</option>
-                                            <option value="Suzuki">Suzuki</option>
-                                            <option value="Kawasaki">Kawasaki</option>
-                                            <option value="Vespa">Vespa</option>
+                                            @foreach ($merekUnikList as $merekItem)
+                                                <option value="{{ $merekItem }}">{{ $merekItem }}</option>
+                                            @endforeach
+                                            <option value="__LAINNYA__">+ Tambah Merek Baru...</option>
                                         </select>
                                         <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                             <polyline points="6 9 12 15 18 9"></polyline>
                                         </svg>
                                     </div>
+                                    <input
+                                        type="text"
+                                        id="merek_baru"
+                                        class="booking-input"
+                                        placeholder="Ketik nama merek kendaraan baru..."
+                                        style="display:none; margin-top:8px;"
+                                    >
                                 </div>
 
-                                <div class="booking-field">
-                                    <label for="model" class="booking-label">Model</label>
+                                <div class="booking-field is-dependent-faded" id="fieldJenisKendaraan">
+                                    <label for="jenis_kendaraan" class="booking-label">Jenis Kendaraan</label>
+                                    <div class="booking-select-wrap">
+                                        <select id="jenis_kendaraan" name="jenis_kendaraan" class="booking-input booking-select" required disabled>
+                                            <option value="" disabled selected>Pilih jenis kendaraan</option>
+                                            @foreach ($jenisUnikList as $jenisItem)
+                                                <option value="{{ $jenisItem }}">{{ $jenisItem }}</option>
+                                            @endforeach
+                                            <option value="__LAINNYA__">+ Tambah Jenis Baru...</option>
+                                        </select>
+                                        <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        id="jenis_kendaraan_baru"
+                                        class="booking-input"
+                                        placeholder="Ketik jenis kendaraan baru (cth: Skuter Listrik)..."
+                                        style="display:none; margin-top:8px;"
+                                    >
+                                </div>
+
+                                <div class="booking-field is-dependent-faded" id="fieldModelKendaraan">
+                                    <label for="model" class="booking-label">Model / Tipe</label>
                                     <div class="booking-select-wrap">
                                         <select id="model" name="model" class="booking-input booking-select" required disabled>
                                             <option value="" disabled selected>Pilih merek terlebih dahulu</option>
@@ -184,14 +282,21 @@
                                             <polyline points="6 9 12 15 18 9"></polyline>
                                         </svg>
                                     </div>
+                                    <input
+                                        type="text"
+                                        id="model_baru"
+                                        class="booking-input"
+                                        placeholder="Ketik nama model / tipe kendaraan baru..."
+                                        style="display:none; margin-top:8px;"
+                                    >
                                 </div>
 
-                                <div class="booking-field">
+                                <div class="booking-field is-dependent-faded" id="fieldTahunKendaraan">
                                     <label for="tahun" class="booking-label">Tahun</label>
                                     <div class="booking-select-wrap">
-                                        <select id="tahun" name="tahun" class="booking-input booking-select" required>
+                                        <select id="tahun" name="tahun" class="booking-input booking-select" required disabled>
                                             <option value="" disabled selected>Pilih tahun kendaraan</option>
-                                            @for ($year = 2026; $year >= 2010; $year--)
+                                            @for ($year = 2026; $year >= 1950; $year--)
                                                 <option value="{{ $year }}">{{ $year }}</option>
                                             @endfor
                                         </select>
@@ -201,20 +306,21 @@
                                     </div>
                                 </div>
 
-                                <div class="booking-field">
+                                <div class="booking-field is-dependent-faded" id="fieldPlatKendaraan" style="grid-column: 1 / -1;">
                                     <label for="plat_nomor" class="booking-label">Plat Nomor</label>
                                     <input
                                         type="text"
                                         id="plat_nomor"
                                         name="plat_nomor"
                                         class="booking-input"
-                                        placeholder="Masukkan plat nomor kendaraan.........."
+                                        placeholder="Masukkan plat nomor kendaraan (Contoh: DA 1234 AB)"
                                         required
+                                        disabled
                                     >
                                 </div>
                             </div>
 
-                            <p class="booking-note">Pastikan data sesuai dengan kendaraan yang akan diservis.</p>
+                            <p class="booking-note">Jika merek, jenis, atau model kendaraan Anda belum ada di daftar, pilih <strong>+ Tambah Baru</strong> dan sistem akan otomatis menyimpannya ke database.</p>
 
                             <hr class="booking-divider">
 
@@ -230,6 +336,7 @@
                         <div class="booking-card-header">
                             <p class="booking-step-indicator">Langkah 2 Dari 4</p>
                             <h2 class="booking-card-title">Pilih Layanan</h2>
+                            <p class="booking-card-subtitle">Harga yang tertera merupakan estimasi jasa awal — biaya akhir menyesuaikan jenis motor &amp; pengecekan di bengkel</p>
                         </div>
 
                         <div class="service-option-list" role="radiogroup" aria-label="Pilihan layanan">
@@ -256,7 +363,10 @@
                                         <strong class="service-option-title">{{ $layanan->nama_layanan }}</strong>
                                         <span class="service-option-desc">Estimasi pengerjaan: {{ $estimasiLayanan }}</span>
                                     </span>
-                                    <span class="service-option-price">Rp {{ number_format($layanan->harga, 0, ',', '.') }}</span>
+                                    <span class="service-option-price" style="text-align:right;">
+                                        <span style="display:block; font-size:11px; font-weight:600; color:#71717a;">Estimasi mulai</span>
+                                        ~Rp {{ number_format($layanan->harga, 0, ',', '.') }}
+                                    </span>
                                 </label>
                             @endforeach
                         </div>
@@ -288,21 +398,34 @@
                                         type="text"
                                         id="nama_lengkap"
                                         name="nama_lengkap"
-                                        class="booking-input"
+                                        class="booking-input is-readonly-locked"
                                         placeholder="Masukkan Nama lengkap"
                                         value="{{ auth()->check() ? auth()->user()->name : '' }}"
+                                        readonly
                                         required
                                     >
                                 </div>
 
+                                @php
+                                    $defaultUserPhone = auth()->check() ? preg_replace('/\D+/', '', (string) (auth()->user()->no_telepon ?? '')) : '';
+                                    $isPhoneLocked = $defaultUserPhone !== '';
+                                @endphp
                                 <div class="booking-field">
-                                    <label for="no_telepon" class="booking-label">No.telepon</label>
+                                    <div class="booking-label-row">
+                                        <label for="no_telepon" class="booking-label">No.telepon</label>
+                                        <button type="button" id="btnToggleEditTelepon" class="btn-toggle-edit-telepon" onclick="toggleEditNoTelepon()">
+                                            {{ $isPhoneLocked ? 'Ubah No. Telepon' : 'Kunci No. Telepon' }}
+                                        </button>
+                                    </div>
                                     <input
-                                        type="tel"
+                                        type="number"
+                                        inputmode="numeric"
                                         id="no_telepon"
                                         name="no_telepon"
-                                        class="booking-input"
-                                        placeholder="Contoh:082318****"
+                                        class="booking-input {{ $isPhoneLocked ? 'is-readonly-locked' : '' }}"
+                                        placeholder="Contoh: 082318123456"
+                                        value="{{ $defaultUserPhone }}"
+                                        {{ $isPhoneLocked ? 'readonly' : '' }}
                                         required
                                     >
                                 </div>
@@ -340,7 +463,7 @@
                                     </div>
                                 </div>
 
-                                <div class="booking-field">
+                                <div class="booking-field is-dependent-faded" id="fieldTanggalServis">
                                     <label for="tanggal_servis" class="booking-label">Tanggal servis</label>
                                     <div class="booking-input-icon-wrap">
                                         <input
@@ -351,6 +474,7 @@
                                             min="{{ now()->toDateString() }}"
                                             value="{{ now()->toDateString() }}"
                                             required
+                                            disabled
                                         >
                                     </div>
                                 </div>
@@ -411,7 +535,7 @@
                                             <strong class="confirm-val" id="summaryLayanan">-</strong>
                                         </div>
                                         <div class="confirm-row">
-                                            <span class="confirm-key">Biaya layanan</span>
+                                            <span class="confirm-key">Estimasi biaya</span>
                                             <span class="confirm-colon">:</span>
                                             <strong class="confirm-val" id="summaryHarga">-</strong>
                                         </div>
@@ -497,6 +621,7 @@
                                         <input type="hidden" name="layanan_id" id="submitLayananId" value="">
                                         <input type="hidden" name="jadwal_service" id="submitJadwalService" value="">
                                         <input type="hidden" name="merek" id="submitMerek" value="">
+                                        <input type="hidden" name="jenis_kendaraan" id="submitJenisKendaraan" value="">
                                         <input type="hidden" name="model" id="submitModel" value="">
                                         <input type="hidden" name="tahun" id="submitTahun" value="">
                                         <input type="hidden" name="plat_nomor" id="submitPlatNomor" value="">
@@ -519,103 +644,304 @@
     <x-user-footer :layanan-aktif="$layananAktif ?? collect()" :produk-aktif="$produkAktif ?? collect()" />
 
     <script>
-        const MODEL_BY_MEREK = {
-            Honda: [
-                'Vario 125',
-                'Vario 160',
-                'BeAT',
-                'Scoopy',
-                'PCX 160',
-                'ADV 160',
-                'Genio',
-                'Stylo 160',
-                'Supra X 125',
-                'CBR 150R',
-                'CBR 250RR',
-                'CRF 150L',
-            ],
-            Yamaha: [
-                'NMAX',
-                'Aerox 155',
-                'Lexi',
-                'Mio M3',
-                'Fazzio',
-                'Grand Filano',
-                'XMAX',
-                'R15',
-                'R25',
-                'Vixion',
-                'MT-15',
-                'F1ZR',
-            ],
-            Suzuki: [
-                'Nex II',
-                'Address',
-                'Satria F150',
-                'GSX-R150',
-                'GSX-S150',
-                'Burgman Street 125',
-                'V-Strom 250 SX',
-            ],
-            Kawasaki: [
-                'Ninja 250',
-                'Ninja ZX-25R',
-                'KLX 150',
-                'W175',
-                'Versys-X 250',
-                'Z250',
-            ],
-            Vespa: [
-                'Sprint 150',
-                'Primavera 150',
-                'LX 125',
-                'GTS 150',
-                'GTS 300',
-            ],
-        };
+        const KENDARAAN_DB = @json($kendaraanDbList ?? []);
+
+        function getEffectiveMerek() {
+            const merekEl = document.getElementById('merek');
+            const merekBaruEl = document.getElementById('merek_baru');
+            if (!merekEl) return '';
+            if (merekEl.value === '__LAINNYA__') {
+                return (merekBaruEl ? merekBaruEl.value : '').trim();
+            }
+            return merekEl.value.trim();
+        }
+
+        function getEffectiveJenis() {
+            const jenisEl = document.getElementById('jenis_kendaraan');
+            const jenisBaruEl = document.getElementById('jenis_kendaraan_baru');
+            if (!jenisEl) return '';
+            if (jenisEl.value === '__LAINNYA__') {
+                return (jenisBaruEl ? jenisBaruEl.value : '').trim();
+            }
+            return jenisEl.value.trim();
+        }
+
+        function getEffectiveModel() {
+            const modelEl = document.getElementById('model');
+            const modelBaruEl = document.getElementById('model_baru');
+            if (!modelEl) return '';
+            if (modelEl.value === '__LAINNYA__') {
+                return (modelBaruEl ? modelBaruEl.value : '').trim();
+            }
+            return modelEl.value.trim();
+        }
+
+        function syncProgressiveStepFields() {
+            const hasMerek = Boolean(getEffectiveMerek());
+            const hasJenis = hasMerek && Boolean(getEffectiveJenis());
+            const hasModel = hasJenis && Boolean(getEffectiveModel());
+            const tahunEl = document.getElementById('tahun');
+            const platEl = document.getElementById('plat_nomor');
+            const hasTahun = hasModel && Boolean(tahunEl && tahunEl.value.trim());
+            const hasPlat = hasTahun && Boolean(platEl && platEl.value.trim());
+
+            const fieldJenis = document.getElementById('fieldJenisKendaraan');
+            const fieldModel = document.getElementById('fieldModelKendaraan');
+            const fieldTahun = document.getElementById('fieldTahunKendaraan');
+            const fieldPlat = document.getElementById('fieldPlatKendaraan');
+
+            const jenisEl = document.getElementById('jenis_kendaraan');
+            const modelEl = document.getElementById('model');
+
+            if (fieldJenis) fieldJenis.classList.toggle('is-dependent-faded', !hasMerek);
+            if (jenisEl) jenisEl.disabled = !hasMerek;
+
+            if (fieldModel) fieldModel.classList.toggle('is-dependent-faded', !hasJenis);
+            if (modelEl) modelEl.disabled = !hasJenis;
+
+            if (fieldTahun) fieldTahun.classList.toggle('is-dependent-faded', !hasModel);
+            if (tahunEl) {
+                tahunEl.disabled = !hasModel;
+                if (!hasModel) tahunEl.value = '';
+            }
+
+            if (fieldPlat) fieldPlat.classList.toggle('is-dependent-faded', !hasTahun);
+            if (platEl) {
+                platEl.disabled = !hasTahun;
+                if (!hasTahun) platEl.value = '';
+            }
+
+            // Step 3 progressive fade: Tanggal Servis menyala setelah Nama, No. Telepon & Jam Servis terisi
+            const namaEl = document.getElementById('nama_lengkap');
+            const telEl = document.getElementById('no_telepon');
+            const jamEl = document.getElementById('jam_servis');
+            const tglEl = document.getElementById('tanggal_servis');
+            const fieldTgl = document.getElementById('fieldTanggalServis');
+
+            const hasNamaTel = Boolean(namaEl && namaEl.value.trim()) && Boolean(telEl && telEl.value.trim());
+            const hasJam = hasNamaTel && Boolean(jamEl && jamEl.value.trim());
+
+            if (fieldTgl) fieldTgl.classList.toggle('is-dependent-faded', !hasJam);
+            if (tglEl) tglEl.disabled = !hasJam;
+
+            const hasTanggal = hasJam && Boolean(tglEl && tglEl.value.trim());
+
+            // Status kelengkapan tiap step untuk tombol Lanjut & Stepper
+            const step1Complete = hasPlat;
+            const step2Complete = step1Complete && Boolean(document.querySelector('input[name="jenis_layanan"]:checked'));
+            const step3Complete = step2Complete && hasTanggal;
+
+            const btnNextStep1 = document.querySelector('#stepPanel1 .booking-next-btn');
+            const btnNextStep2 = document.querySelector('#stepPanel2 .booking-next-btn');
+            const btnNextStep3 = document.querySelector('#stepPanel3 .booking-next-btn');
+
+            if (btnNextStep1) btnNextStep1.classList.toggle('is-btn-faded', !step1Complete);
+            if (btnNextStep2) btnNextStep2.classList.toggle('is-btn-faded', !step2Complete);
+            if (btnNextStep3) btnNextStep3.classList.toggle('is-btn-faded', !step3Complete);
+
+            document.querySelectorAll('.stepper-item').forEach(function (item) {
+                const target = Number(item.dataset.stepTarget);
+                let unlocked = true;
+                if (target === 2) unlocked = step1Complete;
+                if (target === 3) unlocked = step2Complete;
+                if (target === 4) unlocked = step3Complete;
+                item.classList.toggle('is-step-faded', !unlocked && target !== currentStep);
+            });
+        }
+
+        function toggleEditNoTelepon() {
+            const telInput = document.getElementById('no_telepon');
+            const btn = document.getElementById('btnToggleEditTelepon');
+            if (!telInput || !btn) return;
+
+            if (telInput.hasAttribute('readonly')) {
+                telInput.removeAttribute('readonly');
+                telInput.classList.remove('is-readonly-locked');
+                telInput.focus();
+                btn.textContent = 'Kunci No. Telepon';
+            } else {
+                telInput.setAttribute('readonly', 'readonly');
+                telInput.classList.add('is-readonly-locked');
+                btn.textContent = 'Ubah No. Telepon';
+            }
+        }
 
         function syncModelByMerek() {
             const merekEl = document.getElementById('merek');
+            const merekBaruEl = document.getElementById('merek_baru');
+            const jenisEl = document.getElementById('jenis_kendaraan');
+            const jenisBaruEl = document.getElementById('jenis_kendaraan_baru');
             const modelEl = document.getElementById('model');
+            const modelBaruEl = document.getElementById('model_baru');
             if (!merekEl || !modelEl) return;
 
             const merekDipilih = merekEl.value;
-            const daftarModel = MODEL_BY_MEREK[merekDipilih] || [];
+            const prevModelVal = modelEl.value;
+
+            const isNewMerek = merekDipilih === '__LAINNYA__';
+            if (merekBaruEl) {
+                merekBaruEl.style.display = isNewMerek ? 'block' : 'none';
+                merekBaruEl.required = isNewMerek;
+            }
+
+            const isNewJenis = Boolean(merekDipilih) && jenisEl && jenisEl.value === '__LAINNYA__';
+            if (jenisBaruEl) {
+                jenisBaruEl.style.display = isNewJenis ? 'block' : 'none';
+                jenisBaruEl.required = Boolean(isNewJenis);
+            }
+
+            if (jenisEl && !isNewMerek && merekDipilih) {
+                const prevJenis = jenisEl.value;
+                const availableJenis = Array.from(new Set(
+                    KENDARAAN_DB
+                        .filter(function (item) { return item.merek === merekDipilih; })
+                        .map(function (item) { return item.jenis; })
+                ));
+
+                Array.from(jenisEl.options).forEach(function (opt) {
+                    if (!opt.value || opt.value === '__LAINNYA__') return;
+                    const existsForBrand = availableJenis.includes(opt.value);
+                    opt.hidden = !existsForBrand;
+                    opt.disabled = !existsForBrand;
+                });
+
+                if (prevJenis && prevJenis !== '__LAINNYA__' && !availableJenis.includes(prevJenis)) {
+                    jenisEl.value = availableJenis.length === 1 ? availableJenis[0] : '';
+                } else if (!prevJenis && availableJenis.length === 1) {
+                    jenisEl.value = availableJenis[0];
+                }
+            } else if (jenisEl) {
+                Array.from(jenisEl.options).forEach(function (opt) {
+                    opt.hidden = false;
+                    opt.disabled = false;
+                });
+            }
+
+            const jenisDipilih = jenisEl ? jenisEl.value : '';
 
             modelEl.innerHTML = '';
+
+            if (!merekDipilih || !jenisDipilih) {
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.disabled = true;
+                placeholder.selected = true;
+                placeholder.textContent = !merekDipilih ? 'Pilih merek terlebih dahulu' : 'Pilih jenis kendaraan terlebih dahulu';
+                modelEl.appendChild(placeholder);
+                modelEl.disabled = true;
+                if (modelBaruEl) {
+                    modelBaruEl.style.display = 'none';
+                    modelBaruEl.required = false;
+                }
+                syncProgressiveStepFields();
+                return;
+            }
+
+            if (isNewMerek) {
+                const optNew = document.createElement('option');
+                optNew.value = '__LAINNYA__';
+                optNew.selected = true;
+                optNew.textContent = '+ Ketik Model / Tipe Baru';
+                modelEl.appendChild(optNew);
+                modelEl.disabled = false;
+                if (modelBaruEl) {
+                    modelBaruEl.style.display = 'block';
+                    modelBaruEl.required = true;
+                }
+                syncProgressiveStepFields();
+                return;
+            }
+
+            let filteredModels = KENDARAAN_DB.filter(function (item) {
+                if (item.merek !== merekDipilih) return false;
+                if (jenisDipilih && jenisDipilih !== '__LAINNYA__' && item.jenis !== jenisDipilih) {
+                    return false;
+                }
+                return true;
+            });
+
             const placeholder = document.createElement('option');
             placeholder.value = '';
             placeholder.disabled = true;
             placeholder.selected = true;
-            placeholder.textContent = daftarModel.length > 0
+            placeholder.textContent = filteredModels.length > 0
                 ? 'Pilih model kendaraan'
-                : 'Pilih merek terlebih dahulu';
+                : 'Belum ada model di kategori ini — pilih + Tambah Model Baru';
             modelEl.appendChild(placeholder);
 
-            if (daftarModel.length === 0) {
-                modelEl.disabled = true;
-                return;
-            }
-
-            daftarModel.forEach(function (namaModel) {
+            filteredModels.forEach(function (item) {
                 const opt = document.createElement('option');
-                opt.value = namaModel;
-                opt.textContent = namaModel.toUpperCase();
+                opt.value = item.model;
+                opt.dataset.jenis = item.jenis;
+                opt.textContent = item.model.toUpperCase() + ' (' + item.jenis + ')';
+                if (item.model === prevModelVal) {
+                    opt.selected = true;
+                    placeholder.selected = false;
+                }
                 modelEl.appendChild(opt);
             });
+
+            const optCustom = document.createElement('option');
+            optCustom.value = '__LAINNYA__';
+            optCustom.textContent = '+ Tambah Model Baru...';
+            if (prevModelVal === '__LAINNYA__') {
+                optCustom.selected = true;
+                placeholder.selected = false;
+            }
+            modelEl.appendChild(optCustom);
+
             modelEl.disabled = false;
+            if (modelBaruEl && modelEl.value !== '__LAINNYA__') {
+                modelBaruEl.style.display = 'none';
+                modelBaruEl.required = false;
+            }
+            syncProgressiveStepFields();
+        }
+
+        function onModelSelectChange() {
+            const modelEl = document.getElementById('model');
+            const modelBaruEl = document.getElementById('model_baru');
+            const jenisEl = document.getElementById('jenis_kendaraan');
+            if (!modelEl) return;
+
+            const isNewModel = modelEl.value === '__LAINNYA__';
+            if (modelBaruEl) {
+                modelBaruEl.style.display = isNewModel ? 'block' : 'none';
+                modelBaruEl.required = isNewModel;
+            }
+
+            if (!isNewModel && jenisEl && !jenisEl.value) {
+                const selectedOption = modelEl.options[modelEl.selectedIndex];
+                if (selectedOption && selectedOption.dataset.jenis) {
+                    jenisEl.value = selectedOption.dataset.jenis;
+                }
+            }
+            syncProgressiveStepFields();
         }
 
         function validateStepFields(step) {
             if (step === 1) {
+                const merekEl = document.getElementById('merek');
+                const merekBaruEl = document.getElementById('merek_baru');
+                const jenisEl = document.getElementById('jenis_kendaraan');
+                const jenisBaruEl = document.getElementById('jenis_kendaraan_baru');
+                const modelEl = document.getElementById('model');
+                const modelBaruEl = document.getElementById('model_baru');
+                const tahunEl = document.getElementById('tahun');
+                const platEl = document.getElementById('plat_nomor');
+
                 const step1Fields = [
-                    document.getElementById('merek'),
-                    document.getElementById('model'),
-                    document.getElementById('tahun'),
-                    document.getElementById('plat_nomor'),
-                ];
+                    merekEl,
+                    (merekEl && merekEl.value === '__LAINNYA__') ? merekBaruEl : null,
+                    jenisEl,
+                    (jenisEl && jenisEl.value === '__LAINNYA__') ? jenisBaruEl : null,
+                    modelEl,
+                    (modelEl && modelEl.value === '__LAINNYA__') ? modelBaruEl : null,
+                    tahunEl,
+                    platEl,
+                ].filter(Boolean);
+
                 for (const field of step1Fields) {
-                    if (!field) continue;
                     if (!field.value || !field.value.trim()) {
                         field.reportValidity();
                         field.focus();
@@ -648,20 +974,21 @@
         }
 
         function updateConfirmationSummary() {
-            const merek = document.getElementById('merek')?.value || '';
-            const model = document.getElementById('model')?.value || '';
+            const merek = getEffectiveMerek();
+            const jenis = getEffectiveJenis();
+            const model = getEffectiveModel();
             const tahun = document.getElementById('tahun')?.value || '';
             const plat = document.getElementById('plat_nomor')?.value.trim() || '';
             const layananEl = document.querySelector('input[name="jenis_layanan"]:checked');
             const layananId = layananEl ? layananEl.value : '';
             const layananNama = layananEl ? (layananEl.dataset.nama || '-') : '-';
-            const layananHarga = layananEl && layananEl.dataset.harga ? ('Rp ' + layananEl.dataset.harga) : '-';
+            const layananHarga = layananEl && layananEl.dataset.harga ? ('Sekitar Rp ' + layananEl.dataset.harga + ' (Menyesuaikan jenis motor)') : '-';
             const nama = document.getElementById('nama_lengkap')?.value.trim() || '';
             const telepon = document.getElementById('no_telepon')?.value.trim() || '';
             const jam = document.getElementById('jam_servis')?.value.trim() || '';
             const tanggal = document.getElementById('tanggal_servis')?.value.trim() || '';
 
-            const motorText = [merek, model, tahun].filter(Boolean).join(' ');
+            const motorText = [merek, model, jenis ? `(${jenis})` : '', tahun].filter(Boolean).join(' ');
             document.getElementById('summaryMotor').textContent = motorText || '-';
             document.getElementById('summaryPlat').textContent = plat ? plat.toUpperCase() : '-';
             document.getElementById('summaryLayanan').textContent = layananNama;
@@ -689,6 +1016,7 @@
             const submitLayananId = document.getElementById('submitLayananId');
             const submitJadwalService = document.getElementById('submitJadwalService');
             const submitMerek = document.getElementById('submitMerek');
+            const submitJenisKendaraan = document.getElementById('submitJenisKendaraan');
             const submitModel = document.getElementById('submitModel');
             const submitTahun = document.getElementById('submitTahun');
             const submitPlatNomor = document.getElementById('submitPlatNomor');
@@ -699,6 +1027,7 @@
                 submitJadwalService.value = (tanggal && jam) ? `${tanggal} ${jam}:00` : '';
             }
             if (submitMerek) submitMerek.value = merek;
+            if (submitJenisKendaraan) submitJenisKendaraan.value = jenis;
             if (submitModel) submitModel.value = model;
             if (submitTahun) submitTahun.value = tahun;
             if (submitPlatNomor) submitPlatNomor.value = plat;
@@ -759,6 +1088,7 @@
                 const isTarget = Number(item.dataset.stepTarget) === stepNumber;
                 item.classList.toggle('active', isTarget);
             });
+            syncProgressiveStepFields();
         }
 
         function nextStep() {
@@ -799,13 +1129,31 @@
                 });
             }
             const merekSelect = document.getElementById('merek');
+            const jenisSelect = document.getElementById('jenis_kendaraan');
+            const modelSelect = document.getElementById('model');
             if (merekSelect) {
                 merekSelect.addEventListener('change', syncModelByMerek);
             }
+            if (jenisSelect) {
+                jenisSelect.addEventListener('change', syncModelByMerek);
+            }
+            if (modelSelect) {
+                modelSelect.addEventListener('change', onModelSelectChange);
+            }
+            ['merek_baru', 'jenis_kendaraan_baru', 'model_baru', 'tahun', 'plat_nomor', 'no_telepon', 'jam_servis', 'tanggal_servis'].forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', syncProgressiveStepFields);
+                    el.addEventListener('change', syncProgressiveStepFields);
+                }
+            });
+            document.querySelectorAll('input[name="jenis_layanan"]').forEach(function (radio) {
+                radio.addEventListener('change', syncProgressiveStepFields);
+            });
             syncModelByMerek();
 
             function resetBookingFromStart() {
-                ['merek', 'model', 'tahun', 'plat_nomor', 'no_telepon'].forEach(function (id) {
+                ['merek', 'merek_baru', 'jenis_kendaraan', 'jenis_kendaraan_baru', 'model', 'model_baru', 'tahun', 'plat_nomor'].forEach(function (id) {
                     const el = document.getElementById(id);
                     if (el) el.value = '';
                 });
@@ -844,6 +1192,7 @@
             }
         });
     </script>
+    <x-user-profile-modal />
     <x-login-success-toast />
     <x-rating-reminder-toast />
 </body>

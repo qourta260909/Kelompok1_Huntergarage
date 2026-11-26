@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kendaraan;
 use App\Models\Layanan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class LayananController extends Controller
 {
@@ -12,6 +14,34 @@ class LayananController extends Controller
         $daftarLayanan = Layanan::orderBy('id', 'asc')->get();
 
         return view('dashboard_layanan', compact('daftarLayanan'));
+    }
+
+    public function storeKendaraan(Request $request)
+    {
+        $validated = $request->validate([
+            'merek' => ['required', 'string', 'max:100'],
+            'jenis_kendaraan' => ['required', 'string', 'max:100'],
+            'model' => ['required', 'string', 'max:120'],
+        ]);
+
+        $merek = ucwords(trim($validated['merek']));
+        $jenis = ucwords(trim($validated['jenis_kendaraan']));
+        $model = trim($validated['model']);
+
+        Kendaraan::updateOrCreate(
+            ['merek' => $merek, 'model' => $model],
+            ['jenis_kendaraan' => $jenis]
+        );
+
+        return redirect()->route('dashboard.layanan')->with('success', "Data kendaraan {$merek} {$model} ({$jenis}) berhasil disimpan.");
+    }
+
+    public function destroyKendaraan(Kendaraan $kendaraan)
+    {
+        $label = "{$kendaraan->merek} {$kendaraan->model}";
+        $kendaraan->delete();
+
+        return redirect()->route('dashboard.layanan')->with('success', "Data kendaraan {$label} berhasil dihapus.");
     }
 
     public function store(Request $request)

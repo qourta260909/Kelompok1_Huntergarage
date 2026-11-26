@@ -70,14 +70,14 @@
         }
         .order-card thead th:first-child,
         .order-card tbody td:first-child {
-            padding-left: 32px;
+            padding-left: 18px;
+            width: 11%;
         }
         .order-card thead th:last-child,
         .order-card tbody td:last-child {
-            padding-right: 32px;
+            padding-right: 18px;
             text-align: center !important;
-            white-space: nowrap;
-            width: 1%;
+            width: 12%;
         }
         .badge-cancelled {
             background-color: #fef2f2;
@@ -348,6 +348,18 @@
 </svg>
 </span> Pesanan
                 </a>
+                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
+                </a>
                 <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -361,18 +373,6 @@
   <line x1="12" y1="22.08" x2="12" y2="12"/>
 </svg>
 </span> Produk
-                </a>
-                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
-                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <line x1="8" y1="5" x2="20" y2="5"/>
-  <line x1="8" y1="9" x2="20" y2="9"/>
-  <line x1="16" y1="13" x2="20" y2="13"/>
-  <line x1="16" y1="17" x2="20" y2="17"/>
-  <line x1="16" y1="21" x2="20" y2="21"/>
-  <path d="M12 17a4 4 0 1 1-4-4h4"/>
-  <polyline points="8 9 5 13 8 17"/>
-</svg>
-</span> Riwayat
                 </a>
                 <a href="{{ route('dashboard.ulasan') }}" class="nav-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -452,11 +452,11 @@
                                         $badgeClass = 'badge-cancelled';
                                         $statusLabel = 'Ditolak';
                                     } elseif ($riwayat->status === 'proses') {
-                                        $badgeClass = 'badge-proses';
-                                        $statusLabel = 'Proses';
+                                        $badgeClass = 'badge-success';
+                                        $statusLabel = 'Diterima (Proses)';
                                     } else {
                                         $badgeClass = 'badge-success';
-                                        $statusLabel = $kategoriRow === 'produk' ? 'Sudah Diantar' : 'Sudah Selesai';
+                                        $statusLabel = $kategoriRow === 'produk' ? 'Diterima (Diantar)' : 'Diterima (Selesai)';
                                     }
 
                                     $jadwalSvc = $riwayat->jadwalService;
@@ -501,7 +501,7 @@
                                         'kendaraan' => $infoKendaraan ?: '-',
                                         'jadwal' => $tanggalJamFormat,
                                         'metode' => $kategoriRow === 'produk' ? 'Transfer Bank BCA' : 'Bayar di Tempat / Transfer Bank BCA (Setelah Selesai)',
-                                        'total' => 'Rp ' . number_format((float) $riwayat->total_harga, 0, ',', '.'),
+                                        'total' => ($kategoriRow === 'layanan' ? '~Rp ' : 'Rp ') . number_format((float) $riwayat->total_harga, 0, ',', '.'),
                                         'status' => $statusLabel,
                                         'bukti_url' => $riwayat->bukti_pembayaran_url,
                                         'pdf_url' => route('dashboard.pesanan.pdf', $riwayat->id),
@@ -519,7 +519,7 @@
                                     <td>{{ $riwayat->nama_layanan ?? '-' }}</td>
                                     <td>{{ $alamatAtauKendaraan }}</td>
                                     <td>{{ $tanggalJamFormat }}</td>
-                                    <td class="td-bold" style="white-space: nowrap;">Rp {{ number_format($riwayat->total_harga, 0, ',', '.') }}</td>
+                                    <td class="td-bold">{{ $kategoriRow === 'layanan' ? '~Rp ' : 'Rp ' }}{{ number_format($riwayat->total_harga, 0, ',', '.') }}</td>
                                     <td>
                                         <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
                                     </td>
@@ -527,31 +527,6 @@
                                         <div class="history-actions">
                                             <button type="button" class="btn-detail-admin" onclick='openAdminOrderDetail(@json($detailData))'>
                                                 Detail
-                                            </button>
-
-                                            @if ($riwayat->status === 'proses')
-                                                <form method="POST" action="{{ route('dashboard.pesanan.status', $riwayat->id) }}" style="display:inline;">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="aksi" value="selesai">
-                                                    <button type="submit" class="btn-finish">
-                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                                        </svg>
-                                                        {{ $kategoriRow === 'produk' ? 'Sudah Diantar' : 'Sudah Selesai' }}
-                                                    </button>
-                                                </form>
-                                            @endif
-
-                                            <button
-                                                type="button"
-                                                class="btn-delete"
-                                                onclick="openDeleteConfirmModal({{ json_encode(route('dashboard.pesanan.destroy', $riwayat->id)) }}, 'Konfirmasi Hapus Riwayat', {{ json_encode('Apakah Anda yakin ingin menghapus riwayat pesanan "' . $kodeBooking . '"? Tindakan ini tidak dapat dibatalkan.') }})"
-                                            >
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                                                </svg>
-                                                Hapus
                                             </button>
                                         </div>
                                     </td>

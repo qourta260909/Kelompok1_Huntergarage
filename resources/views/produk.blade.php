@@ -173,6 +173,96 @@
             gap: 16px;
         }
 
+        /* ================= FILTER PRODUK BAR ================= */
+        .produk-filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 16px 20px;
+            background-color: #fafafa;
+            border: 1px solid #e4e4e7;
+            border-radius: 16px;
+        }
+
+        .produk-filter-categories {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .produk-cat-pill {
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1.2px solid #d4d4d8;
+            background-color: #ffffff;
+            color: #27272a;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.16s ease;
+            white-space: nowrap;
+        }
+
+        .produk-cat-pill:hover {
+            background-color: #f4f4f5;
+            border-color: #a1a1aa;
+        }
+
+        .produk-cat-pill.active {
+            background-color: #111111;
+            border-color: #111111;
+            color: #ffffff;
+        }
+
+        .produk-filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .produk-filter-select {
+            height: 38px;
+            padding: 0 34px 0 14px;
+            border-radius: 10px;
+            border: 1.2px solid #d4d4d8;
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%233f3f46' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 11px center;
+            background-size: 15px 15px;
+            appearance: none;
+            -webkit-appearance: none;
+            color: #18181b;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .produk-filter-select:focus {
+            border-color: #111111;
+        }
+
+        .catalog-cat-tag {
+            display: inline-block;
+            align-self: flex-start;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
+            color: #3f3f46;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
         .catalog-section-title {
             font-size: 20px;
             font-weight: 700;
@@ -1330,6 +1420,13 @@
                                 </svg>
                                 <span>Booking Saya</span>
                             </a>
+                            <button type="button" class="dropdown-item" role="menuitem" onclick="openUserProfileModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>Edit Profil</span>
+                            </button>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -1423,6 +1520,40 @@
                     <p class="empty-catalog-desc">Produk akan muncul otomatis disini jika tersedia.</p>
                 </div>
             @else
+                @php
+                    $kategoriFilterList = collect($daftarKategoriProduk ?? [])
+                        ->pluck('nama_kategori')
+                        ->merge($produkAktif->pluck('kategori'))
+                        ->map(fn ($k) => trim((string) $k))
+                        ->filter()
+                        ->unique()
+                        ->values();
+                @endphp
+
+                <!-- Bar Filter Produk (Kategori, Stok, Urutan Harga) -->
+                <div class="produk-filter-bar" aria-label="Filter Produk">
+                    <div class="produk-filter-categories" role="tablist" aria-label="Kategori Produk">
+                        <button type="button" class="produk-cat-pill active" data-filter-kat="semua">Semua Kategori</button>
+                        @foreach ($kategoriFilterList as $katNama)
+                            <button type="button" class="produk-cat-pill" data-filter-kat="{{ strtolower($katNama) }}">{{ $katNama }}</button>
+                        @endforeach
+                    </div>
+
+                    <div class="produk-filter-controls">
+                        <select id="filterStokProduk" class="produk-filter-select" aria-label="Filter Ketersediaan Stok">
+                            <option value="semua">Stok: Semua</option>
+                            <option value="tersedia">Stok: Tersedia Saja</option>
+                        </select>
+
+                        <select id="sortProdukSelect" class="produk-filter-select" aria-label="Urutkan Produk">
+                            <option value="default">Urutkan: Default</option>
+                            <option value="harga_asc">Harga: Termurah</option>
+                            <option value="harga_desc">Harga: Termahal</option>
+                            <option value="nama_asc">Nama: A - Z</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Section 1: Ban, Aki & Komponen Kendaraan -->
                 <section class="catalog-section" id="semua-komponen" aria-labelledby="sectionKomponenTitle">
                     <div class="catalog-section-header">
@@ -1434,9 +1565,18 @@
                             @php
                                 $stokProduk = (int) ($produk->stok ?? 0);
                                 $stokHabis = $stokProduk <= 0;
-                                $deskripsiProduk = $produk->deskripsi ?: ($produk->kategori ?: 'Suku Cadang Resmi');
+                                $kategoriProdukLabel = trim((string) ($produk->kategori ?: ($produk->deskripsi ?: 'Suku Cadang Resmi')));
+                                $deskripsiProduk = $produk->deskripsi ?: $kategoriProdukLabel;
                             @endphp
-                            <article class="catalog-card" data-search="{{ strtolower($produk->nama_produk . ' ' . $deskripsiProduk) }}">
+                            <article
+                                class="catalog-card"
+                                data-id="{{ $produk->id }}"
+                                data-nama="{{ strtolower($produk->nama_produk) }}"
+                                data-kategori="{{ strtolower($kategoriProdukLabel) }}"
+                                data-harga="{{ (float) $produk->harga_jual }}"
+                                data-stok="{{ $stokProduk }}"
+                                data-search="{{ strtolower($produk->nama_produk . ' ' . $deskripsiProduk . ' ' . $kategoriProdukLabel) }}"
+                            >
                                 <div class="catalog-card-thumb">
                                     @if ($produk->gambar_url)
                                         <img src="{{ $produk->gambar_url }}" alt="{{ $produk->nama_produk }}">
@@ -1449,6 +1589,7 @@
                                     @endif
                                 </div>
                                 <div class="catalog-card-body">
+                                    <span class="catalog-cat-tag">{{ $kategoriProdukLabel }}</span>
                                     <h3 class="catalog-card-title">{{ $produk->nama_produk }}</h3>
                                     <p class="catalog-card-sub">{{ $deskripsiProduk }}</p>
                                     <div class="catalog-rating">
@@ -1494,14 +1635,23 @@
                         <h2 id="sectionRekomendasiTitle" class="catalog-section-title">Rekomendasi Produk</h2>
                     </div>
 
-                    <div class="catalog-grid">
+                    <div class="catalog-grid" id="rekomendasiCatalogGrid">
                         @foreach ($produkAktif->take(4) as $produk)
                             @php
                                 $stokProduk = (int) ($produk->stok ?? 0);
                                 $stokHabis = $stokProduk <= 0;
-                                $deskripsiProduk = $produk->deskripsi ?: ($produk->kategori ?: 'Suku Cadang Resmi');
+                                $kategoriProdukLabel = trim((string) ($produk->kategori ?: ($produk->deskripsi ?: 'Suku Cadang Resmi')));
+                                $deskripsiProduk = $produk->deskripsi ?: $kategoriProdukLabel;
                             @endphp
-                            <article class="catalog-card" data-search="{{ strtolower($produk->nama_produk . ' ' . $deskripsiProduk) }}">
+                            <article
+                                class="catalog-card"
+                                data-id="{{ $produk->id }}"
+                                data-nama="{{ strtolower($produk->nama_produk) }}"
+                                data-kategori="{{ strtolower($kategoriProdukLabel) }}"
+                                data-harga="{{ (float) $produk->harga_jual }}"
+                                data-stok="{{ $stokProduk }}"
+                                data-search="{{ strtolower($produk->nama_produk . ' ' . $deskripsiProduk . ' ' . $kategoriProdukLabel) }}"
+                            >
                                 <div class="catalog-card-thumb">
                                     @if ($produk->gambar_url)
                                         <img src="{{ $produk->gambar_url }}" alt="{{ $produk->nama_produk }}">
@@ -1514,6 +1664,7 @@
                                     @endif
                                 </div>
                                 <div class="catalog-card-body">
+                                    <span class="catalog-cat-tag">{{ $kategoriProdukLabel }}</span>
                                     <h3 class="catalog-card-title">{{ $produk->nama_produk }}</h3>
                                     <p class="catalog-card-sub">{{ $deskripsiProduk }}</p>
                                     <div class="catalog-rating">
@@ -2282,42 +2433,86 @@
                 });
             }
 
-            // 4. Pencarian Produk (Search Bar di Bar Hitam)
+            // 4. Pencarian & Filter Produk (Search Bar, Kategori, Stok, dan Urutkan Harga/Nama)
             const searchInput = document.getElementById('topbarProdukSearch');
+            const catPills = document.querySelectorAll('.produk-cat-pill');
+            const filterStokSelect = document.getElementById('filterStokProduk');
+            const sortProdukSelect = document.getElementById('sortProdukSelect');
             const sections = document.querySelectorAll('.catalog-section');
             const emptySearch = document.getElementById('produkEmptySearch');
+            let activeKategoriFilter = 'semua';
 
-            if (searchInput) {
-                searchInput.addEventListener('input', function () {
-                    const kataKunci = this.value.toLowerCase().trim();
-                    let totalKetemu = 0;
+            function applyProdukFilterAndSort() {
+                const kataKunci = (searchInput ? searchInput.value : '').toLowerCase().trim();
+                const stokMode = filterStokSelect ? filterStokSelect.value : 'semua';
+                const sortMode = sortProdukSelect ? sortProdukSelect.value : 'default';
+                let totalKetemu = 0;
 
-                    sections.forEach(function (section) {
-                        let ketemuDiSection = 0;
+                sections.forEach(function (section) {
+                    const grid = section.querySelector('.catalog-grid');
+                    const cards = Array.from(section.querySelectorAll('.catalog-card'));
+                    let ketemuDiSection = 0;
 
-                        section.querySelectorAll('.catalog-card').forEach(function (card) {
-                            const teksProduk = card.dataset.search || '';
-                            const cocok = teksProduk.includes(kataKunci);
-
-                            if (kataKunci === '') {
-                                card.style.display = '';
-                            } else {
-                                card.style.display = cocok ? 'flex' : 'none';
+                    if (grid && cards.length > 1) {
+                        cards.sort(function (a, b) {
+                            if (sortMode === 'harga_asc') {
+                                return Number(a.dataset.harga || 0) - Number(b.dataset.harga || 0);
                             }
-
-                            if (cocok) {
-                                ketemuDiSection++;
-                                totalKetemu++;
+                            if (sortMode === 'harga_desc') {
+                                return Number(b.dataset.harga || 0) - Number(a.dataset.harga || 0);
                             }
+                            if (sortMode === 'nama_asc') {
+                                return (a.dataset.nama || '').localeCompare(b.dataset.nama || '');
+                            }
+                            return Number(a.dataset.id || 0) - Number(b.dataset.id || 0);
                         });
+                        cards.forEach(function (c) {
+                            grid.appendChild(c);
+                        });
+                    }
 
-                        section.style.display = ketemuDiSection === 0 ? 'none' : '';
+                    cards.forEach(function (card) {
+                        const teksProduk = card.dataset.search || '';
+                        const katProduk = card.dataset.kategori || '';
+                        const stokProduk = Number(card.dataset.stok || 0);
+
+                        const cocokCari = kataKunci === '' || teksProduk.includes(kataKunci);
+                        const cocokKat = activeKategoriFilter === 'semua' || katProduk === activeKategoriFilter;
+                        const cocokStok = stokMode === 'semua' || stokProduk > 0;
+                        const tampil = cocokCari && cocokKat && cocokStok;
+
+                        card.style.display = tampil ? 'flex' : 'none';
+                        if (tampil) {
+                            ketemuDiSection++;
+                            totalKetemu++;
+                        }
                     });
 
-                    if (emptySearch) {
-                        emptySearch.style.display = totalKetemu === 0 ? '' : 'none';
-                    }
+                    section.style.display = ketemuDiSection === 0 ? 'none' : '';
                 });
+
+                if (emptySearch) {
+                    emptySearch.style.display = totalKetemu === 0 ? '' : 'none';
+                }
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', applyProdukFilterAndSort);
+            }
+            catPills.forEach(function (pill) {
+                pill.addEventListener('click', function () {
+                    activeKategoriFilter = this.dataset.filterKat || 'semua';
+                    catPills.forEach(function (p) {
+                        p.classList.toggle('active', p === pill);
+                    });
+                    applyProdukFilterAndSort();
+                });
+            });
+            if (filterStokSelect) {
+                filterStokSelect.addEventListener('change', applyProdukFilterAndSort);
+            }
+            if (sortProdukSelect) {
+                sortProdukSelect.addEventListener('change', applyProdukFilterAndSort);
             }
 
             const navEntriesProduk = window.performance && performance.getEntriesByType
@@ -2397,6 +2592,7 @@
             }
         }
     </script>
+    <x-user-profile-modal />
     <x-login-success-toast />
     <x-rating-reminder-toast />
 </body>

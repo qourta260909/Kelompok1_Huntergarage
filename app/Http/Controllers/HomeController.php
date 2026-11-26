@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KategoriProduk;
+use App\Models\Kendaraan;
 use App\Models\Layanan;
 use App\Models\Pesanan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class HomeController extends Controller
 {
@@ -53,14 +56,26 @@ class HomeController extends Controller
         $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
         $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
 
-        return view('layanan', compact('layananAktif', 'produkAktif'));
+        if (Schema::hasTable('tb_kendaraan')) {
+            if (Kendaraan::count() < 80) {
+                Kendaraan::syncFromBrandCatalog();
+            }
+            $daftarKendaraan = Kendaraan::orderBy('merek', 'asc')->orderBy('jenis_kendaraan', 'asc')->orderBy('model', 'asc')->get();
+        } else {
+            $daftarKendaraan = collect();
+        }
+
+        return view('layanan', compact('layananAktif', 'produkAktif', 'daftarKendaraan'));
     }
 
     public function produk()
     {
         $layananAktif = Layanan::where('status', 'aktif')->orderBy('id', 'asc')->get();
         $produkAktif = Produk::where('status', 'aktif')->orderBy('id', 'asc')->get();
+        $daftarKategoriProduk = Schema::hasTable('tb_kategori_produk')
+            ? KategoriProduk::orderBy('nama_kategori', 'asc')->get()
+            : collect();
 
-        return view('produk', compact('layananAktif', 'produkAktif'));
+        return view('produk', compact('layananAktif', 'produkAktif', 'daftarKategoriProduk'));
     }
 }

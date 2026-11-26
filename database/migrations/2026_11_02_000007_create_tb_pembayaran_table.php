@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_pembayaran', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('pesanan_id')->constrained('tb_pesanan')->cascadeOnDelete();
-            $table->string('nomor_invoice')->nullable()->unique();
-            $table->decimal('jumlah', 12, 2)->default(0);
-            $table->string('metode_pembayaran')->default('tunai');
-            $table->string('bukti_transfer')->nullable();
-            $table->string('status')->default('menunggu');
-            $table->timestamp('dibayar_pada')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('tb_pembayaran')) {
+            Schema::create('tb_pembayaran', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('pesanan_id')->constrained('tb_pesanan')->cascadeOnDelete();
+                $table->string('nomor_invoice')->nullable()->unique();
+                $table->decimal('jumlah', 12, 2)->default(0);
+                $table->string('metode_pembayaran')->default('tunai');
+                $table->string('bukti_transfer')->nullable();
+                $table->string('status')->default('menunggu');
+                $table->timestamp('dibayar_pada')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -110,12 +110,38 @@
         }
         .catalog-card thead th:first-child,
         .catalog-card tbody td:first-child {
-            padding-left: 28px;
+            padding-left: 16px;
         }
         .catalog-card thead th:last-child,
         .catalog-card tbody td:last-child {
-            padding-right: 28px;
+            padding-right: 16px;
             text-align: center !important;
+        }
+        .catalog-card table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .catalog-card thead th:nth-child(1),
+        .catalog-card tbody td:nth-child(1) { width: 28%; }
+        .catalog-card thead th:nth-child(2),
+        .catalog-card tbody td:nth-child(2) { width: 15%; }
+        .catalog-card thead th:nth-child(3),
+        .catalog-card tbody td:nth-child(3) { width: 20%; }
+        .catalog-card thead th:nth-child(4),
+        .catalog-card tbody td:nth-child(4) { width: 11%; }
+        .catalog-card thead th:nth-child(5),
+        .catalog-card tbody td:nth-child(5) { width: 11%; }
+        .catalog-card thead th:nth-child(6),
+        .catalog-card tbody td:nth-child(6) { width: 15%; }
+        .badge-kategori-produk {
+            display: inline-block;
+            background-color: #f4f4f5;
+            color: #18181b;
+            border: 1px solid #e4e4e7;
+            font-size: 11.5px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 9999px;
         }
         .catalog-card thead th.th-status,
         .catalog-card tbody td.td-status {
@@ -463,6 +489,18 @@
 </svg>
 </span> Pesanan
                 </a>
+                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
+                </a>
                 <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -476,18 +514,6 @@
   <line x1="12" y1="22.08" x2="12" y2="12"/>
 </svg>
 </span> Produk
-                </a>
-                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
-                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <line x1="8" y1="5" x2="20" y2="5"/>
-  <line x1="8" y1="9" x2="20" y2="9"/>
-  <line x1="16" y1="13" x2="20" y2="13"/>
-  <line x1="16" y1="17" x2="20" y2="17"/>
-  <line x1="16" y1="21" x2="20" y2="21"/>
-  <path d="M12 17a4 4 0 1 1-4-4h4"/>
-  <polyline points="8 9 5 13 8 17"/>
-</svg>
-</span> Riwayat
                 </a>
                 <a href="{{ route('dashboard.ulasan') }}" class="nav-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -541,14 +567,23 @@
                         </svg>
                         <input type="text" id="searchInput" class="search-input" placeholder="Cari Produk...">
                     </div>
+                    <select id="kategoriFilterSelect" class="search-input" style="width:190px; padding-left:14px; font-weight:700; cursor:pointer;">
+                        <option value="all">Semua Kategori</option>
+                        @foreach (($daftarKategoriProduk ?? []) as $kat)
+                            <option value="{{ strtolower($kat->nama_kategori) }}">{{ $kat->nama_kategori }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                <button type="button" class="btn-add-primary" onclick="openCreateModal()">Tambah Produk</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button type="button" class="btn-add-primary" style="background:#ffffff; color:#000000; border:1.5px solid #000000; box-shadow:none;" onclick="openKategoriModal()">+ Kategori Produk</button>
+                    <button type="button" class="btn-add-primary" onclick="openCreateModal()">Tambah Produk</button>
+                </div>
             </div>
 
             <div class="catalog-card">
                 <div class="catalog-card-header">
                     <div class="catalog-card-title">Daftar Produk</div>
-                    <div class="catalog-card-subtitle">Daftar suku cadang & produk bengkel beserta stok tersedia</div>
+                    <div class="catalog-card-subtitle">Daftar suku cadang & produk bengkel beserta kategori dan stok tersedia</div>
                 </div>
 
                 <div class="table-wrapper">
@@ -556,6 +591,7 @@
                         <thead>
                             <tr>
                                 <th>Produk</th>
+                                <th>Kategori</th>
                                 <th>Deskripsi</th>
                                 <th>Jumlah stok</th>
                                 <th>Harga jual</th>
@@ -566,11 +602,12 @@
                             @forelse ($daftarProduk ?? [] as $produk)
                                 @php
                                     $statusRow = $produk->status ?? 'aktif';
+                                    $kategoriTampil = $produk->kategori ?: ($produk->deskripsi ?: 'Umum');
                                     $deskripsiTampil = $produk->deskripsi ?: ($produk->kategori ?: '-');
                                     $stokProduk = (int) ($produk->stok ?? 0);
                                     $gambarUrl = $produk->gambar_url;
                                 @endphp
-                                <tr class="produk-row" data-status="{{ $statusRow }}">
+                                <tr class="produk-row" data-status="{{ $statusRow }}" data-kategori="{{ strtolower($kategoriTampil) }}">
                                     <td>
                                         <div class="produk-cell-wrap">
                                             <div class="produk-thumb-box">
@@ -590,6 +627,9 @@
                                                 <span class="produk-name-text">{{ $produk->nama_produk }}</span>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge-kategori-produk">{{ $kategoriTampil }}</span>
                                     </td>
                                     <td>
                                         <span class="deskripsi-text">{{ $deskripsiTampil }}</span>
@@ -617,6 +657,7 @@
                                                 onclick="openEditModal({{ json_encode([
                                                     'id' => $produk->id,
                                                     'nama_produk' => $produk->nama_produk,
+                                                    'kategori' => $kategoriTampil,
                                                     'deskripsi' => $deskripsiTampil === '-' ? '' : $deskripsiTampil,
                                                     'gambar_url' => $gambarUrl,
                                                     'stok' => $stokProduk,
@@ -647,7 +688,7 @@
                                 </tr>
                             @empty
                                 <tr id="emptyServerRow">
-                                    <td colspan="5" class="empty-state-cell">
+                                    <td colspan="6" class="empty-state-cell">
                                         <div class="empty-state-box">
                                             <div class="empty-state-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -663,7 +704,7 @@
                                 </tr>
                             @endforelse
                             <tr id="emptyFilterRow" style="display:none;">
-                                <td colspan="5" class="empty-state-cell">
+                                <td colspan="6" class="empty-state-cell">
                                     <div class="empty-state-box">
                                         <div class="empty-state-icon">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -672,7 +713,7 @@
                                             </svg>
                                         </div>
                                         <div class="empty-state-title">Produk Tidak Ditemukan</div>
-                                        <div class="empty-state-sub">Tidak ada data produk pada status atau kata kunci pencarian ini.</div>
+                                        <div class="empty-state-sub">Tidak ada data produk pada status, kategori, atau kata kunci pencarian ini.</div>
                                     </div>
                                 </td>
                             </tr>
@@ -720,8 +761,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="inputDeskripsi">Deskripsi / Kategori</label>
-                    <input type="text" id="inputDeskripsi" name="deskripsi" class="form-control" placeholder="Contoh: Aki, Pengereman, Pembakaran" required>
+                    <label for="inputKategori">Kategori Produk</label>
+                    <select id="inputKategori" name="kategori" class="form-control">
+                        @foreach (($daftarKategoriProduk ?? []) as $kat)
+                            <option value="{{ $kat->nama_kategori }}">{{ $kat->nama_kategori }}</option>
+                        @endforeach
+                        <option value="__LAINNYA__">+ Tambah Kategori Baru...</option>
+                    </select>
+                    <input type="text" id="inputKategoriBaru" name="kategori_baru" class="form-control" placeholder="Ketik nama kategori baru (cth: Ban & Velg)" style="display:none; margin-top:8px;">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputDeskripsi">Deskripsi</label>
+                    <input type="text" id="inputDeskripsi" name="deskripsi" class="form-control" placeholder="Contoh: Suku cadang original bergaransi">
                 </div>
 
                 <div class="form-row-2">
@@ -752,9 +804,42 @@
         </div>
     </div>
 
+    <!-- Modal Kelola Kategori Produk -->
+    <div id="crudKategoriModal" class="crud-modal-overlay" aria-hidden="true">
+        <div class="crud-modal-card" style="max-width: 500px;">
+            <h3 class="crud-modal-title">Kelola Kategori Produk</h3>
+            <form method="POST" action="{{ route('dashboard.kategori-produk.store') }}" style="display:flex; gap:8px; margin-bottom:16px;">
+                @csrf
+                <input type="text" name="nama_kategori" class="form-control" placeholder="Nama kategori baru (cth: Kelistrikan, Ban)" required>
+                <button type="submit" class="btn-save-crud" style="white-space:nowrap;">+ Tambah</button>
+            </form>
+
+            <div style="font-size:12.5px; font-weight:800; color:#52525b; margin-bottom:8px;">Daftar Kategori Tersimpan ({{ isset($daftarKategoriProduk) ? $daftarKategoriProduk->count() : 0 }})</div>
+            <div style="max-height:240px; overflow-y:auto; border:1px solid #e4e4e7; border-radius:10px; padding:8px;">
+                @forelse (($daftarKategoriProduk ?? []) as $kat)
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding:7px 10px; border-bottom:1px solid #f4f4f5; font-size:13px;">
+                        <span style="font-weight:800; color:#09090b;">{{ $kat->nama_kategori }}</span>
+                        <form method="POST" action="{{ route('dashboard.kategori-produk.destroy', $kat->id) }}" onsubmit="return confirm('Hapus kategori {{ $kat->nama_kategori }}?');" style="margin:0;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" style="background:none; border:none; color:#ef4444; font-weight:700; font-size:12px; cursor:pointer;">Hapus</button>
+                        </form>
+                    </div>
+                @empty
+                    <div style="text-align:center; padding:14px; font-size:12.5px; color:#71717a;">Belum ada kategori produk tersimpan.</div>
+                @endforelse
+            </div>
+
+            <div class="crud-modal-actions" style="margin-top:16px;">
+                <button type="button" class="btn-cancel-crud" onclick="closeKategoriModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const statusTabButtons = document.querySelectorAll('[data-status-tab]');
         const searchInput = document.getElementById('searchInput');
+        const kategoriFilterSelect = document.getElementById('kategoriFilterSelect');
         const produkTableBody = document.getElementById('produkTableBody');
         const produkRows = Array.from(document.querySelectorAll('.produk-row'));
         const emptyFilterRow = document.getElementById('emptyFilterRow');
@@ -835,15 +920,18 @@
             if (resetPage) currentPage = 1;
 
             if (emptyServerRow) {
-                syncFillerRows(0, 5);
+                syncFillerRows(0, 6);
                 renderPagination(0, 1, 0, 0);
                 return;
             }
 
             const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+            const selectedKat = kategoriFilterSelect ? kategoriFilterSelect.value : 'all';
             const matchedRows = produkRows.filter((row) => {
                 const rowStatus = row.dataset.status || 'aktif';
-                return rowStatus === activeStatus && row.textContent.toLowerCase().includes(query);
+                const rowKat = row.dataset.kategori || '';
+                const matchKat = selectedKat === 'all' || rowKat === selectedKat;
+                return rowStatus === activeStatus && matchKat && row.textContent.toLowerCase().includes(query);
             });
 
             const totalItems = matchedRows.length;
@@ -867,7 +955,7 @@
             const startItem = totalItems === 0 ? 0 : startIdx + 1;
             const endItem = totalItems === 0 ? 0 : startIdx + pageRows.length;
 
-            syncFillerRows(pageRows.length, 5);
+            syncFillerRows(pageRows.length, 6);
             renderPagination(totalItems, totalPages, startItem, endItem);
         }
 
@@ -890,6 +978,10 @@
             searchInput.addEventListener('input', () => filterProduk(true));
         }
 
+        if (kategoriFilterSelect) {
+            kategoriFilterSelect.addEventListener('change', () => filterProduk(true));
+        }
+
         filterProduk(true);
 
         // Modal Logic
@@ -898,6 +990,8 @@
         const crudModalTitle = document.getElementById('crudModalTitle');
         const crudFormMethod = document.getElementById('crudFormMethod');
         const inputNamaProduk = document.getElementById('inputNamaProduk');
+        const inputKategori = document.getElementById('inputKategori');
+        const inputKategoriBaru = document.getElementById('inputKategoriBaru');
         const inputDeskripsi = document.getElementById('inputDeskripsi');
         const inputGambar = document.getElementById('inputGambar');
         const fotoPreviewImg = document.getElementById('fotoPreviewImg');
@@ -905,6 +999,20 @@
         const inputStok = document.getElementById('inputStok');
         const inputStatus = document.getElementById('inputStatus');
         const inputHargaJual = document.getElementById('inputHargaJual');
+
+        if (inputKategori && inputKategoriBaru) {
+            inputKategori.addEventListener('change', function () {
+                if (this.value === '__LAINNYA__') {
+                    inputKategoriBaru.style.display = 'block';
+                    inputKategoriBaru.required = true;
+                    inputKategoriBaru.focus();
+                } else {
+                    inputKategoriBaru.style.display = 'none';
+                    inputKategoriBaru.required = false;
+                    inputKategoriBaru.value = '';
+                }
+            });
+        }
 
         function setFotoPreview(url) {
             if (url) {
@@ -958,6 +1066,14 @@
             crudForm.action = "{{ route('dashboard.produk.store') }}";
             crudFormMethod.value = 'POST';
             inputNamaProduk.value = '';
+            if (inputKategori && inputKategori.options.length > 0) {
+                inputKategori.selectedIndex = 0;
+            }
+            if (inputKategoriBaru) {
+                inputKategoriBaru.style.display = 'none';
+                inputKategoriBaru.required = false;
+                inputKategoriBaru.value = '';
+            }
             inputDeskripsi.value = '';
             if (inputGambar) inputGambar.value = '';
             setFotoPreview(null);
@@ -972,6 +1088,25 @@
             crudForm.action = data.update_url;
             crudFormMethod.value = 'PUT';
             inputNamaProduk.value = data.nama_produk || '';
+            if (inputKategori) {
+                const katVal = data.kategori || '';
+                const existingOption = Array.from(inputKategori.options).find((o) => o.value.toLowerCase() === katVal.toLowerCase());
+                if (existingOption) {
+                    inputKategori.value = existingOption.value;
+                    if (inputKategoriBaru) {
+                        inputKategoriBaru.style.display = 'none';
+                        inputKategoriBaru.required = false;
+                        inputKategoriBaru.value = '';
+                    }
+                } else if (katVal) {
+                    inputKategori.value = '__LAINNYA__';
+                    if (inputKategoriBaru) {
+                        inputKategoriBaru.style.display = 'block';
+                        inputKategoriBaru.required = true;
+                        inputKategoriBaru.value = katVal;
+                    }
+                }
+            }
             inputDeskripsi.value = data.deskripsi || '';
             if (inputGambar) inputGambar.value = '';
             setFotoPreview(data.gambar_url || null);
@@ -983,6 +1118,14 @@
 
         function closeCrudModal() {
             crudModal.classList.remove('active');
+        }
+
+        const crudKategoriModal = document.getElementById('crudKategoriModal');
+        function openKategoriModal() {
+            if (crudKategoriModal) crudKategoriModal.classList.add('active');
+        }
+        function closeKategoriModal() {
+            if (crudKategoriModal) crudKategoriModal.classList.remove('active');
         }
     </script>
 

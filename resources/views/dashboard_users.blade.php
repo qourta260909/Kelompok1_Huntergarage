@@ -108,42 +108,47 @@
         }
         .catalog-card thead th {
             text-align: left;
-            padding: 16px 20px;
-            font-size: 13px;
+            padding: 14px 12px;
+            font-size: 12px;
             font-weight: 700;
             color: #52525b;
             border-bottom: 1px solid #e2e8f0;
-            white-space: nowrap;
         }
         .catalog-card tbody td {
-            padding: 15px 20px;
-            font-size: 13.5px;
+            padding: 13px 12px;
+            font-size: 13px;
             font-weight: 600;
             color: #18181b;
             border-bottom: 1px solid #f1f5f9;
             vertical-align: middle;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         .catalog-card thead th:first-child,
         .catalog-card tbody td:first-child {
-            padding-left: 32px;
+            padding-left: 18px;
         }
         .catalog-card thead th:last-child,
         .catalog-card tbody td:last-child {
-            padding-right: 32px;
+            padding-right: 18px;
             text-align: center !important;
+            width: 18%;
         }
         .password-hash-text {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 12px;
+            font-size: 11.5px;
             color: #71717a;
             font-weight: 500;
-        }
-        .alamat-cell-text {
-            max-width: 240px;
-            display: inline-block;
-            white-space: nowrap;
+            display: block;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .alamat-cell-text {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             color: #3f3f46;
             font-weight: 500;
         }
@@ -393,6 +398,18 @@
 </svg>
 </span> Pesanan
                 </a>
+                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
+                </a>
                 <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -406,18 +423,6 @@
   <line x1="12" y1="22.08" x2="12" y2="12"/>
 </svg>
 </span> Produk
-                </a>
-                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
-                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <line x1="8" y1="5" x2="20" y2="5"/>
-  <line x1="8" y1="9" x2="20" y2="9"/>
-  <line x1="16" y1="13" x2="20" y2="13"/>
-  <line x1="16" y1="17" x2="20" y2="17"/>
-  <line x1="16" y1="21" x2="20" y2="21"/>
-  <path d="M12 17a4 4 0 1 1-4-4h4"/>
-  <polyline points="8 9 5 13 8 17"/>
-</svg>
-</span> Riwayat
                 </a>
                 <a href="{{ route('dashboard.ulasan') }}" class="nav-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -603,8 +608,8 @@
                 <div class="form-row-2">
                     <div class="form-group">
                         <label for="inputPassword">Kata Sandi</label>
-                        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Min. 6 karakter">
-                        <div class="form-help-text" id="passwordHelpText">Wajib diisi untuk akun baru.</div>
+                        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Min. 8 karakter" minlength="8">
+                        <div class="form-help-text" id="passwordHelpText">Wajib diisi untuk akun baru (minimal 8 karakter).</div>
                     </div>
 
                     <div class="form-group">

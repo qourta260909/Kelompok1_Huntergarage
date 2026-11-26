@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_produk', function (Blueprint $table) {
-            $table->id();
-            $table->string('kode_produk')->nullable();
-            $table->string('nama_produk');
-            $table->string('gambar')->nullable();
-            $table->text('deskripsi')->nullable();
-            $table->string('kategori')->nullable();
-            $table->integer('stok')->default(0);
-            $table->decimal('harga_jual', 12, 2)->default(0);
-            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('tb_produk')) {
+            Schema::create('tb_produk', function (Blueprint $table) {
+                $table->id();
+                $table->string('kode_produk')->nullable();
+                $table->string('nama_produk');
+                $table->string('gambar')->nullable();
+                $table->text('deskripsi')->nullable();
+                $table->string('kategori')->nullable();
+                $table->integer('stok')->default(0);
+                $table->decimal('harga_jual', 12, 2)->default(0);
+                $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

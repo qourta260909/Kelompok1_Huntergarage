@@ -49,20 +49,40 @@
         }
         .order-card thead th:first-child,
         .order-card tbody td:first-child {
-            padding-left: 32px;
+            padding-left: 18px;
         }
         .order-card thead th:last-child,
         .order-card tbody td:last-child {
-            padding-right: 32px;
+            padding-right: 18px;
         }
         .badge-menunggu {
             display: inline-block;
             background-color: #fef3c7;
             color: #b45309;
             border: 1px solid #fde68a;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 800;
-            padding: 6px 16px;
+            padding: 5px 12px;
+            border-radius: 9999px;
+        }
+        .badge-diterima {
+            display: inline-block;
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            font-size: 11.5px;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 9999px;
+        }
+        .badge-ditolak {
+            display: inline-block;
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            font-size: 11.5px;
+            font-weight: 800;
+            padding: 5px 12px;
             border-radius: 9999px;
         }
         @keyframes tabSwitchFade {
@@ -117,6 +137,18 @@
 </svg>
 </span> Pesanan
                 </a>
+                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
+                </a>
                 <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -130,18 +162,6 @@
   <line x1="12" y1="22.08" x2="12" y2="12"/>
 </svg>
 </span> Produk
-                </a>
-                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
-                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <line x1="8" y1="5" x2="20" y2="5"/>
-  <line x1="8" y1="9" x2="20" y2="9"/>
-  <line x1="16" y1="13" x2="20" y2="13"/>
-  <line x1="16" y1="17" x2="20" y2="17"/>
-  <line x1="16" y1="21" x2="20" y2="21"/>
-  <path d="M12 17a4 4 0 1 1-4-4h4"/>
-  <polyline points="8 9 5 13 8 17"/>
-</svg>
-</span> Riwayat
                 </a>
                 <a href="{{ route('dashboard.ulasan') }}" class="nav-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -210,9 +230,12 @@
                 </div>
             </div>
 
-            <!-- Tabel Pesanan Terbaru -->
+            <!-- Tabel Pesanan Terbaru (Hari Ini) -->
             <div id="header-layanan" class="header-container">
-                <h3 class="section-heading">Pesanan Terbaru</h3>
+                <div>
+                    <h3 class="section-heading">Pesanan Terbaru Hari Ini</h3>
+                    <p style="font-size: 12.5px; color: #64748b; margin-top: 2px;">Menampilkan semua pesanan yang baru masuk pada hari ini ({{ now()->locale('id')->translatedFormat('d F Y') }})</p>
+                </div>
                 <div class="search-box-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -247,7 +270,19 @@
                                     $tanggalJamFormat = $carbonWaktu
                                         ? strtolower($carbonWaktu->translatedFormat('d M Y')) . ', ' . $carbonWaktu->format('H:i')
                                         : '-';
-                                    $statusLabel = in_array($pesanan->status, ['baru', 'proses'], true) ? 'Menunggu' : ucfirst($pesanan->status);
+                                    if ($pesanan->status === 'dibatalkan') {
+                                        $statusLabel = 'Ditolak';
+                                        $statusBadgeCls = 'badge-ditolak';
+                                    } elseif ($pesanan->status === 'selesai') {
+                                        $statusLabel = $kategoriRow === 'produk' ? 'Sudah Diantar' : 'Selesai';
+                                        $statusBadgeCls = 'badge-diterima';
+                                    } elseif ($pesanan->status === 'proses') {
+                                        $statusLabel = 'Diterima';
+                                        $statusBadgeCls = 'badge-diterima';
+                                    } else {
+                                        $statusLabel = 'Menunggu';
+                                        $statusBadgeCls = 'badge-menunggu';
+                                    }
                                     $jadwalSvc = $pesanan->jadwalService;
                                     $infoKendaraan = $jadwalSvc
                                         ? trim(($jadwalSvc->tipe_kendaraan ?? '') . ($jadwalSvc->no_plat_kendaraan ? ' (' . $jadwalSvc->no_plat_kendaraan . ')' : ''))
@@ -260,9 +295,9 @@
                                     <td>{{ $infoKendaraan ?: '-' }}</td>
                                     <td>{{ $pesanan->alamat ?: '-' }}</td>
                                     <td>{{ $tanggalJamFormat }}</td>
-                                    <td style="white-space: nowrap;">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                    <td>{{ $kategoriRow === 'layanan' ? '~Rp ' : 'Rp ' }}{{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                                     <td>
-                                        <span class="badge-menunggu">{{ $statusLabel }}</span>
+                                        <span class="{{ $statusBadgeCls }}">{{ $statusLabel }}</span>
                                     </td>
                                 </tr>
                             @empty
@@ -276,8 +311,8 @@
                                                     <line x1="10" y1="13" x2="14" y2="13"/>
                                                 </svg>
                                             </div>
-                                            <div class="empty-state-title">Belum Ada Pesanan Terbaru</div>
-                                            <div class="empty-state-sub">Saat pelanggan membuat pesanan baru, daftar pesanan akan otomatis muncul di sini.</div>
+                                            <div class="empty-state-title">Belum Ada Pesanan Hari Ini</div>
+                                            <div class="empty-state-sub">Semua pesanan baru yang dibuat pada hari ini akan otomatis muncul di sini.</div>
                                         </div>
                                     </td>
                                 </tr>

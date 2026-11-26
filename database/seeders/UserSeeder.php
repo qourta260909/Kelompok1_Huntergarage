@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class UserSeeder extends Seeder
 {
@@ -13,6 +15,22 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        if (Schema::hasTable('users')) {
+            Schema::table('users', function (Blueprint $table) {
+                if (!Schema::hasColumn('users', 'no_telepon')) {
+                    $table->string('no_telepon', 30)->nullable()->after('role');
+                }
+                if (!Schema::hasColumn('users', 'alamat')) {
+                    $table->text('alamat')->nullable()->after('no_telepon');
+                }
+                if (!Schema::hasColumn('users', 'otp_code')) {
+                    $table->string('otp_code', 10)->nullable()->after('remember_token');
+                }
+                if (!Schema::hasColumn('users', 'otp_expires_at')) {
+                    $table->timestamp('otp_expires_at')->nullable()->after('otp_code');
+                }
+            });
+        }
         User::updateOrCreate(
             ['email' => 'admin@huntergarage.com'],
             [

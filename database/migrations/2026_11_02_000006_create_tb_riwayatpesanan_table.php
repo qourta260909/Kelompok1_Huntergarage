@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_riwayatpesanan', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('pesanan_id')->nullable()->constrained('tb_pesanan')->nullOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->decimal('total_harga', 12, 2)->default(0);
-            $table->string('status_akhir')->default('selesai');
-            $table->timestamp('tanggal_selesai')->nullable();
-            $table->text('catatan')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('tb_riwayatpesanan')) {
+            Schema::create('tb_riwayatpesanan', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('pesanan_id')->nullable()->constrained('tb_pesanan')->nullOnDelete();
+                $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->decimal('total_harga', 12, 2)->default(0);
+                $table->string('status_akhir')->default('selesai');
+                $table->timestamp('tanggal_selesai')->nullable();
+                $table->text('catatan')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

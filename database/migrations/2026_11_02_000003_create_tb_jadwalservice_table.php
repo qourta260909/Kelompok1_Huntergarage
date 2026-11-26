@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_jadwalservice', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('layanan_id')->nullable()->constrained('tb_layanan')->nullOnDelete();
-            $table->string('no_plat_kendaraan');
-            $table->string('tipe_kendaraan')->nullable();
-            $table->date('tanggal_service');
-            $table->time('jam_service');
-            $table->text('keluhan')->nullable();
-            $table->string('status')->default('menunggu');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('tb_jadwalservice')) {
+            Schema::create('tb_jadwalservice', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->foreignId('layanan_id')->nullable()->constrained('tb_layanan')->nullOnDelete();
+                $table->string('no_plat_kendaraan');
+                $table->string('tipe_kendaraan')->nullable();
+                $table->date('tanggal_service');
+                $table->time('jam_service');
+                $table->text('keluhan')->nullable();
+                $table->string('status')->default('menunggu');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

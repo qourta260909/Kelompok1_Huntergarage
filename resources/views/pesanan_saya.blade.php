@@ -1371,6 +1371,13 @@
                                 </svg>
                                 <span>Booking Saya</span>
                             </a>
+                            <button type="button" class="dropdown-item" role="menuitem" onclick="openUserProfileModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>Edit Profil</span>
+                            </button>
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -1601,8 +1608,8 @@
                     </div>
 
                     <div class="gojek-total-box">
-                        <span class="gojek-total-label">Total Pembayaran</span>
-                        <span class="gojek-total-amount">Rp {{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</span>
+                        <span class="gojek-total-label">{{ $isLayananView ? 'Estimasi Biaya Servis' : 'Total Pembayaran' }}</span>
+                        <span class="gojek-total-amount">{{ $isLayananView ? '~Rp ' : 'Rp ' }}{{ number_format($pesananAktif->total_harga, 0, ',', '.') }}</span>
                     </div>
 
                     @if ($statusPesanan === 'selesai')
@@ -1752,6 +1759,18 @@
                         </svg>
                         <span>Booking Servis</span>
                     </button>
+
+                    <button
+                        type="button"
+                        class="user-sidebar-link"
+                        onclick="openUserProfileModal()"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Edit Profil (OTP)</span>
+                    </button>
                 </nav>
             </aside>
 
@@ -1871,8 +1890,8 @@
 
                                 <div class="user-order-item-right">
                                     <div class="user-order-price-box">
-                                        <span class="user-order-price-label">Total Pembayaran</span>
-                                        <strong class="user-order-item-price">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</strong>
+                                        <span class="user-order-price-label">{{ $katItem === 'layanan' ? 'Estimasi Biaya' : 'Total Pembayaran' }}</span>
+                                        <strong class="user-order-item-price">{{ $katItem === 'layanan' ? '~Rp ' : 'Rp ' }}{{ number_format($item->total_harga, 0, ',', '.') }}</strong>
                                     </div>
                                     <div class="user-order-item-actions">
                                         @if ($katItem === 'layanan' && $st === 'baru')
@@ -2265,6 +2284,7 @@
         </div>
     </div>
 
+    <x-user-profile-modal />
     <x-login-success-toast />
     <x-rating-reminder-toast />
 </body>

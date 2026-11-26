@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DataPesanan;
 use App\Models\JadwalService;
+use App\Models\Kendaraan;
 use App\Models\Layanan;
 use App\Models\Pesanan;
 use App\Models\Produk;
@@ -11,6 +12,7 @@ use App\Support\BookingPdfGenerator;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class PesananController extends Controller
@@ -172,6 +174,7 @@ class PesananController extends Controller
             'layanan_pengiriman' => ['nullable', 'required_if:kategori,produk', 'in:reguler,express'],
             'bukti_pembayaran' => ['nullable', 'required_if:kategori,produk', 'file', 'mimes:jpg,jpeg,png,webp,jfif,avif', 'max:10240'],
             'merek' => ['nullable', 'string', 'max:100'],
+            'jenis_kendaraan' => ['nullable', 'string', 'max:100'],
             'model' => ['nullable', 'string', 'max:100'],
             'tahun' => ['nullable', 'integer', 'min:1990', 'max:2030'],
             'plat_nomor' => ['nullable', 'string', 'max:30'],
@@ -205,9 +208,21 @@ class PesananController extends Controller
                 $totalHarga = $layanan->harga;
 
                 $jadwalCarbon = Carbon::parse($validated['jadwal_service']);
+                $merekTrimmed = isset($validated['merek']) ? ucwords(trim($validated['merek'])) : null;
+                $jenisTrimmed = isset($validated['jenis_kendaraan']) ? ucwords(trim($validated['jenis_kendaraan'])) : null;
+                $modelTrimmed = isset($validated['model']) ? trim($validated['model']) : null;
+
+                if ($merekTrimmed && $modelTrimmed && Schema::hasTable('tb_kendaraan')) {
+                    Kendaraan::firstOrCreate(
+                        ['merek' => $merekTrimmed, 'model' => $modelTrimmed],
+                        ['jenis_kendaraan' => $jenisTrimmed ?: 'Matic']
+                    );
+                }
+
                 $tipeKendaraanParts = array_filter([
-                    isset($validated['merek']) ? trim($validated['merek']) : null,
-                    isset($validated['model']) ? trim($validated['model']) : null,
+                    $merekTrimmed,
+                    $modelTrimmed,
+                    $jenisTrimmed ? "({$jenisTrimmed})" : null,
                     isset($validated['tahun']) ? (string) $validated['tahun'] : null,
                 ]);
                 $tipeKendaraan = count($tipeKendaraanParts) > 0 ? implode(' ', $tipeKendaraanParts) : null;
@@ -396,8 +411,7 @@ class PesananController extends Controller
     public function index()
     {
         $daftarPesanan = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk', 'pembayaran'])
-            ->where('status', 'baru')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->get()
             ->map(function (Pesanan $pesanan) {
                 $pesanan->nama_pelanggan_tampil = $pesanan->nama_pelanggan ?: ($pesanan->user->name ?? 'Pelanggan');
@@ -411,7 +425,7 @@ class PesananController extends Controller
     {
         $daftarRiwayat = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk', 'pembayaran'])
             ->whereIn('status', ['proses', 'selesai', 'dibatalkan'])
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->get()
             ->map(function (Pesanan $pesanan) {
                 $pesanan->nama_pelanggan_tampil = $pesanan->nama_pelanggan ?: ($pesanan->user->name ?? 'Pelanggan');
@@ -562,14 +576,14 @@ class PesananController extends Controller
             $labelSelesai = $kategoriTab === 'produk' ? 'Sudah Diantar' : 'Sudah Selesai';
 
             return redirect()
-                ->route('dashboard.riwayat', ['tab' => $kategoriTab])
+                ->route('dashboard.pesanan', ['tab' => $kategoriTab])
                 ->with('active_category', $kategoriTab)
                 ->with('success', "Pesanan {$kodePesanan} telah diperbarui menjadi {$labelSelesai}.");
         }
 
         $pesanNotifikasi = $validated['aksi'] === 'terima'
-            ? "Pesanan {$kodePesanan} berhasil diterima (status: Proses) dan dipindahkan ke Riwayat Pesanan."
-            : "Pesanan {$kodePesanan} telah ditolak dan dipindahkan ke Riwayat Pesanan.";
+            ? "Pesanan {$kodePesanan} berhasil diterima (status: Diterima / Proses)."
+            : "Pesanan {$kodePesanan} telah ditolak.";
 
         return redirect()
             ->route('dashboard.pesanan', ['tab' => $kategoriTab])

@@ -363,6 +363,18 @@
 </svg>
 </span> Pesanan
                 </a>
+                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
+                </a>
                 <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -376,18 +388,6 @@
   <line x1="12" y1="22.08" x2="12" y2="12"/>
 </svg>
 </span> Produk
-                </a>
-                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
-                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <line x1="8" y1="5" x2="20" y2="5"/>
-  <line x1="8" y1="9" x2="20" y2="9"/>
-  <line x1="16" y1="13" x2="20" y2="13"/>
-  <line x1="16" y1="17" x2="20" y2="17"/>
-  <line x1="16" y1="21" x2="20" y2="21"/>
-  <path d="M12 17a4 4 0 1 1-4-4h4"/>
-  <polyline points="8 9 5 13 8 17"/>
-</svg>
-</span> Riwayat
                 </a>
                 <a href="{{ route('dashboard.ulasan') }}" class="nav-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -448,7 +448,7 @@
             <div class="catalog-card">
                 <div class="catalog-card-header">
                     <div class="catalog-card-title">Daftar Layanan</div>
-                    <div class="catalog-card-subtitle">Contoh tarif jasa - Belum termasuk suku cadang</div>
+                    <div class="catalog-card-subtitle">Estimasi tarif jasa awal (menyesuaikan jenis kendaraan &amp; belum termasuk suku cadang)</div>
                 </div>
 
                 <div class="table-wrapper">
@@ -459,7 +459,7 @@
                                 <th>Estimasi Pengerjaan</th>
                                 <th>Kode</th>
                                 <th class="th-status">Status</th>
-                                <th>Harga</th>
+                                <th>Estimasi Harga</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -491,7 +491,7 @@
                                             <span class="badge-status-nonaktif">Nonaktif</span>
                                         @endif
                                     </td>
-                                    <td>{{ number_format($layanan->harga, 0, ',', '.') }}</td>
+                                    <td>~Rp {{ number_format($layanan->harga, 0, ',', '.') }}</td>
                                     <td>
                                         <div class="action-btns">
                                             <button
@@ -594,7 +594,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="inputHarga">Harga (Rp)</label>
+                        <label for="inputHarga">Estimasi Harga Mulai (Rp)</label>
                         <input type="text" inputmode="numeric" id="inputHarga" name="harga" class="form-control" placeholder="Contoh: 50.000" autocomplete="off" required>
                     </div>
                 </div>

@@ -11,28 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_pesanan', function (Blueprint $table) {
-            $table->id();
-            $table->string('kode_booking', 30)->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('layanan_id')->nullable()->constrained('tb_layanan')->nullOnDelete();
-            $table->foreignId('produk_id')->nullable()->constrained('tb_produk')->nullOnDelete();
-            $table->foreignId('jadwalservice_id')->nullable()->constrained('tb_jadwalservice')->nullOnDelete();
-            $table->string('nama_pelanggan')->nullable();
-            $table->string('no_telepon', 30)->nullable();
-            $table->text('alamat')->nullable();
-            $table->string('layanan_pengiriman', 50)->nullable();
-            $table->decimal('ongkir', 12, 2)->default(0);
-            $table->string('bukti_pembayaran')->nullable();
-            $table->string('kategori')->default('layanan');
-            $table->string('nama_layanan')->nullable();
-            $table->dateTime('jadwal_service')->nullable();
-            $table->decimal('total_harga', 12, 2)->default(0);
-            $table->string('status')->default('baru');
-            $table->unsignedTinyInteger('rating')->nullable();
-            $table->text('ulasan')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('tb_pesanan')) {
+            Schema::create('tb_pesanan', function (Blueprint $table) {
+                $table->id();
+                $table->string('kode_booking', 30)->nullable();
+                $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->foreignId('layanan_id')->nullable()->constrained('tb_layanan')->nullOnDelete();
+                $table->foreignId('produk_id')->nullable()->constrained('tb_produk')->nullOnDelete();
+                $table->foreignId('jadwalservice_id')->nullable()->constrained('tb_jadwalservice')->nullOnDelete();
+                $table->string('nama_pelanggan')->nullable();
+                $table->string('no_telepon', 30)->nullable();
+                $table->text('alamat')->nullable();
+                $table->string('layanan_pengiriman', 50)->nullable();
+                $table->decimal('ongkir', 12, 2)->default(0);
+                $table->string('bukti_pembayaran')->nullable();
+                $table->string('kategori')->default('layanan');
+                $table->string('nama_layanan')->nullable();
+                $table->dateTime('jadwal_service')->nullable();
+                $table->decimal('total_harga', 12, 2)->default(0);
+                $table->string('status')->default('baru');
+                $table->unsignedTinyInteger('rating')->nullable();
+                $table->text('ulasan')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

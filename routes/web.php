@@ -42,11 +42,15 @@ Route::middleware(['auth', 'verified', 'admin', PreventBackHistory::class])->gro
     Route::post('/dashboard-layanan', [LayananController::class, 'store'])->name('dashboard.layanan.store');
     Route::put('/dashboard-layanan/{layanan}', [LayananController::class, 'update'])->name('dashboard.layanan.update');
     Route::delete('/dashboard-layanan/{layanan}', [LayananController::class, 'destroy'])->name('dashboard.layanan.destroy');
+    Route::post('/dashboard-kendaraan', [LayananController::class, 'storeKendaraan'])->name('dashboard.kendaraan.store');
+    Route::delete('/dashboard-kendaraan/{kendaraan}', [LayananController::class, 'destroyKendaraan'])->name('dashboard.kendaraan.destroy');
 
     Route::get('/dashboard-produk', [ProdukController::class, 'index'])->name('dashboard.produk');
     Route::post('/dashboard-produk', [ProdukController::class, 'store'])->name('dashboard.produk.store');
     Route::put('/dashboard-produk/{produk}', [ProdukController::class, 'update'])->name('dashboard.produk.update');
     Route::delete('/dashboard-produk/{produk}', [ProdukController::class, 'destroy'])->name('dashboard.produk.destroy');
+    Route::post('/dashboard-kategori-produk', [ProdukController::class, 'storeKategori'])->name('dashboard.kategori-produk.store');
+    Route::delete('/dashboard-kategori-produk/{kategori}', [ProdukController::class, 'destroyKategori'])->name('dashboard.kategori-produk.destroy');
 
     Route::get('/dashboard-riwayat', [PesananController::class, 'riwayat'])->name('dashboard.riwayat');
     Route::get('/dashboard-ulasan', [PesananController::class, 'ulasan'])->name('dashboard.ulasan');
@@ -62,6 +66,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/send-otp', [ProfileController::class, 'sendOtp'])->name('profile.otp.send');
+    Route::post('/profile/update-with-otp', [ProfileController::class, 'updateWithOtp'])->name('profile.otp.update');
 });
 
 require __DIR__.'/auth.php';

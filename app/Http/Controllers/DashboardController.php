@@ -16,8 +16,8 @@ class DashboardController extends Controller
         $totalPesanan = DB::table('tb_pesanan')->count();
 
         $pesananTerbaru = Pesanan::with(['user', 'jadwalService', 'layanan', 'produk', 'details.produk'])
-            ->whereIn('status', ['baru', 'proses'])
-            ->orderBy('id', 'asc')
+            ->whereDate('created_at', now()->toDateString())
+            ->orderBy('id', 'desc')
             ->get()
             ->map(function (Pesanan $pesanan) {
                 $pesanan->nama_pelanggan = $pesanan->nama_pelanggan ?: ($pesanan->user->name ?? 'Pelanggan');

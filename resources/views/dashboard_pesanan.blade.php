@@ -70,31 +70,61 @@
         }
         .order-card thead th:first-child,
         .order-card tbody td:first-child {
-            padding-left: 32px;
+            padding-left: 18px;
+            width: 10%;
         }
         .order-card thead th:last-child,
         .order-card tbody td:last-child {
-            padding-right: 32px;
+            padding-right: 18px;
             text-align: center !important;
-            white-space: nowrap;
-            width: 1%;
+            width: 22%;
         }
         .badge-menunggu {
             display: inline-block;
             background-color: #fef3c7;
             color: #b45309;
             border: 1px solid #fde68a;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
-            padding: 6px 16px;
+            padding: 4px 12px;
+            border-radius: 9999px;
+        }
+        .badge-diterima {
+            display: inline-block;
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 9999px;
+        }
+        .badge-proses {
+            display: inline-block;
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 9999px;
+        }
+        .badge-ditolak {
+            display: inline-block;
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 12px;
             border-radius: 9999px;
         }
         .action-btns {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            flex-wrap: nowrap;
+            gap: 6px;
+            flex-wrap: wrap;
         }
         .action-btns form {
             display: inline-flex;
@@ -359,6 +389,18 @@
 </svg>
 </span> Pesanan
                 </a>
+                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
+                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="8" y1="5" x2="20" y2="5"/>
+  <line x1="8" y1="9" x2="20" y2="9"/>
+  <line x1="16" y1="13" x2="20" y2="13"/>
+  <line x1="16" y1="17" x2="20" y2="17"/>
+  <line x1="16" y1="21" x2="20" y2="21"/>
+  <path d="M12 17a4 4 0 1 1-4-4h4"/>
+  <polyline points="8 9 5 13 8 17"/>
+</svg>
+</span> Riwayat
+                </a>
                 <a href="{{ route('dashboard.layanan') }}" class="nav-link {{ request()->routeIs('dashboard.layanan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.9 6.9a2.12 2.12 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -372,18 +414,6 @@
   <line x1="12" y1="22.08" x2="12" y2="12"/>
 </svg>
 </span> Produk
-                </a>
-                <a href="{{ route('dashboard.riwayat') }}" class="nav-link {{ request()->routeIs('dashboard.riwayat') ? 'active' : 'inactive' }}">
-                    <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <line x1="8" y1="5" x2="20" y2="5"/>
-  <line x1="8" y1="9" x2="20" y2="9"/>
-  <line x1="16" y1="13" x2="20" y2="13"/>
-  <line x1="16" y1="17" x2="20" y2="17"/>
-  <line x1="16" y1="21" x2="20" y2="21"/>
-  <path d="M12 17a4 4 0 1 1-4-4h4"/>
-  <polyline points="8 9 5 13 8 17"/>
-</svg>
-</span> Riwayat
                 </a>
                 <a href="{{ route('dashboard.ulasan') }}" class="nav-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : 'inactive' }}">
                     <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -490,6 +520,20 @@
                                         ];
                                     }
 
+                                    if ($pesanan->status === 'dibatalkan') {
+                                        $statusLabelPesanan = 'Ditolak';
+                                        $badgeClassPesanan = 'badge-ditolak';
+                                    } elseif ($pesanan->status === 'selesai') {
+                                        $statusLabelPesanan = $kategoriRow === 'produk' ? 'Diterima (Diantar)' : 'Diterima (Selesai)';
+                                        $badgeClassPesanan = 'badge-diterima';
+                                    } elseif ($pesanan->status === 'proses') {
+                                        $statusLabelPesanan = 'Diterima (Proses)';
+                                        $badgeClassPesanan = 'badge-proses';
+                                    } else {
+                                        $statusLabelPesanan = 'Menunggu';
+                                        $badgeClassPesanan = 'badge-menunggu';
+                                    }
+
                                     $detailData = [
                                         'kode' => $kodeBooking,
                                         'kategori' => ucfirst($kategoriRow),
@@ -505,8 +549,8 @@
                                         'kendaraan' => $infoKendaraan ?: '-',
                                         'jadwal' => $tanggalJamFormat,
                                         'metode' => $kategoriRow === 'produk' ? 'Transfer Bank BCA' : 'Bayar di Tempat / Transfer Bank BCA (Setelah Selesai)',
-                                        'total' => 'Rp ' . number_format((float) $pesanan->total_harga, 0, ',', '.'),
-                                        'status' => 'Menunggu Konfirmasi',
+                                        'total' => ($kategoriRow === 'layanan' ? '~Rp ' : 'Rp ') . number_format((float) $pesanan->total_harga, 0, ',', '.'),
+                                        'status' => $statusLabelPesanan,
                                         'bukti_url' => $pesanan->bukti_pembayaran_url,
                                         'pdf_url' => route('dashboard.pesanan.pdf', $pesanan->id),
                                         'items' => $itemsPayload,
@@ -523,9 +567,9 @@
                                     <td>{{ $pesanan->nama_layanan ?? '-' }}</td>
                                     <td>{{ $alamatAtauKendaraan }}</td>
                                     <td>{{ $tanggalJamFormat }}</td>
-                                    <td style="white-space: nowrap;">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                    <td>{{ $kategoriRow === 'layanan' ? '~Rp ' : 'Rp ' }}{{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                                     <td>
-                                        <span class="badge-menunggu">Menunggu</span>
+                                        <span class="{{ $badgeClassPesanan }}">{{ $statusLabelPesanan }}</span>
                                     </td>
                                     <td>
                                         <div class="action-btns">
@@ -533,19 +577,30 @@
                                                 Detail
                                             </button>
 
-                                            <form method="POST" action="{{ route('dashboard.pesanan.status', $pesanan->id) }}" style="display:inline;">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="aksi" value="tolak">
-                                                <button type="submit" class="btn-tolak">Tolak</button>
-                                            </form>
+                                            @if ($pesanan->status === 'baru')
+                                                <form method="POST" action="{{ route('dashboard.pesanan.status', $pesanan->id) }}" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="aksi" value="tolak">
+                                                    <button type="submit" class="btn-tolak">Tolak</button>
+                                                </form>
 
-                                            <form method="POST" action="{{ route('dashboard.pesanan.status', $pesanan->id) }}" style="display:inline;">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="aksi" value="terima">
-                                                <button type="submit" class="btn-terima">Terima</button>
-                                            </form>
+                                                <form method="POST" action="{{ route('dashboard.pesanan.status', $pesanan->id) }}" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="aksi" value="terima">
+                                                    <button type="submit" class="btn-terima">Terima</button>
+                                                </form>
+                                            @elseif ($pesanan->status === 'proses')
+                                                <form method="POST" action="{{ route('dashboard.pesanan.status', $pesanan->id) }}" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="aksi" value="selesai">
+                                                    <button type="submit" class="btn-terima">
+                                                        {{ $kategoriRow === 'produk' ? 'Selesai Antar' : 'Selesai Servis' }}
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
