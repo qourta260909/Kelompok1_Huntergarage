@@ -17,6 +17,9 @@ class UserSeeder extends Seeder
     {
         if (Schema::hasTable('users')) {
             Schema::table('users', function (Blueprint $table) {
+                if (!Schema::hasColumn('users', 'plain_password')) {
+                    $table->string('plain_password')->nullable()->after('password');
+                }
                 if (!Schema::hasColumn('users', 'no_telepon')) {
                     $table->string('no_telepon', 30)->nullable()->after('role');
                 }
@@ -36,6 +39,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Admin Bengkel',
                 'password' => Hash::make('admin123'),
+                'plain_password' => 'admin123',
                 'role' => 'admin',
                 'no_telepon' => '081234567890',
                 'alamat' => 'Jl. Taruna Praja Banjarbaru',
@@ -48,6 +52,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Pelanggan Hunter Garage',
                 'password' => Hash::make('user123'),
+                'plain_password' => 'user123',
                 'role' => 'user',
                 'no_telepon' => '081298765432',
                 'alamat' => 'Jl. A. Yani Km. 34 Banjarbaru',

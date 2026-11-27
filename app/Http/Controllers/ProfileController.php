@@ -53,10 +53,28 @@ class ProfileController extends Controller
         ]);
 
         try {
-            Mail::raw(
-                "Halo {$user->name},\n\nKode OTP untuk perubahan profil (Username / Kata Sandi) akun Hunter Garage Anda adalah: {$otpCode}\nKode ini berlaku selama 10 menit.\n\nSalam,\nHunter Garage",
+            $htmlBody = "
+                <div style='font-family:Poppins,Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;border:1px solid #e4e4e7;border-radius:16px;background:#ffffff;color:#111111;'>
+                    <h2 style='margin:0 0 8px;font-size:18px;font-weight:700;color:#09090b;'>Hunter Garage</h2>
+                    <p style='margin:0 0 16px;font-size:13.5px;color:#52525b;line-height:1.5;'>Halo <strong>" . e($user->name) . "</strong>, gunakan kode verifikasi OTP berikut untuk menyimpan perubahan profil atau kata sandi akun Anda:</p>
+                    <div style='text-align:center;padding:16px;margin:16px 0;background:#f4f4f5;border-radius:12px;letter-spacing:6px;font-size:26px;font-weight:800;color:#09090b;'>
+                        {$otpCode}
+                    </div>
+                    <p style='margin:0 0 12px;font-size:12.5px;color:#71717a;'>Kode ini berlaku selama <strong>10 menit</strong>. Jangan berikan kode ini kepada siapa pun.</p>
+                    <hr style='border:none;border-top:1px solid #e4e4e7;margin:16px 0;'>
+                    <p style='margin:0;font-size:11.5px;color:#a1a1aa;'>Email ini dikirim secara otomatis (No-Reply). Mohon tidak membalas email ini.</p>
+                </div>
+            ";
+
+            Mail::html(
+                $htmlBody,
                 function ($message) use ($user) {
-                    $message->to($user->email)
+                    $message->from(
+                        config('mail.from.address', 'noreply@huntergarage.com'),
+                        config('mail.from.name', 'Hunter Garage (No-Reply)')
+                    )
+                        ->replyTo('noreply@huntergarage.com', 'No-Reply Hunter Garage')
+                        ->to($user->email)
                         ->subject('Kode OTP Perubahan Profil - Hunter Garage');
                 }
             );
@@ -142,6 +160,9 @@ class ProfileController extends Controller
 
         if (!empty($validated['password'])) {
             $updateData['password'] = Hash::make($validated['password']);
+            if (Schema::hasColumn('users', 'plain_password')) {
+                $updateData['plain_password'] = $validated['password'];
+            }
         }
 
         if (Schema::hasColumns('users', ['otp_code', 'otp_expires_at'])) {

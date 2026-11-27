@@ -22,7 +22,14 @@
         </div>
 
         <div class="field-group">
-            <label for="password" class="field-label">Kata Sandi</label>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2px;">
+                <label for="password" class="field-label" style="margin-bottom:0;">Kata Sandi</label>
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" style="font-size:0.82rem; font-weight:600; color:#111827; text-decoration:underline; text-underline-offset:3px;">
+                        Lupa kata sandi?
+                    </a>
+                @endif
+            </div>
             <div class="field-shell">
                 <svg class="field-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M7 10V8.5A5 5 0 0 1 12 3.5a5 5 0 0 1 5 5V10h.75A2.25 2.25 0 0 1 20 12.25v7.5A2.25 2.25 0 0 1 17.75 22h-11.5A2.25 2.25 0 0 1 4 19.75v-7.5A2.25 2.25 0 0 1 6.25 10H7Zm2 0h6V8.5a3 3 0 1 0-6 0V10Zm2.5 4.75a1 1 0 1 0 2 0 .98.98 0 0 0-.27-.7.98.98 0 0 0-1.46 0 .98.98 0 0 0-.27.7Z" fill="currentColor"/>

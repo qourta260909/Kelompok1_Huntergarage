@@ -134,11 +134,10 @@
             text-align: center !important;
             width: 18%;
         }
-        .password-hash-text {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 11.5px;
-            color: #71717a;
-            font-weight: 500;
+        .password-plain-text {
+            font-size: 13px;
+            color: #18181b;
+            font-weight: 700;
             display: block;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -505,7 +504,7 @@
                                     <td>{{ $usr->name }}</td>
                                     <td>{{ $usr->email }}</td>
                                     <td>
-                                        <span class="password-hash-text" title="Terenkripsi">{{ \Illuminate\Support\Str::limit($usr->password, 22, '...') }}</span>
+                                        <span class="password-plain-text">{{ $usr->plain_password ?: (($usr->role ?? 'user') === 'admin' ? 'admin123' : 'user123') }}</span>
                                     </td>
                                     <td>{{ $usr->no_telepon ?: '-' }}</td>
                                     <td>
@@ -527,6 +526,7 @@
                                                     'id' => $usr->id,
                                                     'name' => $usr->name,
                                                     'email' => $usr->email,
+                                                    'plain_password' => $usr->plain_password ?: (($usr->role ?? 'user') === 'admin' ? 'admin123' : 'user123'),
                                                     'no_telepon' => $usr->no_telepon ?? '',
                                                     'alamat' => $usr->alamat ?? '',
                                                     'role' => $usr->role ?? 'user',
@@ -608,7 +608,7 @@
                 <div class="form-row-2">
                     <div class="form-group">
                         <label for="inputPassword">Kata Sandi</label>
-                        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Min. 8 karakter" minlength="8">
+                        <input type="text" id="inputPassword" name="password" class="form-control" placeholder="Min. 8 karakter" minlength="8">
                         <div class="form-help-text" id="passwordHelpText">Wajib diisi untuk akun baru (minimal 8 karakter).</div>
                     </div>
 
@@ -806,7 +806,7 @@
             inputEmail.value = '';
             inputPassword.value = '';
             inputPassword.required = true;
-            if (passwordHelpText) passwordHelpText.textContent = 'Wajib diisi (min. 6 karakter).';
+            if (passwordHelpText) passwordHelpText.textContent = 'Wajib diisi (min. 8 karakter).';
             inputRole.value = 'user';
             inputNoTelepon.value = '';
             inputAlamat.value = '';
@@ -819,9 +819,9 @@
             crudFormMethod.value = 'PUT';
             inputName.value = data.name || '';
             inputEmail.value = data.email || '';
-            inputPassword.value = '';
+            inputPassword.value = data.plain_password || '';
             inputPassword.required = false;
-            if (passwordHelpText) passwordHelpText.textContent = 'Kosongkan jika tidak ingin mengubah password.';
+            if (passwordHelpText) passwordHelpText.textContent = 'Ubah teks di atas jika ingin mengganti kata sandi (min. 8 karakter).';
             inputRole.value = data.role || 'user';
             inputNoTelepon.value = data.no_telepon || '';
             inputAlamat.value = data.alamat || '';

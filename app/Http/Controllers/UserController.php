@@ -41,6 +41,7 @@ class UserController extends Controller
             'name' => trim($validated['name']),
             'email' => strtolower(trim($validated['email'])),
             'password' => Hash::make($validated['password']),
+            'plain_password' => $validated['password'],
             'no_telepon' => trim((string) ($validated['no_telepon'] ?? '')) ?: null,
             'alamat' => trim((string) ($validated['alamat'] ?? '')) ?: null,
             'role' => $validated['role'],
@@ -71,6 +72,7 @@ class UserController extends Controller
 
         if (!empty($validated['password'])) {
             $data['password'] = Hash::make($validated['password']);
+            $data['plain_password'] = $validated['password'];
         }
 
         $user->update($data);
